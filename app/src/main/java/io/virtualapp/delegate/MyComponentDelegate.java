@@ -19,7 +19,6 @@ import java.io.File;
 import me.ele.uetool.VEnv;
 import me.ele.uetool.MeasureToolHelper;
 import me.ele.uetool.UETMenu;
-import me.ele.uetool.UETool;
 
 
 public class MyComponentDelegate implements ComponentDelegate {
