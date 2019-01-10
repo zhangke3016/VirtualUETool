@@ -7,7 +7,7 @@ UEMeasureTool [![platform](https://img.shields.io/badge/platform-android-brightg
 
 ## 介绍
 
-UEMeasureTool 扩展自[UETool](https://github.com/eleme/UETool)实现，基于[]可以作用于**任何App**显示在屏幕上的 view，比如 Activity/Fragment/Dialog/PopupWindow 等等。
+UEMeasureTool 扩展自[UETool](https://github.com/eleme/UETool)实现，底层基于[VirtualApp](https://github.com/asLody/VirtualApp)的实现。可以作用于**任何App**在屏幕上显示的 view，比如 Activity/Fragment/Dialog/PopupWindow 等等。
 
 目前 UEMeasureTool 提供以下功能：
 
