@@ -8,6 +8,9 @@ import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 
 import com.lody.virtual.client.hook.delegate.ComponentDelegate;
 
@@ -38,7 +41,20 @@ public class MyComponentDelegate implements ComponentDelegate {
         application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-
+                try{
+                    if (activity instanceof FragmentActivity){
+                        ((FragmentActivity)activity).getSupportFragmentManager().registerFragmentLifecycleCallbacks(
+                                new FragmentManager.FragmentLifecycleCallbacks() {
+                                    @Override
+                                    public void onFragmentStopped(FragmentManager fm, Fragment f) {
+                                        super.onFragmentStopped(fm, f);
+                                        UETMenu.dismiss(activity);
+                                    }
+                                }, true);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -72,6 +88,7 @@ public class MyComponentDelegate implements ComponentDelegate {
                 if (visibleActivityCount == 0 && mSDCardListener != null){
                     stopWatch();
                 }
+                UETMenu.dismiss(activity);
             }
 
             @Override
@@ -96,18 +113,17 @@ public class MyComponentDelegate implements ComponentDelegate {
         public void onEvent(int event, @Nullable String path) {
             switch(event){
                 case FileObserver.CREATE:
-                    path = VEnv.DIR + "/" + path;
-                    if (path.equals(VEnv.DIR + "/"
-                            + MeasureToolHelper.Type.TYPE_EDIT_ATTR)){
-                        new File(path).delete();
+                    new File(VEnv.DIR + "/"
+                            + MeasureToolHelper.Type.TYPE_EDIT_ATTR).delete();
+                    new File(VEnv.DIR + "/"
+                            + MeasureToolHelper.Type.TYPE_RELATIVE_POSITION).delete();
+                    new File(VEnv.DIR + "/"
+                            + MeasureToolHelper.Type.TYPE_SHOW_GRIDDING).delete();
+                    if (path.equals(MeasureToolHelper.Type.TYPE_EDIT_ATTR+"")){
                         mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_EDIT_ATTR));
-                    }else if (path.equals(VEnv.DIR + "/"
-                            + MeasureToolHelper.Type.TYPE_RELATIVE_POSITION)){
-                        new File(path).delete();
+                    }else if (path.equals(MeasureToolHelper.Type.TYPE_RELATIVE_POSITION+"")){
                         mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_RELATIVE_POSITION));
-                    }else if (path.equals(VEnv.DIR + "/"
-                            + MeasureToolHelper.Type.TYPE_SHOW_GRIDDING)){
-                        new File(path).delete();
+                    }else if (path.equals(MeasureToolHelper.Type.TYPE_SHOW_GRIDDING+"")){
                         mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_SHOW_GRIDDING));
                     }
                     break;
@@ -147,7 +163,6 @@ public class MyComponentDelegate implements ComponentDelegate {
     @Override
     public void afterActivityCreate(Activity activity) {
         UETool.setTargetActivity(activity);
-
     }
 
     @Override

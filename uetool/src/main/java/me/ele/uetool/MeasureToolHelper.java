@@ -83,7 +83,7 @@ public class MeasureToolHelper {
         if (viewWithTag != null){
             viewGroup.removeView(viewWithTag);
         }
-        UETool.getInstance().release();
+//        UETool.getInstance().release();
     }
 
     @IntDef({
