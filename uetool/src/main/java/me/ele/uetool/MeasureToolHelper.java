@@ -77,12 +77,20 @@ public class MeasureToolHelper {
         }
     }
 
-    public static void onDestroy(Activity activity) {
-        ViewGroup viewGroup = (ViewGroup) activity.getWindow().getDecorView();
-        View viewWithTag = viewGroup.findViewWithTag(EXTRA_TYPE);
-        if (viewWithTag != null){
-            viewGroup.removeView(viewWithTag);
+    public static boolean onDestroy(Activity activity) {
+        View view = Util.getCurrentView(activity);
+        ViewGroup viewGroup = null;
+        if (view instanceof ViewGroup){
+            viewGroup = (ViewGroup) view;
         }
+        if (viewGroup != null){
+            View viewWithTag = viewGroup.findViewWithTag(EXTRA_TYPE);
+            if (viewWithTag != null){
+                viewGroup.removeView(viewWithTag);
+                return true;
+            }
+        }
+        return false;
 //        UETool.getInstance().release();
     }
 

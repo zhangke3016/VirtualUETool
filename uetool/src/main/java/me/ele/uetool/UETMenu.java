@@ -189,9 +189,8 @@ public class UETMenu extends LinearLayout {
         Activity currentTopActivity = UETool.getInstance().getTargetActivity();
         if (currentTopActivity == null) {
             return;
-        } else if (currentTopActivity.getWindow().getDecorView().findViewWithTag(MeasureToolHelper.EXTRA_TYPE) != null) {
-            UETMenu.dismiss(currentTopActivity);
-            UETool.getInstance().setTargetActivity(currentTopActivity);
+        } else if (UETMenu.dismiss(currentTopActivity)){
+//            UETool.getInstance().setTargetActivity(currentTopActivity);
             return;
         }
         Bundle bundle = new Bundle();
@@ -200,8 +199,8 @@ public class UETMenu extends LinearLayout {
     }
 
 
-    public static void dismiss(Activity currentTopActivity){
-        MeasureToolHelper.onDestroy(currentTopActivity);
+    public static boolean dismiss(Activity currentTopActivity){
+        return MeasureToolHelper.onDestroy(currentTopActivity);
     }
 
     public void show() {
