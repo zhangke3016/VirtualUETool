@@ -2,5 +2,5 @@
 **Show/edit any view's attributions, any app.**
 
 ## Show
-![zhihu](pic/1.png)
-![qq](pic/2.gif)
+![UEMeasureTool](pic/1.png)
+![UEMeasureTool](pic/2.gif)
