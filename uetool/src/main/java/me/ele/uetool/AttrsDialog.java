@@ -331,7 +331,7 @@ public class AttrsDialog extends Dialog {
 
                 TextView textView2 = new TextView(parent.getContext());
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.leftMargin = dip2px(10);
                 textView2.setLayoutParams(layoutParams);
