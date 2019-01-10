@@ -197,7 +197,7 @@ public class CollectViewsLayout extends View {
             }
         }
         if (target == null) {
-            Toast.makeText(getContext(), "null x:"+x+" y:"+ y, Toast.LENGTH_SHORT).show();
+            Log.d("TAG", "target is null");
         }
         return target;
     }
