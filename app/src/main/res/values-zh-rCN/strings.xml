@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">布局辅助</string>
+    <string name="app_name">UEMeasureTool</string>
     <string name="desktop">桌面</string>
     <string name="add_app">添加App</string>
     <string name="preparing">正在打开App，请稍等…</string>
