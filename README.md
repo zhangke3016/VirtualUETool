@@ -2,8 +2,9 @@ UETool [![platform](https://img.shields.io/badge/platform-android-brightgreen.sv
 ======
 
 >**Show/edit any view's attributions, any app.**
-## Show
 ![UEMeasureTool](pic/1.png)
+
+## 效果
 ![UEMeasureTool](pic/2.gif)
 
 
