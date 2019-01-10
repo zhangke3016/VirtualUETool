@@ -1,1 +1,1 @@
-include ':lib', ':app',':uetool',':uetool-base'
+include ':lib', ':app',':uetool',':uetool-base', ':uetool-fresco'

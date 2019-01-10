@@ -147,7 +147,7 @@ public class AttrsDialog extends Dialog {
                 try {
                     IAttrs attrs = (IAttrs) Class.forName(attrsProvider).newInstance();
                     items.addAll(attrs.getAttrs(element));
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }
