@@ -27,7 +27,6 @@ public class UETool {
             add(UETCore.class.getName());
         }
     };
-    private Activity targetActivity;
     private UETMenu uetMenu;
 
     private UETool() {
@@ -114,20 +113,11 @@ public class UETool {
     }
 
     public Activity getTargetActivity() {
-        return targetActivity;
-    }
-
-    public static void setTargetActivity(Activity targetActivity) {
-        getInstance().targetActivity = targetActivity;
-        Application.setApplicationContext(targetActivity.getApplication());
+        return Util.getCurrentActivity();
     }
 
     public Set<String> getAttrsProvider() {
         return attrsProviderSet;
-    }
-
-    void release() {
-        targetActivity = null;
     }
 
     @TargetApi(Build.VERSION_CODES.M)

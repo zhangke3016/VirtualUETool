@@ -162,12 +162,10 @@ public class MyComponentDelegate implements ComponentDelegate {
 
     @Override
     public void afterActivityCreate(Activity activity) {
-        UETool.setTargetActivity(activity);
     }
 
     @Override
     public void afterActivityResume(Activity activity) {
-        UETool.setTargetActivity(activity);
     }
 
     @Override

@@ -187,6 +187,7 @@ public class UETMenu extends LinearLayout {
 
     public static void open(@MeasureToolHelper.Type int type) {
         Activity currentTopActivity = UETool.getInstance().getTargetActivity();
+        Log.e("TAG", "currentTopActivity == null: "+(currentTopActivity == null) );
         if (currentTopActivity == null) {
             return;
         } else if (UETMenu.dismiss(currentTopActivity)){
@@ -195,7 +196,7 @@ public class UETMenu extends LinearLayout {
         }
         Bundle bundle = new Bundle();
         bundle.putInt(MeasureToolHelper.EXTRA_TYPE, type);
-        MeasureToolHelper.onCreate(currentTopActivity,bundle );
+        MeasureToolHelper.onCreate(currentTopActivity,bundle);
     }
 
 

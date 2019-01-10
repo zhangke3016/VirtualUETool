@@ -91,7 +91,6 @@ public class MeasureToolHelper {
             }
         }
         return false;
-//        UETool.getInstance().release();
     }
 
     @IntDef({
