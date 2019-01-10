@@ -1,7 +1,6 @@
 package com.lody.virtual.client;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.BroadcastReceiver;
@@ -10,16 +9,13 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.Configuration;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.ConditionVariable;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.IInterface;
@@ -62,9 +58,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import me.ele.uetool.TransparentHelper;
-import me.ele.uetool.UETMenu;
-import me.ele.uetool.UETool;
 import mirror.android.app.ActivityThread;
 import mirror.android.app.ActivityThreadNMR1;
 import mirror.android.app.ContextImpl;
@@ -87,8 +80,6 @@ import mirror.dalvik.system.VMRuntime;
 import mirror.java.lang.ThreadGroupN;
 
 import static com.lody.virtual.os.VUserHandle.getUserId;
-import static me.ele.uetool.UETool.UE_ACTION;
-import static me.ele.uetool.UETool.UE_TYPE;
 
 /**
  * @author Lody

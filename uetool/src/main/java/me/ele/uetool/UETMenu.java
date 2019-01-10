@@ -6,12 +6,10 @@ import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -30,7 +28,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.ele.uetool.TransparentHelper.Type.TYPE_UNKNOWN;
+import static me.ele.uetool.MeasureToolHelper.Type.TYPE_UNKNOWN;
 
 public class UETMenu extends LinearLayout {
 
@@ -64,7 +62,7 @@ public class UETMenu extends LinearLayout {
             public void onClick(View v) {
                 try {
                     new File(VEnv.DIR + "/"
-                            + TransparentHelper.Type.TYPE_EDIT_ATTR).createNewFile();
+                            + MeasureToolHelper.Type.TYPE_EDIT_ATTR).createNewFile();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -76,7 +74,7 @@ public class UETMenu extends LinearLayout {
                     public void onClick(View v) {
                         try {
                             new File(VEnv.DIR + "/"
-                                    + TransparentHelper.Type.TYPE_RELATIVE_POSITION).createNewFile();
+                                    + MeasureToolHelper.Type.TYPE_RELATIVE_POSITION).createNewFile();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -88,7 +86,7 @@ public class UETMenu extends LinearLayout {
                     public void onClick(View v) {
                         try {
                             new File(VEnv.DIR + "/"
-                                    + TransparentHelper.Type.TYPE_SHOW_GRIDDING).createNewFile();
+                                    + MeasureToolHelper.Type.TYPE_SHOW_GRIDDING).createNewFile();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -187,24 +185,23 @@ public class UETMenu extends LinearLayout {
         open(TYPE_UNKNOWN);
     }
 
-    public static void open(@TransparentHelper.Type int type) {
+    public static void open(@MeasureToolHelper.Type int type) {
         Activity currentTopActivity = UETool.getInstance().getTargetActivity();
         if (currentTopActivity == null) {
             return;
-        } else if (currentTopActivity.getWindow().getDecorView().findViewWithTag(TransparentHelper.EXTRA_TYPE) != null) {
+        } else if (currentTopActivity.getWindow().getDecorView().findViewWithTag(MeasureToolHelper.EXTRA_TYPE) != null) {
             UETMenu.dismiss(currentTopActivity);
             UETool.getInstance().setTargetActivity(currentTopActivity);
             return;
         }
-        Log.e("TAG", "open: currentTopActivity："+currentTopActivity.getClass().getName() );
         Bundle bundle = new Bundle();
-        bundle.putInt(TransparentHelper.EXTRA_TYPE, type);
-        TransparentHelper.onCreate(currentTopActivity,bundle );
+        bundle.putInt(MeasureToolHelper.EXTRA_TYPE, type);
+        MeasureToolHelper.onCreate(currentTopActivity,bundle );
     }
 
 
     public static void dismiss(Activity currentTopActivity){
-        TransparentHelper.onDestroy(currentTopActivity);
+        MeasureToolHelper.onDestroy(currentTopActivity);
     }
 
     public void show() {

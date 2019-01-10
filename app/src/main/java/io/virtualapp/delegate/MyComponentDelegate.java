@@ -14,7 +14,7 @@ import com.lody.virtual.client.hook.delegate.ComponentDelegate;
 import java.io.File;
 
 import me.ele.uetool.VEnv;
-import me.ele.uetool.TransparentHelper;
+import me.ele.uetool.MeasureToolHelper;
 import me.ele.uetool.UETMenu;
 import me.ele.uetool.UETool;
 
@@ -98,17 +98,17 @@ public class MyComponentDelegate implements ComponentDelegate {
                 case FileObserver.CREATE:
                     path = VEnv.DIR + "/" + path;
                     if (path.equals(VEnv.DIR + "/"
-                            + TransparentHelper.Type.TYPE_EDIT_ATTR)){
+                            + MeasureToolHelper.Type.TYPE_EDIT_ATTR)){
                         new File(path).delete();
-                        mHandler.post(() -> UETMenu.open(TransparentHelper.Type.TYPE_EDIT_ATTR));
+                        mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_EDIT_ATTR));
                     }else if (path.equals(VEnv.DIR + "/"
-                            + TransparentHelper.Type.TYPE_RELATIVE_POSITION)){
+                            + MeasureToolHelper.Type.TYPE_RELATIVE_POSITION)){
                         new File(path).delete();
-                        mHandler.post(() -> UETMenu.open(TransparentHelper.Type.TYPE_RELATIVE_POSITION));
+                        mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_RELATIVE_POSITION));
                     }else if (path.equals(VEnv.DIR + "/"
-                            + TransparentHelper.Type.TYPE_SHOW_GRIDDING)){
+                            + MeasureToolHelper.Type.TYPE_SHOW_GRIDDING)){
                         new File(path).delete();
-                        mHandler.post(() -> UETMenu.open(TransparentHelper.Type.TYPE_SHOW_GRIDDING));
+                        mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_SHOW_GRIDDING));
                     }
                     break;
             }

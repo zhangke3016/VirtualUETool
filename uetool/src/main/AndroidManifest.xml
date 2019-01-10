@@ -4,11 +4,4 @@
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
-    <application>
-        <activity
-            android:name="me.ele.uetool.TransparentHelper"
-            android:launchMode="singleTask"
-            android:theme="@style/uet_Theme.AppCompat.Translucent"/>
-    </application>
-
 </manifest>

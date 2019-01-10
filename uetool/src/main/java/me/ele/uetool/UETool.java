@@ -25,7 +25,6 @@ public class UETool {
     private Set<String> attrsProviderSet = new LinkedHashSet<String>() {
         {
             add(UETCore.class.getName());
-//            add("me.ele.uetool.fresco.UETFresco");
         }
     };
     private Activity targetActivity;

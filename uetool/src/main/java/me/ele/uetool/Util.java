@@ -23,8 +23,10 @@ import android.support.graphics.drawable.VectorDrawableCompat;
 import android.text.SpannedString;
 import android.text.style.ImageSpan;
 import android.util.Pair;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ import android.widget.Toast;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -221,27 +224,68 @@ public class Util {
         Toast.makeText(context, "copied", Toast.LENGTH_SHORT).show();
     }
 
-    public static Activity getCurrentActivity() {
-//        try {
-//            Class activityThreadClass = Class.forName("android.app.ActivityThread");
-//            Method currentActivityThreadMethod = activityThreadClass.getMethod("currentActivityThread");
-//            Object currentActivityThread = currentActivityThreadMethod.invoke(null);
-//            Field mActivitiesField = activityThreadClass.getDeclaredField("mActivities");
-//            mActivitiesField.setAccessible(true);
-//            Map activities = (Map) mActivitiesField.get(currentActivityThread);
-//            for (Object record : activities.values()) {
-//                Class recordClass = record.getClass();
-//                Field pausedField = recordClass.getDeclaredField("paused");
-//                pausedField.setAccessible(true);
-//                if (!(boolean) pausedField.get(record)) {
-//                    Field activityField = recordClass.getDeclaredField("activity");
-//                    activityField.setAccessible(true);
-//                    return (Activity) activityField.get(record);
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        return UETool.getInstance().getTargetActivity();
+    public static View getCurrentView(Activity activity){
+        try {
+            Activity targetActivity = UETool.getInstance().getTargetActivity();
+            WindowManager windowManager = targetActivity.getWindowManager();
+            Field mGlobalField = activity.getClass().forName("android.view.WindowManagerImpl").getDeclaredField("mGlobal");
+            mGlobalField.setAccessible(true);
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                Field mViewsField = activity.getClass().forName("android.view.WindowManagerGlobal").getDeclaredField("mViews");
+                mViewsField.setAccessible(true);
+                List<View> views = (List<View>) mViewsField.get(mGlobalField.get(windowManager));
+                for (int i = views.size() - 1; i >= 0; i--) {
+                    View targetView = getTargetDecorView(targetActivity, views.get(i));
+                    if (targetView != null) {
+                        return targetView;
+                    }
+                }
+            } else {
+                Field mRootsField = activity.getClass().forName("android.view.WindowManagerGlobal").getDeclaredField("mRoots");
+                mRootsField.setAccessible(true);
+                List viewRootImpls;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    viewRootImpls = (List) mRootsField.get(mGlobalField.get(windowManager));
+                } else {
+                    viewRootImpls = Arrays.asList((Object[]) mRootsField.get(mGlobalField.get(windowManager)));
+                }
+                for (int i = viewRootImpls.size() - 1; i >= 0; i--) {
+                    Class clazz = activity.getClass().forName("android.view.ViewRootImpl");
+                    Object object = viewRootImpls.get(i);
+                    Field mWindowAttributesField = clazz.getDeclaredField("mWindowAttributes");
+                    mWindowAttributesField.setAccessible(true);
+                    Field mViewField = clazz.getDeclaredField("mView");
+                    mViewField.setAccessible(true);
+                    View decorView = (View) mViewField.get(object);
+                    WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) mWindowAttributesField.get(object);
+                    if (layoutParams.getTitle().toString().contains(targetActivity.getClass().getName())
+                            || getTargetDecorView(targetActivity, decorView) != null) {
+                        return decorView;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static View getTargetDecorView(Activity targetActivity, View decorView) {
+        View targetView = null;
+        Context context = decorView.getContext();
+        if (context == targetActivity) {
+            targetView = decorView;
+        } else {
+            while (context instanceof ContextThemeWrapper) {
+                Context baseContext = ((ContextThemeWrapper) context).getBaseContext();
+                if (baseContext == targetActivity) {
+                    targetView = decorView;
+                    break;
+                }
+                context = baseContext;
+            }
+        }
+        return targetView;
     }
 }

@@ -15,12 +15,12 @@ import me.ele.uetool.base.DimenUtil;
 
 import static android.view.Gravity.BOTTOM;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static me.ele.uetool.TransparentHelper.Type.TYPE_EDIT_ATTR;
-import static me.ele.uetool.TransparentHelper.Type.TYPE_RELATIVE_POSITION;
-import static me.ele.uetool.TransparentHelper.Type.TYPE_SHOW_GRIDDING;
-import static me.ele.uetool.TransparentHelper.Type.TYPE_UNKNOWN;
+import static me.ele.uetool.MeasureToolHelper.Type.TYPE_EDIT_ATTR;
+import static me.ele.uetool.MeasureToolHelper.Type.TYPE_RELATIVE_POSITION;
+import static me.ele.uetool.MeasureToolHelper.Type.TYPE_SHOW_GRIDDING;
+import static me.ele.uetool.MeasureToolHelper.Type.TYPE_UNKNOWN;
 
-public class TransparentHelper {
+public class MeasureToolHelper {
 
     public static final String EXTRA_TYPE = "extra_type";
 
@@ -28,13 +28,9 @@ public class TransparentHelper {
         if (savedInstanceState == null) {
             return;
         }
-
         FrameLayout frameLayout = new FrameLayout(activity);
-
         ViewGroup vContainer = frameLayout;
-
         final BoardTextView board = new BoardTextView(activity);
-
         int type = savedInstanceState.getInt(EXTRA_TYPE, TYPE_UNKNOWN);
 
         switch (type) {
@@ -64,16 +60,22 @@ public class TransparentHelper {
         params.gravity = BOTTOM;
         vContainer.addView(board, params);
 
-        View viewWithTag = vContainer.findViewWithTag(EXTRA_TYPE);
-        if (viewWithTag != null){
-            vContainer.removeView(viewWithTag);
+        View view = Util.getCurrentView(activity);
+        ViewGroup viewGroup = null;
+        if (view instanceof ViewGroup){
+            viewGroup = (ViewGroup) view;
         }
-
-        vContainer.setTag(EXTRA_TYPE);
-        ViewGroup viewGroup = (ViewGroup) activity.getWindow().getDecorView();
-        viewGroup.addView(vContainer);
+        if (viewGroup != null){
+            View viewWithTag = viewGroup.findViewWithTag(EXTRA_TYPE);
+            if (viewWithTag != null){
+                viewGroup.removeView(viewWithTag);
+            }
+            vContainer.setTag(EXTRA_TYPE);
+            vContainer.setFocusable(false);
+            vContainer.setFocusableInTouchMode(false);
+            viewGroup.addView(vContainer,new ViewGroup.LayoutParams(viewGroup.getWidth(),viewGroup.getHeight()));
+        }
     }
-
 
     public static void onDestroy(Activity activity) {
         ViewGroup viewGroup = (ViewGroup) activity.getWindow().getDecorView();

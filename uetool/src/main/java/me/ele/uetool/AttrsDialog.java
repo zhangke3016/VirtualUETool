@@ -151,18 +151,6 @@ public class AttrsDialog extends Dialog {
                     e.printStackTrace();
                 }
             }
-//            Iterator<Item> iterator = items.iterator();
-//            while (iterator.hasNext()){
-//                Item item = iterator.next();
-//                if (item.getClass() != TitleItem.class
-//                        && item.getClass() != EditTextItem.class
-//                        && item.getClass() != TextItem.class
-//                        && item.getClass() != SwitchItem.class
-//                        && item.getClass() != AddMinusEditItem.class
-//                        ){
-//                    iterator.remove();
-//                }
-//            }
             notifyDataSetChanged();
         }
 

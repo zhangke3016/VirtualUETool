@@ -198,25 +198,6 @@ public class CollectViewsLayout extends View {
         }
         if (target == null) {
             Toast.makeText(getContext(), "null x:"+x+" y:"+ y, Toast.LENGTH_SHORT).show();
-        }else {
-
-//            if (target.getView() instanceof ImageView){
-//                ImageView imageView = (ImageView) target.getView();
-//                imageView.setDrawingCacheEnabled(true);
-//                Bitmap bitmap = Bitmap.createBitmap(imageView.getDrawingCache());
-//                imageView.setDrawingCacheEnabled(false);
-//                try {
-//                    if (bitmap != null){
-//                        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+System.currentTimeMillis()+".jpg");
-//                        file.createNewFile();
-//                        bitmap.compress(Bitmap.CompressFormat.JPEG,100 , new FileOutputStream(file));
-//                        Toast.makeText(getContext(), file.getAbsolutePath()+" 保存成功", Toast.LENGTH_SHORT).show();
-//                    }
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-//            Log.e("TAG", "target: "+ target.getView().getClass().getName());
         }
         return target;
     }

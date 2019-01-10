@@ -33,7 +33,7 @@ public class Element {
     }
 
     public void reset() {
-        view.getLocationOnScreen(location);
+        view.getLocationInWindow(location);
         int width = view.getWidth();
         int height = view.getHeight();
 
