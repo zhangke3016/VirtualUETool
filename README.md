@@ -24,7 +24,7 @@ UEMeasureTool 扩展自[UETool](https://github.com/eleme/UETool)实现，底层�
 
 ## 自定义实现你的 View 的属性
 
-注意：自定义实现View 的属性时，与**[UETool](https://github.com/eleme/UETool)**的方式一致
+注意：自定义实现View 的属性时，与 **[UETool](https://github.com/eleme/UETool)** 的方式一致
 
 #### 
 
