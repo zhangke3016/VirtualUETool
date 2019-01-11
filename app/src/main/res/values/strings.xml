@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">UEMeasureTool</string>
+    <string name="app_name">VirtualUETool</string>
     <string name="wait">Please wait…</string>
     <string name="desktop">Desktop</string>
     <string name="add_app">Add App</string>
