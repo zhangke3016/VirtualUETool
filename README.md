@@ -51,7 +51,3 @@ UETool.putAttrsProviderClass(String customizeClassName);
 [UETool](https://github.com/eleme/UETool)
 
 [VirtualApp](https://github.com/asLody/VirtualApp)
-
-## License
-
-[MIT](http://opensource.org/licenses/MIT)
