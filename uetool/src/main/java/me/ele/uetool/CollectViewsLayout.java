@@ -197,7 +197,7 @@ public class CollectViewsLayout extends View {
             }
         }
         if (target == null) {
-            Log.d("TAG", "target is null");
+            Toast.makeText(getContext(), String.format("could not found view in (%1$.0f , %2$.0f), please select view again", x, y), Toast.LENGTH_SHORT).show();
         }
         return target;
     }
