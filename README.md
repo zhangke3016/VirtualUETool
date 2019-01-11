@@ -9,7 +9,7 @@ VirtualUETool [![platform](https://img.shields.io/badge/platform-android-brightg
 
 VirtualUETool 扩展自[UETool](https://github.com/eleme/UETool)实现，底层基于[VirtualApp](https://github.com/asLody/VirtualApp)的实现。可以作用于**任何App**在屏幕上显示的 view，比如 Activity/Fragment/Dialog/PopupWindow 等等。
 
-目前 VirtualUETool 提供以下功能：
+目前 VirtualUETool 基本可实现 UETool 的所有功能,可直接查看已安装APP：
 
 - 移动屏幕上的任意 view，如果重复选中一个 view，将会选中其父 view
 - 查看/修改常用控件的属性，比如修改 TextView 的文本内容、文本大小、文本颜色等等
