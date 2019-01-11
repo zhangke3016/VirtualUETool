@@ -19,6 +19,8 @@ VirtualUETool 扩展自[UETool](https://github.com/eleme/UETool)实现，底层�
 - 显示两个 view 的相对位置关系
 - 显示网格栅栏，方便查看控件是否对齐
 
+[下载体验](app-release.apk)
+
 ## 效果
 ![VirtualUETool](pic/2.gif)
 
