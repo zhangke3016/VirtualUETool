@@ -92,6 +92,18 @@ public class UETMenu extends LinearLayout {
                         }
                     }
                 }));
+        subMenus.add(new UETSubMenu.SubMenu("布局层级", R.drawable.uet_show_gridding,
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            new File(VEnv.DIR + "/"
+                                    + MeasureToolHelper.Type.TYPE_LAYOUT_LEVEL).createNewFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }));
 
         for (UETSubMenu.SubMenu subMenu : subMenus) {
             UETSubMenu uetSubMenu = new UETSubMenu(getContext());
@@ -187,7 +199,6 @@ public class UETMenu extends LinearLayout {
 
     public static void open(@MeasureToolHelper.Type int type) {
         Activity currentTopActivity = UETool.getInstance().getTargetActivity();
-        Log.e("TAG", "currentTopActivity == null: "+(currentTopActivity == null) );
         if (currentTopActivity == null) {
             return;
         } else if (UETMenu.dismiss(currentTopActivity)){
