@@ -118,12 +118,16 @@ public class MyComponentDelegate implements ComponentDelegate {
                             + MeasureToolHelper.Type.TYPE_RELATIVE_POSITION).delete();
                     new File(VEnv.DIR + "/"
                             + MeasureToolHelper.Type.TYPE_SHOW_GRIDDING).delete();
+                    new File(VEnv.DIR + "/"
+                            + MeasureToolHelper.Type.TYPE_LAYOUT_LEVEL).delete();
                     if (path.equals(MeasureToolHelper.Type.TYPE_EDIT_ATTR+"")){
                         mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_EDIT_ATTR));
                     }else if (path.equals(MeasureToolHelper.Type.TYPE_RELATIVE_POSITION+"")){
                         mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_RELATIVE_POSITION));
                     }else if (path.equals(MeasureToolHelper.Type.TYPE_SHOW_GRIDDING+"")){
                         mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_SHOW_GRIDDING));
+                    }else if (path.equals(MeasureToolHelper.Type.TYPE_LAYOUT_LEVEL+"")){
+                        mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_LAYOUT_LEVEL));
                     }
                     break;
             }

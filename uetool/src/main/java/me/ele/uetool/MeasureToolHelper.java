@@ -16,6 +16,7 @@ import me.ele.uetool.base.DimenUtil;
 import static android.view.Gravity.BOTTOM;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static me.ele.uetool.MeasureToolHelper.Type.TYPE_EDIT_ATTR;
+import static me.ele.uetool.MeasureToolHelper.Type.TYPE_LAYOUT_LEVEL;
 import static me.ele.uetool.MeasureToolHelper.Type.TYPE_RELATIVE_POSITION;
 import static me.ele.uetool.MeasureToolHelper.Type.TYPE_SHOW_GRIDDING;
 import static me.ele.uetool.MeasureToolHelper.Type.TYPE_UNKNOWN;
@@ -23,6 +24,8 @@ import static me.ele.uetool.MeasureToolHelper.Type.TYPE_UNKNOWN;
 public class MeasureToolHelper {
 
     public static final String EXTRA_TYPE = "extra_type";
+
+    private static final String EXTRA_TYPE_LEVEL = "extra_type_level";
 
     public static void onCreate(Activity activity,Bundle savedInstanceState) {
         if (savedInstanceState == null) {
@@ -51,6 +54,8 @@ public class MeasureToolHelper {
                 vContainer.addView(new GriddingLayout(activity));
                 board.updateInfo("LINE_INTERVAL: " + DimenUtil.px2dip(GriddingLayout.LINE_INTERVAL, true));
                 break;
+            case TYPE_LAYOUT_LEVEL:
+                break;
             default:
                 Toast.makeText(activity, "fail ---", Toast.LENGTH_SHORT).show();
                 break;
@@ -65,15 +70,32 @@ public class MeasureToolHelper {
         if (view instanceof ViewGroup){
             viewGroup = (ViewGroup) view;
         }
-        if (viewGroup != null){
+        if (viewGroup != null && viewGroup.getChildCount() > 0){
+            if (type == TYPE_LAYOUT_LEVEL){
+                ScalpelFrameLayout scalpelFrameLayout = new ScalpelFrameLayout(activity);
+                View v = viewGroup.getChildAt(0);
+                viewGroup.removeView(v);
+
+                scalpelFrameLayout.addView(v);
+                scalpelFrameLayout.setTag(EXTRA_TYPE_LEVEL);
+                vContainer.addView(scalpelFrameLayout);
+                scalpelFrameLayout.setLayerInteractionEnabled(true);
+                scalpelFrameLayout.setDrawViews(true);
+                scalpelFrameLayout.setDrawIds(true);
+            }
             View viewWithTag = viewGroup.findViewWithTag(EXTRA_TYPE);
+            View viewWithTagLevel = viewGroup.findViewWithTag(EXTRA_TYPE_LEVEL);
             if (viewWithTag != null){
                 viewGroup.removeView(viewWithTag);
+            }
+            if (viewWithTagLevel != null){
+                viewGroup.removeView(viewWithTagLevel);
             }
             vContainer.setTag(EXTRA_TYPE);
             vContainer.setFocusable(false);
             vContainer.setFocusableInTouchMode(false);
             viewGroup.addView(vContainer,new ViewGroup.LayoutParams(viewGroup.getWidth(),viewGroup.getHeight()));
+            viewGroup.postInvalidate();
         }
     }
 
@@ -85,6 +107,15 @@ public class MeasureToolHelper {
         }
         if (viewGroup != null){
             View viewWithTag = viewGroup.findViewWithTag(EXTRA_TYPE);
+            ViewGroup viewWithTagLevel = viewGroup.findViewWithTag(EXTRA_TYPE_LEVEL);
+            if (viewWithTagLevel != null){
+                View child = viewWithTagLevel.getChildAt(0);
+                if (child != null) {
+                    viewWithTagLevel.removeView(child);
+                    ViewGroup vg = (ViewGroup) Util.getCurrentView(activity);
+                    vg.addView(child,0);
+                }
+            }
             if (viewWithTag != null){
                 viewGroup.removeView(viewWithTag);
                 return true;
@@ -98,6 +129,7 @@ public class MeasureToolHelper {
             TYPE_EDIT_ATTR,
             TYPE_SHOW_GRIDDING,
             TYPE_RELATIVE_POSITION,
+            TYPE_LAYOUT_LEVEL
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
@@ -105,5 +137,6 @@ public class MeasureToolHelper {
         int TYPE_EDIT_ATTR = 1;
         int TYPE_SHOW_GRIDDING = 2;
         int TYPE_RELATIVE_POSITION = 3;
+        int TYPE_LAYOUT_LEVEL = 4;
     }
 }

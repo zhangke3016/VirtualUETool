@@ -18,11 +18,14 @@ VirtualUETool 扩展自[UETool](https://github.com/eleme/UETool)实现，底层�
 - 有的时候 UETool 为你选中的 view 并不是你想要的，你可以选择打开 ValidView，然后选中你需要的 View
 - 显示两个 view 的相对位置关系
 - 显示网格栅栏，方便查看控件是否对齐
+- 新增支持查看布局层级
 
 [下载体验](https://github.com/zhangke3016/VirtualUETool/blob/master/app-release.apk?raw=true)
 
 ## 效果
 ![VirtualUETool](pic/2.gif)
+![VirtualUETool](pic/5.png)
+![VirtualUETool](pic/6.png)
 
 ## 自定义实现你的 View 的属性
 
