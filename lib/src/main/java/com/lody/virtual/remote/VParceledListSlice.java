@@ -28,7 +28,7 @@ import android.util.Log;
  */
 public class VParceledListSlice<T extends Parcelable> implements Parcelable {
 	@SuppressWarnings("unchecked")
-	public static final Parcelable.ClassLoaderCreator<VParceledListSlice> CREATOR = new Parcelable.ClassLoaderCreator<VParceledListSlice>() {
+	public static final ClassLoaderCreator<VParceledListSlice> CREATOR = new ClassLoaderCreator<VParceledListSlice>() {
 		public VParceledListSlice createFromParcel(Parcel in) {
 			return new VParceledListSlice(in, null);
 		}

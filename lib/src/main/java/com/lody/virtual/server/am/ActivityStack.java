@@ -481,7 +481,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
 
     private void realStartActivityLocked(IBinder resultTo, Intent intent, String resultWho, int requestCode,
                                          Bundle options) {
-        Class<?>[] types = mirror.android.app.IActivityManager.startActivity.paramList();
+        Class<?>[] types = IActivityManager.startActivity.paramList();
         Object[] args = new Object[types.length];
         if (types[0] == IApplicationThread.TYPE) {
             args[0] = ActivityThread.getApplicationThread.call(VirtualCore.mainThread());
@@ -506,7 +506,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
         }
         ClassUtils.fixArgs(types, args);
 
-        mirror.android.app.IActivityManager.startActivity.call(ActivityManagerNative.getDefault.call(),
+        IActivityManager.startActivity.call(ActivityManagerNative.getDefault.call(),
                 (Object[]) args);
     }
 

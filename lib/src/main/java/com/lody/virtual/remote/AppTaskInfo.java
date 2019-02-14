@@ -10,7 +10,7 @@ import android.os.Parcelable;
  */
 
 public class AppTaskInfo implements Parcelable {
-	public static final Parcelable.Creator<AppTaskInfo> CREATOR = new Parcelable.Creator<AppTaskInfo>() {
+	public static final Creator<AppTaskInfo> CREATOR = new Creator<AppTaskInfo>() {
 		@Override
 		public AppTaskInfo createFromParcel(Parcel source) {
 			return new AppTaskInfo(source);

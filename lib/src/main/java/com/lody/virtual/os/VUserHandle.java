@@ -92,8 +92,8 @@ public final class VUserHandle implements Parcelable {
      * @hide
      */
     public static final int LAST_ISOLATED_UID = 99999;
-    public static final Parcelable.Creator<VUserHandle> CREATOR
-            = new Parcelable.Creator<VUserHandle>() {
+    public static final Creator<VUserHandle> CREATOR
+            = new Creator<VUserHandle>() {
         public VUserHandle createFromParcel(Parcel in) {
             return new VUserHandle(in);
         }

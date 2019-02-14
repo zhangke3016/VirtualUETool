@@ -15,7 +15,7 @@ public class IUsageStatsManager {
     public static Class<?> TYPE = RefClass.load(IUsageStatsManager.class, "android.app.usage.IUsageStatsManager");
 
     public static class Stub {
-        public static Class<?> TYPE = RefClass.load(IUsageStatsManager.Stub.class, "android.app.usage.IUsageStatsManager$Stub");
+        public static Class<?> TYPE = RefClass.load(Stub.class, "android.app.usage.IUsageStatsManager$Stub");
         @MethodParams({IBinder.class})
         public static RefStaticMethod<IInterface> asInterface;
     }

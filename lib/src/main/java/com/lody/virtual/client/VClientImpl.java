@@ -21,6 +21,7 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.StrictMode;
@@ -294,7 +295,7 @@ public final class VClientImpl extends IVClient.Stub {
         }
         Object boundApp = fixBoundApp(mBoundApplication);
         mBoundApplication.info = ContextImpl.mPackageInfo.get(context);
-        mirror.android.app.ActivityThread.AppBindData.info.set(boundApp, data.info);
+        ActivityThread.AppBindData.info.set(boundApp, data.info);
         VMRuntime.setTargetSdkVersion.call(VMRuntime.getRuntime.call(), data.appInfo.targetSdkVersion);
 
         Configuration configuration = context.getResources().getConfiguration();
@@ -313,7 +314,7 @@ public final class VClientImpl extends IVClient.Stub {
             InvocationStubManager.getInstance().checkEnv(AppInstrumentation.class);
         }
         mInitialApplication = LoadedApk.makeApplication.call(data.info, false, null);
-        mirror.android.app.ActivityThread.mInitialApplication.set(mainThread, mInitialApplication);
+        ActivityThread.mInitialApplication.set(mainThread, mInitialApplication);
         ContextFixer.fixContext(mInitialApplication);
         if (Build.VERSION.SDK_INT >= 24 && "com.tencent.mm:recovery".equals(processName)) {
             fixWeChatRecovery(mInitialApplication);
@@ -346,8 +347,6 @@ public final class VClientImpl extends IVClient.Stub {
         VActivityManager.get().appDoneExecuting();
         VirtualCore.get().getComponentDelegate().afterApplicationCreate(mInitialApplication);
     }
-
-
 
     private void fixWeChatRecovery(Application app) {
         try {
@@ -460,10 +459,10 @@ public final class VClientImpl extends IVClient.Stub {
 
     private Object fixBoundApp(AppBindData data) {
         Object thread = VirtualCore.mainThread();
-        Object boundApp = mirror.android.app.ActivityThread.mBoundApplication.get(thread);
-        mirror.android.app.ActivityThread.AppBindData.appInfo.set(boundApp, data.appInfo);
-        mirror.android.app.ActivityThread.AppBindData.processName.set(boundApp, data.processName);
-        mirror.android.app.ActivityThread.AppBindData.instrumentationName.set(
+        Object boundApp = ActivityThread.mBoundApplication.get(thread);
+        ActivityThread.AppBindData.appInfo.set(boundApp, data.appInfo);
+        ActivityThread.AppBindData.processName.set(boundApp, data.processName);
+        ActivityThread.AppBindData.instrumentationName.set(
                 boundApp,
                 new ComponentName(data.appInfo.packageName, Instrumentation.class.getName())
         );

@@ -24,6 +24,7 @@ VirtualUETool 扩展自[UETool](https://github.com/eleme/UETool)实现，底层�
 
 ## 效果
 ![VirtualUETool](pic/2.gif)
+>新增查看布局层级
 ![VirtualUETool](pic/5.png)
 ![VirtualUETool](pic/6.png)
 

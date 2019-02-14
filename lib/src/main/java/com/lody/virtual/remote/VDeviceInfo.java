@@ -50,7 +50,7 @@ public class VDeviceInfo implements Parcelable {
         this.gmsAdId = in.readString();
     }
 
-    public static final Parcelable.Creator<VDeviceInfo> CREATOR = new Parcelable.Creator<VDeviceInfo>() {
+    public static final Creator<VDeviceInfo> CREATOR = new Creator<VDeviceInfo>() {
         @Override
         public VDeviceInfo createFromParcel(Parcel source) {
             return new VDeviceInfo(source);

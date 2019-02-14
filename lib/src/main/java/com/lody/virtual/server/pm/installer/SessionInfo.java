@@ -96,7 +96,7 @@ public class SessionInfo implements Parcelable {
         this.appLabel = in.readString();
     }
 
-    public static final Parcelable.Creator<SessionInfo> CREATOR = new Parcelable.Creator<SessionInfo>() {
+    public static final Creator<SessionInfo> CREATOR = new Creator<SessionInfo>() {
         @Override
         public SessionInfo createFromParcel(Parcel source) {
             return new SessionInfo(source);

@@ -13,6 +13,7 @@ import io.virtualapp.delegate.MyComponentDelegate;
 import io.virtualapp.delegate.MyPhoneInfoDelegate;
 import io.virtualapp.delegate.MyTaskDescriptionDelegate;
 import jonathanfinerty.once.Once;
+import com.yc.nonsdk.NonSdkManager;
 
 /**
  * @author Lody
@@ -32,6 +33,7 @@ public class VApp extends MultiDexApplication {
         mPreferences = base.getSharedPreferences("va", Context.MODE_MULTI_PROCESS);
         VASettings.ENABLE_IO_REDIRECT = true;
         VASettings.ENABLE_INNER_SHORTCUT = false;
+        NonSdkManager.getInstance().visibleAllApi();
         try {
             VirtualCore.get().startup(base);
         } catch (Throwable e) {
@@ -49,12 +51,6 @@ public class VApp extends MultiDexApplication {
             @Override
             public void onMainProcess() {
                 Once.initialise(VApp.this);
-//                new FlurryAgent.Builder()
-//                        .withLogEnabled(true)
-//                        .withListener(() -> {
-//                            // nothing
-//                        })
-//                        .build(VApp.this, "48RJJP7ZCZZBB6KMMWW5");
             }
 
             @Override

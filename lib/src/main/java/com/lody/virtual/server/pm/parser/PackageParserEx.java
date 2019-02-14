@@ -57,7 +57,7 @@ public class PackageParserEx {
             p.mSignatures = new Signature[]{new Signature(sig)};
             VLog.d(TAG, "Using fake-signature feature on : " + p.packageName);
         } else {
-            PackageParserCompat.collectCertificates(parser, p, PackageParser.PARSE_IS_SYSTEM);
+            PackageParserCompat.collectCertificates(parser, p, PackageParser.PARSE_IS_SYSTEM, true);
         }
         return buildPackageCache(p);
     }
@@ -172,7 +172,12 @@ public class PackageParserEx {
             }
         }
         cache.applicationInfo = p.applicationInfo;
-        cache.mSignatures = p.mSignatures;
+        cache.applicationInfo.sharedLibraryFiles = p.applicationInfo.sharedLibraryFiles;
+        if (Build.VERSION.SDK_INT >= 28) {
+            cache.mSignatures = p.mSigningDetails.signatures;
+        } else {
+            cache.mSignatures = p.mSignatures;
+        }
         cache.mAppMetaData = p.mAppMetaData;
         cache.packageName = p.packageName;
         cache.mPreferredOrder = p.mPreferredOrder;
@@ -203,6 +208,10 @@ public class PackageParserEx {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ai.splitSourceDirs = new String[]{ps.apkPath};
             ai.splitPublicSourceDirs = ai.splitSourceDirs;
+            if (Build.VERSION.SDK_INT >= 28) {
+                ai.splitSourceDirs = null;
+                ai.splitPublicSourceDirs = null;
+            }
             ApplicationInfoL.scanSourceDir.set(ai, ai.dataDir);
             ApplicationInfoL.scanPublicSourceDir.set(ai, ai.dataDir);
             String hostPrimaryCpuAbi = ApplicationInfoL.primaryCpuAbi.get(VirtualCore.get().getContext().getApplicationInfo());
@@ -233,7 +242,7 @@ public class PackageParserEx {
             ApplicationInfoL.scanPublicSourceDir.set(ai, ai.dataDir);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if(Build.VERSION.SDK_INT < 26) {
+            if (Build.VERSION.SDK_INT < 26) {
                 ApplicationInfoN.deviceEncryptedDataDir.set(ai, ai.dataDir);
                 ApplicationInfoN.credentialEncryptedDataDir.set(ai, ai.dataDir);
             }

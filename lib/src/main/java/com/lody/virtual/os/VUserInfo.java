@@ -146,8 +146,8 @@ public class VUserInfo implements Parcelable {
         dest.writeInt(guestToRemove ? 1 : 0);
     }
 
-    public static final Parcelable.Creator<VUserInfo> CREATOR
-            = new Parcelable.Creator<VUserInfo>() {
+    public static final Creator<VUserInfo> CREATOR
+            = new Creator<VUserInfo>() {
         public VUserInfo createFromParcel(Parcel source) {
             return new VUserInfo(source);
         }

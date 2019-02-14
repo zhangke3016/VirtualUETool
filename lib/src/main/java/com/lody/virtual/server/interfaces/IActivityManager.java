@@ -46,9 +46,11 @@ public interface IActivityManager {
 
     int startActivities(Intent[] intents, String[] resolvedTypes, IBinder token, Bundle options, int userId) throws RemoteException;
 
-    int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options, String resultWho, int requestCode, int userId) throws RemoteException;
+    int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options, String resultWho,
+            int requestCode, int userId) throws RemoteException;
 
-    void onActivityCreated(ComponentName component, ComponentName caller, IBinder token, Intent intent, String affinity, int taskId, int launchMode, int flags) throws RemoteException;
+    void onActivityCreated(ComponentName component, ComponentName caller, IBinder token, Intent intent, String affinity,
+            int taskId, int launchMode, int flags) throws RemoteException;
 
     void onActivityResumed(int userId, IBinder token) throws RemoteException;
 
@@ -72,9 +74,11 @@ public interface IActivityManager {
 
     boolean stopServiceToken(ComponentName className, IBinder token, int startId, int userId) throws RemoteException;
 
-    void setServiceForeground(ComponentName className, IBinder token, int id, Notification notification, boolean removeNotification, int userId) throws RemoteException;
+    void setServiceForeground(ComponentName className, IBinder token, int id, Notification notification,
+            boolean removeNotification, int userId) throws RemoteException;
 
-    int bindService(IBinder caller, IBinder token, Intent service, String resolvedType, IServiceConnection connection, int flags, int userId) throws RemoteException;
+    int bindService(IBinder caller, IBinder token, Intent service, String resolvedType, IServiceConnection connection,
+            int flags, int userId) throws RemoteException;
 
     boolean unbindService(IServiceConnection connection, int userId) throws RemoteException;
 

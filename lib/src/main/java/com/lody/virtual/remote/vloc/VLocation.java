@@ -54,7 +54,7 @@ public class VLocation implements Parcelable {
         return latitude == 0 && longitude == 0;
     }
 
-    public static final Parcelable.Creator<VLocation> CREATOR = new Parcelable.Creator<VLocation>() {
+    public static final Creator<VLocation> CREATOR = new Creator<VLocation>() {
         @Override
         public VLocation createFromParcel(Parcel source) {
             return new VLocation(source);

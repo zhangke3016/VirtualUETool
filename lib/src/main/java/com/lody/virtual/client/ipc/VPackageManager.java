@@ -10,6 +10,7 @@ import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.os.Build;
 import android.os.RemoteException;
 
 import com.lody.virtual.client.env.VirtualRuntime;
@@ -166,7 +167,15 @@ public class VPackageManager {
 
     public ApplicationInfo getApplicationInfo(String packageName, int flags, int userId) {
         try {
-            return getService().getApplicationInfo(packageName, flags, userId);
+            ApplicationInfo info =  getService().getApplicationInfo(packageName, flags, userId);
+            if (info != null) {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    info.sharedLibraryFiles = new String[]{"/system/framework/android.test.base.jar",
+                            "/system/framework/android.test.mock.jar", "/system/framework/android.test.runner.jar", "/system/framework/javax.obex.jar",
+                            "/system/framework/org.apache.http.legacy.boot.jar"};
+                }
+            }
+            return info;
         } catch (RemoteException e) {
             return VirtualRuntime.crash(e);
         }

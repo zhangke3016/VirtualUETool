@@ -137,7 +137,7 @@ public class ArrayMap<K, V> extends SimpleArrayMap<K, V> implements Map<K, V> {
     @Override
     public void putAll(Map<? extends K, ? extends V> map) {
         ensureCapacity(mSize + map.size());
-        for (Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+        for (Entry<? extends K, ? extends V> entry : map.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }
@@ -162,7 +162,7 @@ public class ArrayMap<K, V> extends SimpleArrayMap<K, V> implements Map<K, V> {
     }
 
     /**
-     * Return a {@link java.util.Set} for iterating over and interacting with all mappings
+     * Return a {@link Set} for iterating over and interacting with all mappings
      * in the array map.
      *
      * <p><b>Note:</b> this is a very inefficient way to access the array contents, it
@@ -170,7 +170,7 @@ public class ArrayMap<K, V> extends SimpleArrayMap<K, V> implements Map<K, V> {
      *
      * <p><b>Note:</b></p> the semantics of this
      * Set are subtly different than that of a {@link java.util.HashMap}: most important,
-     * the {@link java.util.Map.Entry Map.Entry} object returned by its iterator is a single
+     * the {@link Entry Map.Entry} object returned by its iterator is a single
      * object that exists for the entire iterator, so you can <b>not</b> hold on to it
      * after calling {@link java.util.Iterator#next() Iterator.next}.</p>
      */
@@ -180,7 +180,7 @@ public class ArrayMap<K, V> extends SimpleArrayMap<K, V> implements Map<K, V> {
     }
 
     /**
-     * Return a {@link java.util.Set} for iterating over and interacting with all keys
+     * Return a {@link Set} for iterating over and interacting with all keys
      * in the array map.
      *
      * <p><b>Note:</b> this is a fairly inefficient way to access the array contents, it
@@ -192,7 +192,7 @@ public class ArrayMap<K, V> extends SimpleArrayMap<K, V> implements Map<K, V> {
     }
 
     /**
-     * Return a {@link java.util.Collection} for iterating over and interacting with all values
+     * Return a {@link Collection} for iterating over and interacting with all values
      * in the array map.
      *
      * <p><b>Note:</b> this is a fairly inefficient way to access the array contents, it

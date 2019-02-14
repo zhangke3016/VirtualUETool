@@ -1,5 +1,6 @@
 package com.lody.virtual.client.hook.proxies.pm;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.IInterface;
 
@@ -9,6 +10,7 @@ import com.lody.virtual.client.hook.base.MethodInvocationProxy;
 import com.lody.virtual.client.hook.base.MethodInvocationStub;
 import com.lody.virtual.client.hook.base.ResultStaticMethodProxy;
 import com.lody.virtual.helper.compat.BuildCompat;
+import com.lody.virtual.helper.utils.Reflect;
 
 import mirror.android.app.ActivityThread;
 
@@ -48,6 +50,18 @@ public final class PackageManagerStub extends MethodInvocationProxy<MethodInvoca
     public void inject() throws Throwable {
         final IInterface hookedPM = getInvocationStub().getProxyInterface();
         ActivityThread.sPackageManager.set(hookedPM);
+
+        try {
+            Context systemContext = Reflect.on(ActivityThread.currentActivityThread.call()).call("getSystemContext").get();
+            Object systemContextPm = Reflect.on(systemContext).field("mPackageManager").get();
+            if(systemContextPm != null){
+                Reflect.on(systemContext).field("mPackageManager").set("mPM",hookedPM);
+            }
+        }catch (Throwable e){
+            e.printStackTrace();
+        }
+
+
         BinderInvocationStub pmHookBinder = new BinderInvocationStub(getInvocationStub().getBaseInterface());
         pmHookBinder.copyMethodProxies(getInvocationStub());
         pmHookBinder.replaceService("package");

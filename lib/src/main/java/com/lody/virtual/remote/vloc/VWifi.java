@@ -43,7 +43,7 @@ public class VWifi implements Parcelable {
         this.timestamp = in.readLong();
     }
 
-    public static final Parcelable.Creator<VWifi> CREATOR = new Parcelable.Creator<VWifi>() {
+    public static final Creator<VWifi> CREATOR = new Creator<VWifi>() {
         @Override
         public VWifi createFromParcel(Parcel source) {
             return new VWifi(source);

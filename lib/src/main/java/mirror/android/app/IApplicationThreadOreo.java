@@ -18,7 +18,7 @@ public class IApplicationThreadOreo {
     public static Class<?> TYPE = RefClass.load(IApplicationThreadOreo.class, "android.app.IApplicationThread");
 
     public static final class Stub {
-        public static Class<?> TYPE = RefClass.load(IApplicationThreadOreo.Stub.class, "android.app.IApplicationThread$Stub");
+        public static Class<?> TYPE = RefClass.load(Stub.class, "android.app.IApplicationThread$Stub");
         @MethodParams({IBinder.class})
         public static RefStaticMethod<IInterface> asInterface;
     }

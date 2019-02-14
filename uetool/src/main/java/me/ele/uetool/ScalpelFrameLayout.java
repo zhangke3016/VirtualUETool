@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -431,7 +432,9 @@ public class ScalpelFrameLayout extends FrameLayout {
             canvas.drawRect(viewBoundsRect, viewBorderPaint);
 
             if (drawViews) {
-                view.draw(canvas);
+                if (!(view instanceof SurfaceView)) {
+                    view.draw(canvas);
+                }
             }
 
             if (drawIds) {

@@ -1694,4 +1694,34 @@ class MethodProxies {
             return isAppProcess();
         }
     }
+
+    static class OverridePendingTransition extends MethodProxy {
+
+        @Override
+        public String getMethodName() {
+            return "overridePendingTransition";
+        }
+
+        @Override
+        public Object call(Object who, Method method, Object... args) throws Throwable {
+            try {
+                MethodParameterUtils.replaceFirstAppPkg(args);
+                for(int i = 0;i < args.length;i++){
+                    if(args[i] instanceof  Integer){
+                        args[i] = 0;
+                    }
+                }
+                return method.invoke(who,args);
+            }catch (Throwable e){
+                e.printStackTrace();
+            }
+
+            return 0;
+        }
+
+        @Override
+        public boolean isEnable() {
+            return isAppProcess();
+        }
+    }
 }

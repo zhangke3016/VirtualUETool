@@ -34,7 +34,7 @@ public class VSConfig implements Parcelable {
         this.vsPath = in.readString();
     }
 
-    public static final Parcelable.Creator<VSConfig> CREATOR = new Parcelable.Creator<VSConfig>() {
+    public static final Creator<VSConfig> CREATOR = new Creator<VSConfig>() {
         @Override
         public VSConfig createFromParcel(Parcel source) {
             return new VSConfig(source);

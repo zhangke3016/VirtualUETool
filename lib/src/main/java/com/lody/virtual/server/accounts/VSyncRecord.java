@@ -49,7 +49,7 @@ public class VSyncRecord {
             dest.writeBundle(this.extras);
         }
 
-        public static final Parcelable.Creator<SyncExtras> CREATOR = new Parcelable.Creator<SyncExtras>() {
+        public static final Creator<SyncExtras> CREATOR = new Creator<SyncExtras>() {
             @Override
             public SyncExtras createFromParcel(Parcel source) {
                 return new SyncExtras(source);
@@ -105,7 +105,7 @@ public class VSyncRecord {
             return authority != null ? authority.equals(that.authority) : that.authority == null;
         }
 
-        public static final Parcelable.Creator<SyncRecordKey> CREATOR = new Parcelable.Creator<SyncRecordKey>() {
+        public static final Creator<SyncRecordKey> CREATOR = new Creator<SyncRecordKey>() {
             @Override
             public SyncRecordKey createFromParcel(Parcel source) {
                 return new SyncRecordKey(source);
@@ -166,7 +166,7 @@ public class VSyncRecord {
             this.syncRunTimeSecs = in.readLong();
         }
 
-        public static final Parcelable.Creator<PeriodicSyncConfig> CREATOR = new Parcelable.Creator<PeriodicSyncConfig>() {
+        public static final Creator<PeriodicSyncConfig> CREATOR = new Creator<PeriodicSyncConfig>() {
             @Override
             public PeriodicSyncConfig createFromParcel(Parcel source) {
                 return new PeriodicSyncConfig(source);

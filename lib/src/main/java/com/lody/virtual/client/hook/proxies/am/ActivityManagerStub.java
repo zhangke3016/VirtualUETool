@@ -34,7 +34,7 @@ import mirror.android.util.Singleton;
 /**
  * @author Lody
  * @see IActivityManager
- * @see android.app.ActivityManager
+ * @see ActivityManager
  */
 
 @Inject(MethodProxies.class)

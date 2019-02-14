@@ -149,7 +149,7 @@ public class NativeEngine {
 
     public static void onKillProcess(int pid, int signal) {
         VLog.e(TAG, "killProcess: pid = %d, signal = %d.", pid, signal);
-        if (pid == android.os.Process.myPid()) {
+        if (pid == Process.myPid()) {
             VLog.e(TAG, VLog.getStackTraceString(new Throwable()));
         }
     }

@@ -98,5 +98,6 @@ public class ActivityThread {
         public static RefStaticInt LAUNCH_ACTIVITY;
         public static RefStaticInt CREATE_SERVICE;
         public static RefStaticInt SCHEDULE_CRASH;
+        public static RefStaticInt EXECUTE_TRANSACTION;
     }
 }

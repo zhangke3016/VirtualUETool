@@ -155,7 +155,7 @@ public class SessionParams implements Parcelable {
         this.grantedRuntimePermissions = in.createStringArray();
     }
 
-    public static final Parcelable.Creator<SessionParams> CREATOR = new Parcelable.Creator<SessionParams>() {
+    public static final Creator<SessionParams> CREATOR = new Creator<SessionParams>() {
         @Override
         public SessionParams createFromParcel(Parcel source) {
             return new SessionParams(source);

@@ -9,7 +9,7 @@ import android.os.Parcelable;
 
 public class PackageUserState implements Parcelable {
 
-    public static final Parcelable.Creator<PackageUserState> CREATOR = new Parcelable.Creator<PackageUserState>() {
+    public static final Creator<PackageUserState> CREATOR = new Creator<PackageUserState>() {
         @Override
         public PackageUserState createFromParcel(Parcel source) {
             return new PackageUserState(source);

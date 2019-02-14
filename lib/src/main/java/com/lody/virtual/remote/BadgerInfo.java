@@ -39,7 +39,7 @@ public class BadgerInfo implements Parcelable {
         className = in.readString();
     }
 
-    public static final Parcelable.Creator<BadgerInfo> CREATOR = new Parcelable.Creator<BadgerInfo>() {
+    public static final Creator<BadgerInfo> CREATOR = new Creator<BadgerInfo>() {
         @Override
         public BadgerInfo createFromParcel(Parcel source) {
             return new BadgerInfo(source);

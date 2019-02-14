@@ -53,7 +53,7 @@ public class VCell implements Parcelable {
         this.networkId = in.readInt();
     }
 
-    public static final Parcelable.Creator<VCell> CREATOR = new Parcelable.Creator<VCell>() {
+    public static final Creator<VCell> CREATOR = new Creator<VCell>() {
         @Override
         public VCell createFromParcel(Parcel source) {
             return new VCell(source);

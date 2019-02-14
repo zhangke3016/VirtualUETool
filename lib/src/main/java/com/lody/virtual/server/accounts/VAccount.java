@@ -12,7 +12,7 @@ import java.util.Map;
  */
 
 public class VAccount implements Parcelable {
-    public static final Parcelable.Creator<VAccount> CREATOR = new Parcelable.Creator<VAccount>() {
+    public static final Creator<VAccount> CREATOR = new Creator<VAccount>() {
         @Override
         public VAccount createFromParcel(Parcel source) {
             return new VAccount(source);

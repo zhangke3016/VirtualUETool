@@ -11,7 +11,7 @@ public class ITelephonyRegistry {
 	public static Class<?> TYPE = RefClass.load(ITelephonyRegistry.class, "com.android.internal.telephony.ITelephonyRegistry");
 
 	public static class Stub {
-		public static Class<?> TYPE = RefClass.load(ITelephonyRegistry.Stub.class, "com.android.internal.telephony.ITelephonyRegistry$Stub");
+		public static Class<?> TYPE = RefClass.load(Stub.class, "com.android.internal.telephony.ITelephonyRegistry$Stub");
 		@MethodParams({IBinder.class})
 		public static RefStaticMethod<IInterface> asInterface;
 	}

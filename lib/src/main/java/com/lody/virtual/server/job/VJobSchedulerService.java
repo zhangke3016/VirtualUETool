@@ -120,7 +120,7 @@ public class VJobSchedulerService implements IJobService {
             dest.writeInt(this.clientJobId);
         }
 
-        public static final Parcelable.Creator<JobId> CREATOR = new Parcelable.Creator<JobId>() {
+        public static final Creator<JobId> CREATOR = new Creator<JobId>() {
             @Override
             public JobId createFromParcel(Parcel source) {
                 return new JobId(source);
@@ -166,7 +166,7 @@ public class VJobSchedulerService implements IJobService {
             dest.writeParcelable(this.extras, flags);
         }
 
-        public static final Parcelable.Creator<JobConfig> CREATOR = new Parcelable.Creator<JobConfig>() {
+        public static final Creator<JobConfig> CREATOR = new Creator<JobConfig>() {
             @Override
             public JobConfig createFromParcel(Parcel source) {
                 return new JobConfig(source);
@@ -206,7 +206,7 @@ public class VJobSchedulerService implements IJobService {
         try {
             p.writeInt(JOB_FILE_VERSION);
             p.writeInt(mJobStore.size());
-            for (Map.Entry<JobId, JobConfig> entry : mJobStore.entrySet()) {
+            for (Entry<JobId, JobConfig> entry : mJobStore.entrySet()) {
                 entry.getKey().writeToParcel(p, 0);
                 entry.getValue().writeToParcel(p, 0);
             }
@@ -263,9 +263,9 @@ public class VJobSchedulerService implements IJobService {
         int vuid = VBinder.getCallingUid();
         synchronized (mJobStore) {
             boolean changed = false;
-            Iterator<Map.Entry<JobId, JobConfig>> iterator = mJobStore.entrySet().iterator();
+            Iterator<Entry<JobId, JobConfig>> iterator = mJobStore.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<JobId, JobConfig> entry = iterator.next();
+                Entry<JobId, JobConfig> entry = iterator.next();
                 JobId job = entry.getKey();
                 JobConfig config = entry.getValue();
                 if (job.vuid == vuid && job.clientJobId == jobId) {
@@ -286,9 +286,9 @@ public class VJobSchedulerService implements IJobService {
         int vuid = VBinder.getCallingUid();
         synchronized (mJobStore) {
             boolean changed = false;
-            Iterator<Map.Entry<JobId, JobConfig>> iterator = mJobStore.entrySet().iterator();
+            Iterator<Entry<JobId, JobConfig>> iterator = mJobStore.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<JobId, JobConfig> entry = iterator.next();
+                Entry<JobId, JobConfig> entry = iterator.next();
                 JobId job = entry.getKey();
                 if (job.vuid == vuid) {
                     JobConfig config = entry.getValue();
@@ -317,7 +317,7 @@ public class VJobSchedulerService implements IJobService {
                     iterator.remove();
                     continue;
                 }
-                Map.Entry<JobId, JobConfig> jobEntry = findJobByVirtualJobId(job.getId());
+                Entry<JobId, JobConfig> jobEntry = findJobByVirtualJobId(job.getId());
                 if (jobEntry == null) {
                     iterator.remove();
                     continue;
@@ -336,9 +336,9 @@ public class VJobSchedulerService implements IJobService {
     }
 
 
-    public Map.Entry<JobId, JobConfig> findJobByVirtualJobId(int virtualJobId) {
+    public Entry<JobId, JobConfig> findJobByVirtualJobId(int virtualJobId) {
         synchronized (mJobStore) {
-            for (Map.Entry<JobId, JobConfig> entry : mJobStore.entrySet()) {
+            for (Entry<JobId, JobConfig> entry : mJobStore.entrySet()) {
                 if (entry.getValue().virtualJobId == virtualJobId) {
                     return entry;
                 }

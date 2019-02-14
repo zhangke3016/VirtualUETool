@@ -87,7 +87,7 @@ public class ProviderHook implements InvocationHandler {
         if (provider instanceof Proxy && Proxy.getInvocationHandler(provider) instanceof ProviderHook) {
             return provider;
         }
-        ProviderHook.HookFetcher fetcher = ProviderHook.fetchHook(authority);
+        HookFetcher fetcher = ProviderHook.fetchHook(authority);
         if (fetcher != null) {
             ProviderHook hook = fetcher.fetch(external, provider);
             IInterface proxyProvider = ProviderHook.createProxy(provider, hook);

@@ -19,7 +19,8 @@ public interface IAccountManager {
 
     Account[] getAccounts(int userId, String type) throws RemoteException;
 
-    void getAuthToken(int userId, IAccountManagerResponse response, Account account, String authTokenType, boolean notifyOnAuthFailure, boolean expectActivityLaunch, Bundle loginOptions) throws RemoteException;
+    void getAuthToken(int userId, IAccountManagerResponse response, Account account, String authTokenType,
+            boolean notifyOnAuthFailure, boolean expectActivityLaunch, Bundle loginOptions) throws RemoteException;
 
     void setPassword(int userId, Account account, String password) throws RemoteException;
 
@@ -29,7 +30,8 @@ public interface IAccountManager {
 
     void hasFeatures(int userId, IAccountManagerResponse response, Account account, String[] features) throws RemoteException;
 
-    void updateCredentials(int userId, IAccountManagerResponse response, Account account, String authTokenType, boolean expectActivityLaunch, Bundle loginOptions) throws RemoteException;
+    void updateCredentials(int userId, IAccountManagerResponse response, Account account, String authTokenType,
+            boolean expectActivityLaunch, Bundle loginOptions) throws RemoteException;
 
     void editProperties(int userId, IAccountManagerResponse response, String accountType, boolean expectActivityLaunch) throws RemoteException;
 
@@ -39,9 +41,11 @@ public interface IAccountManager {
 
     String getPassword(int userId, Account account) throws RemoteException;
 
-    void confirmCredentials(int userId, IAccountManagerResponse response, Account account, Bundle options, boolean expectActivityLaunch) throws RemoteException;
+    void confirmCredentials(int userId, IAccountManagerResponse response, Account account, Bundle options,
+            boolean expectActivityLaunch) throws RemoteException;
 
-    void addAccount(int userId, IAccountManagerResponse response, String accountType, String authTokenType, String[] requiredFeatures, boolean expectActivityLaunch, Bundle optionsIn) throws RemoteException;
+    void addAccount(int userId, IAccountManagerResponse response, String accountType, String authTokenType,
+            String[] requiredFeatures, boolean expectActivityLaunch, Bundle optionsIn) throws RemoteException;
 
     boolean addAccountExplicitly(int userId, Account account, String password, Bundle extras) throws RemoteException;
 
