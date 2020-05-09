@@ -3,12 +3,9 @@ package io.virtualapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.multidex.MultiDexApplication;
-
-//import com.flurry.android.FlurryAgent;
-import com.lody.virtual.Reflection;
+import com.cmprocess.ipc.VCore;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.stub.VASettings;
-
 import io.virtualapp.delegate.MyAppRequestListener;
 import io.virtualapp.delegate.MyComponentDelegate;
 import io.virtualapp.delegate.MyPhoneInfoDelegate;
@@ -50,6 +47,8 @@ public class VApp extends MultiDexApplication {
             @Override
             public void onMainProcess() {
                 Once.initialise(VApp.this);
+                VCore.init(VApp.this, getPackageName());
+
             }
 
             @Override

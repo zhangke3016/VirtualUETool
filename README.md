@@ -24,6 +24,7 @@ VirtualUETool 扩展自[UETool](https://github.com/eleme/UETool)实现，底层�
 [下载体验](https://github.com/zhangke3016/VirtualUETool/blob/master/app-release.apk?raw=true)
 
 ## 效果
+![VirtualUETool](pic/4.png)
 ![VirtualUETool](pic/2.gif)
 
 ### 新增查看布局层级
@@ -57,6 +58,8 @@ UETool.putAttrsProviderClass(String customizeClassName);
 
 ## Thanks
 [UETool](https://github.com/eleme/UETool)
+
+[CmProcess](https://github.com/zhangke3016/CmProcess)
 
 [VirtualApp](https://github.com/asLody/VirtualApp)
 

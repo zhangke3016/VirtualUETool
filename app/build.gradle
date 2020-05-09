@@ -18,6 +18,7 @@ android {
                 }
             }
         }
+        manifestPlaceholders = [ V_CMPROCESS_NAME:":x" ]
     }
 
     sourceSets {
@@ -70,6 +71,7 @@ dependencies {
     compile 'org.jdeferred:jdeferred-android-aar:1.2.4'
     // ThirdParty
     compile 'com.jonathanfinerty.once:once:1.0.3'
+
     //Glide
     implementation ('com.github.bumptech.glide:glide:4.8.0') {
         exclude(group: "com.android.support")

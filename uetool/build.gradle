@@ -16,6 +16,7 @@ android {
 dependencies {
     compile project(':uetool-base')
     compile project(':uetool-fresco')
+    compile project(':cmprocess')
     //  compile "me.ele:uetool-base:${versions.release}"
     compile "com.android.support:recyclerview-v7:${versions.supportLibrary}"
 }

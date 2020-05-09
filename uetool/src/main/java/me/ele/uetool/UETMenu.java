@@ -1,5 +1,7 @@
 package me.ele.uetool;
 
+import static me.ele.uetool.MenuHelper.Type.TYPE_UNKNOWN;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
@@ -21,14 +23,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
-import java.io.File;
-import java.io.IOException;
+import com.cmprocess.ipc.VCore;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
-import static me.ele.uetool.MenuHelper.Type.TYPE_UNKNOWN;
 
 public class UETMenu extends LinearLayout {
 
@@ -55,57 +53,31 @@ public class UETMenu extends LinearLayout {
         vMenu = findViewById(R.id.menu);
         vSubMenuContainer = findViewById(R.id.sub_menu_container);
         Resources resources = context.getResources();
-        //create dir
-        File file = new File(VEnv.DIR);
-        if (file.exists()) {
-            file.delete();
-        }
-        file.mkdirs();
         subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_catch_view), R.drawable.uet_edit_attr, new OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    new File(VEnv.DIR + "/"
-                            + MenuHelper.Type.TYPE_EDIT_ATTR).createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                sendCommand(MenuHelper.Type.TYPE_EDIT_ATTR);
             }
         }));
         subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_relative_location), R.drawable.uet_relative_position,
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        try {
-                            new File(VEnv.DIR + "/"
-                                    + MenuHelper.Type.TYPE_RELATIVE_POSITION).createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        sendCommand(MenuHelper.Type.TYPE_RELATIVE_POSITION);
                     }
                 }));
         subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_grid), R.drawable.uet_show_gridding,
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        try {
-                            new File(VEnv.DIR + "/"
-                                    + MenuHelper.Type.TYPE_SHOW_GRIDDING).createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        sendCommand(MenuHelper.Type.TYPE_SHOW_GRIDDING);
                     }
                 }));
         subMenus.add(new UETSubMenu.SubMenu("布局层级", R.drawable.uet_show_gridding,
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        try {
-                            new File(VEnv.DIR + "/"
-                                    + MenuHelper.Type.TYPE_LAYOUT_LEVEL).createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        sendCommand(MenuHelper.Type.TYPE_LAYOUT_LEVEL);
                     }
                 }));
 
@@ -163,6 +135,12 @@ public class UETMenu extends LinearLayout {
         });
     }
 
+    private void sendCommand(int type) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(VEnv.INTENT_EXT_TYPE, type);
+        VCore.getCore().post(VEnv.ACTION_UETOOL, bundle);
+    }
+
     private void startAnim() {
         ensureAnim();
         final boolean isOpen = vSubMenuContainer.getTranslationX() <= -vSubMenuContainer.getWidth();
@@ -206,17 +184,17 @@ public class UETMenu extends LinearLayout {
         Log.d("UETMenu", "currentTopActivity: " + (currentTopActivity == null));
         if (currentTopActivity == null) {
             return;
-        } else if (UETMenu.dismiss(currentTopActivity)){
+        } else if (UETMenu.dismiss(currentTopActivity)) {
 //            UETool.getInstance().setTargetActivity(currentTopActivity);
             return;
         }
         Bundle bundle = new Bundle();
         bundle.putInt(MenuHelper.EXTRA_TYPE, type);
-        MenuHelper.show(currentTopActivity,bundle);
+        MenuHelper.show(currentTopActivity, bundle);
     }
 
 
-    public static boolean dismiss(Activity currentTopActivity){
+    public static boolean dismiss(Activity currentTopActivity) {
         return MenuHelper.dismiss(currentTopActivity);
     }
 

@@ -105,7 +105,6 @@ public class HomeActivity extends VActivity implements HomeContract.HomeView {
         bindViews();
         initLaunchpad();
         initMenu();
-        UETool.showUETMenu();
         new HomePresenterImpl(this).start();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -118,6 +117,14 @@ public class HomeActivity extends VActivity implements HomeContract.HomeView {
         mPopupMenu = new PopupMenu(new ContextThemeWrapper(this, R.style.Theme_AppCompat_Light), mMenuView);
         Menu menu = mPopupMenu.getMenu();
         setIconEnable(menu, true);
+        menu.add("打开UETool").setIcon(R.drawable.ic_device).setOnMenuItemClickListener(item -> {
+            UETool.showUETMenu();
+            return true;
+        });
+        menu.add("关闭UETool").setIcon(R.drawable.ic_device).setOnMenuItemClickListener(item -> {
+            UETool.dismissUETMenu();
+            return true;
+        });
         menu.add("Accounts").setIcon(R.drawable.ic_account).setOnMenuItemClickListener(item -> {
             List<VUserInfo> users = VUserManager.get().getUsers();
             List<String> names = new ArrayList<>(users.size());
@@ -482,16 +489,6 @@ public class HomeActivity extends VActivity implements HomeContract.HomeView {
                 upAtDeleteAppArea = false;
                 mDeleteAppTextView.setTextColor(Color.WHITE);
                 mCreateShortcutTextView.setTextColor(Color.WHITE);
-            }
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "请给予读写权限", Toast.LENGTH_LONG).show();
-                finish();
-                break;
             }
         }
     }

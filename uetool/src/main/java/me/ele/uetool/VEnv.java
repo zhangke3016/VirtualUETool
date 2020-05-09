@@ -10,5 +10,7 @@ import android.os.Environment;
  */
 public interface VEnv {
 
-    String DIR = Environment.getExternalStorageDirectory().getAbsolutePath()+"/vev_wat";
+    String INTENT_EXT_TYPE = "uetool_intent_ext_type";
+    String ACTION_UETOOL= "UETOOL_INTENT_ACTION";
+
 }

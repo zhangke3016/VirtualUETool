@@ -1,34 +1,32 @@
 package io.virtualapp.delegate;
 
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.FileObserver;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-
+import android.util.Log;
+import com.cmprocess.ipc.VCore;
+import com.cmprocess.ipc.event.EventCallback;
 import com.lody.virtual.client.hook.delegate.ComponentDelegate;
-
-import com.lody.virtual.helper.utils.VLog;
-
-import me.ele.uetool.VEnv;
-import me.ele.uetool.MenuHelper;
+import me.ele.uetool.MenuHelper.Type;
 import me.ele.uetool.UETMenu;
-import me.ele.uetool.util.FileUtils;
+import me.ele.uetool.VEnv;
 
 
 public class MyComponentDelegate implements ComponentDelegate {
 
-    Handler mHandler = new Handler(Looper.getMainLooper());
-
-    SDCardListener mSDCardListener = new SDCardListener(VEnv.DIR);
-
-    private int visibleActivityCount;
+   private EventCallback mEventCallback = new EventCallback() {
+        @Override
+        public void onEventCallBack(Bundle event) {
+            //main thread
+            final int type = event.getInt(VEnv.INTENT_EXT_TYPE, Type.TYPE_UNKNOWN);
+            Log.d("MyComponentDelegate", "type: " + type);
+            if (type != Type.TYPE_UNKNOWN) {
+                UETMenu.open(type);
+            }
+        }
+    };
 
     @Override
     public void beforeApplicationCreate(Application application) {
@@ -37,109 +35,12 @@ public class MyComponentDelegate implements ComponentDelegate {
 
     @Override
     public void afterApplicationCreate(Application application) {
-
-        application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                try{
-                    if (activity instanceof FragmentActivity){
-                        ((FragmentActivity)activity).getSupportFragmentManager().registerFragmentLifecycleCallbacks(
-                                new FragmentManager.FragmentLifecycleCallbacks() {
-                                    @Override
-                                    public void onFragmentStopped(FragmentManager fm, Fragment f) {
-                                        super.onFragmentStopped(fm, f);
-                                        UETMenu.dismiss(activity);
-                                    }
-                                }, true);
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onActivityStarted(Activity activity) {
-                visibleActivityCount++;
-                if (visibleActivityCount == 1){
-                    stopWatch();
-                    if (mSDCardListener == null){
-                        mSDCardListener = new SDCardListener(VEnv.DIR);
-                    }
-                    startWatch();
-                }
-            }
-
-            @Override
-            public void onActivityResumed(Activity activity) {
-
-            }
-
-            @Override
-            public void onActivityPaused(Activity activity) {
-
-            }
-
-            @Override
-            public void onActivityStopped(Activity activity) {
-                visibleActivityCount--;
-                if (visibleActivityCount == 0 && mHandler != null) {
-                    mHandler.removeCallbacksAndMessages(null);
-                }
-                if (visibleActivityCount == 0 && mSDCardListener != null){
-                    stopWatch();
-                }
-                UETMenu.dismiss(activity);
-            }
-
-            @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-
-            }
-
-            @Override
-            public void onActivityDestroyed(Activity activity) {
-
-            }
-        });
-    }
-
-    public class SDCardListener extends FileObserver{
-
-        public SDCardListener(String path){
-            super(path, FileObserver.CREATE);
-        }
-
-        @Override
-        public void onEvent(int event, @Nullable String path) {
-            switch(event){
-                case FileObserver.CREATE:
-                    VLog.d("TAG", "path: " + path);
-                    FileUtils.deleteAllUEFiles();
-                    if (path.equals(MenuHelper.Type.TYPE_EDIT_ATTR+"")){
-                        mHandler.post(() -> UETMenu.open(MenuHelper.Type.TYPE_EDIT_ATTR));
-                    }else if (path.equals(MenuHelper.Type.TYPE_RELATIVE_POSITION+"")){
-                        mHandler.post(() -> UETMenu.open(MenuHelper.Type.TYPE_RELATIVE_POSITION));
-                    }else if (path.equals(MenuHelper.Type.TYPE_SHOW_GRIDDING+"")){
-                        mHandler.post(() -> UETMenu.open(MenuHelper.Type.TYPE_SHOW_GRIDDING));
-                    }else if (path.equals(MenuHelper.Type.TYPE_LAYOUT_LEVEL+"")){
-                        mHandler.post(() -> UETMenu.open(MenuHelper.Type.TYPE_LAYOUT_LEVEL));
-                    }
-                    break;
-            }
-        }
-    }
-
-    private void startWatch(){
-        mSDCardListener.startWatching();
-    }
-
-    private void stopWatch(){
-        mSDCardListener.stopWatching();
+        VCore.init(application, "io.virtualapp268");
+        VCore.getCore().subscribe(VEnv.ACTION_UETOOL, mEventCallback);
     }
 
     @Override
     public void beforeActivityCreate(Activity activity) {
-
 
     }
 
@@ -160,23 +61,27 @@ public class MyComponentDelegate implements ComponentDelegate {
 
     @Override
     public void afterActivityCreate(Activity activity) {
+//        ueToolActivityLifecycleCallbacks.onActivityCreated(activity, null);
     }
 
     @Override
     public void afterActivityResume(Activity activity) {
+//        ueToolActivityLifecycleCallbacks.onActivityResumed(activity);
     }
 
     @Override
     public void afterActivityPause(Activity activity) {
-
+//        ueToolActivityLifecycleCallbacks.onActivityPaused(activity);
     }
 
     @Override
     public void afterActivityDestroy(Activity activity) {
+//        ueToolActivityLifecycleCallbacks.onActivityDestroyed(activity);
     }
 
     @Override
     public void onSendBroadcast(Intent intent) {
+        Log.d("UEToolBroadcastReceiver", " onSendBroadcast ");
 
     }
 }

@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.cmprocess.ipc">
+    <application>
+        <provider
+            android:name="com.cmprocess.ipc.server.BinderProvider"
+            android:authorities="${applicationId}.cmprocess.service.BinderProvider"
+            android:exported="false"
+            android:process="${V_CMPROCESS_NAME}" />
+
+        <service
+            android:name="com.cmprocess.ipc.server.DaemonService"
+            android:process="${V_CMPROCESS_NAME}" />
+
+        <service
+            android:name="com.cmprocess.ipc.server.DaemonService$InnerService"
+            android:process="${V_CMPROCESS_NAME}" />
+    </application>
+</manifest>
