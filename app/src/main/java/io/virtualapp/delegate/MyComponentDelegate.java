@@ -14,11 +14,12 @@ import android.support.v4.app.FragmentManager;
 
 import com.lody.virtual.client.hook.delegate.ComponentDelegate;
 
-import java.io.File;
+import com.lody.virtual.helper.utils.VLog;
 
 import me.ele.uetool.VEnv;
-import me.ele.uetool.MeasureToolHelper;
+import me.ele.uetool.MenuHelper;
 import me.ele.uetool.UETMenu;
+import me.ele.uetool.util.FileUtils;
 
 
 public class MyComponentDelegate implements ComponentDelegate {
@@ -112,22 +113,16 @@ public class MyComponentDelegate implements ComponentDelegate {
         public void onEvent(int event, @Nullable String path) {
             switch(event){
                 case FileObserver.CREATE:
-                    new File(VEnv.DIR + "/"
-                            + MeasureToolHelper.Type.TYPE_EDIT_ATTR).delete();
-                    new File(VEnv.DIR + "/"
-                            + MeasureToolHelper.Type.TYPE_RELATIVE_POSITION).delete();
-                    new File(VEnv.DIR + "/"
-                            + MeasureToolHelper.Type.TYPE_SHOW_GRIDDING).delete();
-                    new File(VEnv.DIR + "/"
-                            + MeasureToolHelper.Type.TYPE_LAYOUT_LEVEL).delete();
-                    if (path.equals(MeasureToolHelper.Type.TYPE_EDIT_ATTR+"")){
-                        mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_EDIT_ATTR));
-                    }else if (path.equals(MeasureToolHelper.Type.TYPE_RELATIVE_POSITION+"")){
-                        mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_RELATIVE_POSITION));
-                    }else if (path.equals(MeasureToolHelper.Type.TYPE_SHOW_GRIDDING+"")){
-                        mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_SHOW_GRIDDING));
-                    }else if (path.equals(MeasureToolHelper.Type.TYPE_LAYOUT_LEVEL+"")){
-                        mHandler.post(() -> UETMenu.open(MeasureToolHelper.Type.TYPE_LAYOUT_LEVEL));
+                    VLog.d("TAG", "path: " + path);
+                    FileUtils.deleteAllUEFiles();
+                    if (path.equals(MenuHelper.Type.TYPE_EDIT_ATTR+"")){
+                        mHandler.post(() -> UETMenu.open(MenuHelper.Type.TYPE_EDIT_ATTR));
+                    }else if (path.equals(MenuHelper.Type.TYPE_RELATIVE_POSITION+"")){
+                        mHandler.post(() -> UETMenu.open(MenuHelper.Type.TYPE_RELATIVE_POSITION));
+                    }else if (path.equals(MenuHelper.Type.TYPE_SHOW_GRIDDING+"")){
+                        mHandler.post(() -> UETMenu.open(MenuHelper.Type.TYPE_SHOW_GRIDDING));
+                    }else if (path.equals(MenuHelper.Type.TYPE_LAYOUT_LEVEL+"")){
+                        mHandler.post(() -> UETMenu.open(MenuHelper.Type.TYPE_LAYOUT_LEVEL));
                     }
                     break;
             }

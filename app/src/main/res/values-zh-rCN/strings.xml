@@ -21,4 +21,10 @@
     <string name="external_storage">外置存储</string>
     <string name="install_d">安装 (%d)</string>
     <string name="install_too_much_once_time">不能一次性安装超过9个App!</string>
+    <string name="list_app_access_external_storage">如果你想把SD中的APK安装到 VirtualXposed，请赋予它外部存储权限。</string>
+    <string name="install_self_eggs">小伙子，你这个想法很有前途 :)</string>
+    <string name="list_app_activity_install">添加到VirtualApp</string>
+    <string name="start_app_failed">打开应用 %1$s 失败 :(</string>
+
+
 </resources>

@@ -1,7 +1,6 @@
 package io.virtualapp.home.models;
 
 import android.graphics.drawable.Drawable;
-
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.remote.InstalledAppInfo;
 
@@ -14,6 +13,7 @@ public class MultiplePackageAppData implements AppData {
     public InstalledAppInfo appInfo;
     public int userId;
     public boolean isFirstOpen;
+    public boolean isInstalling;
     public boolean isLoading;
     public Drawable icon;
     public String name;
@@ -29,6 +29,11 @@ public class MultiplePackageAppData implements AppData {
             }
         }
         name = target.name;
+    }
+
+    @Override
+    public boolean isInstalling() {
+        return isInstalling;
     }
 
     @Override

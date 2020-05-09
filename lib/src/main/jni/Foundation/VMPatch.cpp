@@ -2,7 +2,9 @@
 // VirtualApp Native Project
 //
 #include <Jni/VAJni.h>
+#include <Substrate/CydiaSubstrate.h>
 #include "VMPatch.h"
+#include "fake_dlfcn.h"
 
 namespace FunctionDef {
     typedef void (*Function_DalvikBridgeFunc)(const void **, void *, const void *, void *);
@@ -425,7 +427,10 @@ void hookAndroidVM(JArrayClass<jobject> javaMethods,
         }
     }
     measureNativeOffset(isArt);
-    replaceGetCallingUid(isArt);
+    // Crash on Q if hook directly by modify entrypoint of function.
+    // Just skip this step on Q and get never crash
+    if(apiLevel<=28)
+        replaceGetCallingUid(isArt);
     replaceOpenDexFileMethod(javaMethods.getElement(OPEN_DEX).get(), isArt,
                              apiLevel);
     replaceCameraNativeSetupMethod(javaMethods.getElement(CAMERA_SETUP).get(),
@@ -433,6 +438,50 @@ void hookAndroidVM(JArrayClass<jobject> javaMethods,
     replaceAudioRecordNativeCheckPermission(javaMethods.getElement(
             AUDIO_NATIVE_CHECK_PERMISSION).get(),
                                             isArt, apiLevel);
+}
+
+bool processNothing(void* thiz, void* new_methods){ return true; }
+bool (*orig_ProcessProfilingInfo)(void*, void*);
+
+bool compileNothing(void* thiz, void* thread, void* method, bool osr) { return false; }
+bool (*orig_CompileNothing)(void* thiz, void* thread, void* method, bool osr);
+
+void (*org_notifyJitActivity)(void *);
+void notifyNothing(void *thiz) {
+    return;
+}
+
+void disableJit(int apiLevel) {
+#ifdef __arm__
+    void *libart = fake_dlopen("/system/lib/libart.so", RTLD_NOW);
+    if (libart) {
+        // disable profile.
+        void *processProfilingInfo = NULL;
+        const char *processProfileInfoFunc =
+                apiLevel < 26 ? "_ZN3art12ProfileSaver20ProcessProfilingInfoEPt" :
+                "_ZN3art12ProfileSaver20ProcessProfilingInfoEbPt";
+        processProfilingInfo = fake_dlsym(libart, processProfileInfoFunc);
+        ALOGE("processProfileingInfo: %p", processProfilingInfo);
+        if (processProfilingInfo) {
+            MSHookFunction(processProfilingInfo, (void*)processNothing, (void**)&orig_ProcessProfilingInfo);
+        }
+
+        // disable jit
+        void *compileMethod = NULL;
+        compileMethod = fake_dlsym(libart,
+                                   "_ZN3art3jit3Jit13CompileMethodEPNS_9ArtMethodEPNS_6ThreadEb");
+        ALOGE("compileMethod: %p", compileMethod);
+        if (compileMethod) {
+            MSHookFunction(compileMethod, (void*) compileNothing, (void**) &orig_CompileNothing);
+        }
+
+        void *notifyJitActivity = fake_dlsym(libart, "_ZN3art12ProfileSaver17NotifyJitActivityEv");
+        if (notifyJitActivity) {
+            MSHookFunction(notifyJitActivity, (void *) notifyNothing,
+                          (void **) &org_notifyJitActivity);
+        }
+    }
+#endif
 }
 
 void *getDvmOrArtSOHandle() {

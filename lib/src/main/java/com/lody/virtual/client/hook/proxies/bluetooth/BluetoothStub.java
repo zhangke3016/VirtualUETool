@@ -9,7 +9,6 @@ import com.lody.virtual.helper.utils.marks.FakeDeviceMark;
 import java.lang.reflect.Method;
 
 import mirror.android.bluetooth.IBluetooth;
-import mirror.android.bluetooth.IBluetoothManager;
 
 /**
  * @see android.bluetooth.BluetoothManager
@@ -20,8 +19,7 @@ public class BluetoothStub extends BinderInvocationProxy {
             "bluetooth";
 
     public BluetoothStub() {
-        super(Build.VERSION.SDK_INT >= 17 ? IBluetoothManager.Stub.asInterface : IBluetooth.Stub.asInterface,
-                SERVICE_NAME);
+        super(IBluetooth.Stub.asInterface, SERVICE_NAME);
     }
 
     @Override

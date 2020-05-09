@@ -153,10 +153,10 @@ public class MarkerActivity extends VActivity implements TencentMap.OnMapClickLi
                 if (mLatLng != null) {
                     /**
                      * TODO edit info
-                     * @see com.lody.virtual.remote.vloc.VLocation#altitude
-                     * @see com.lody.virtual.remote.vloc.VLocation#accuracy
-                     * @see com.lody.virtual.remote.vloc.VLocation#speed
-                     * @see com.lody.virtual.remote.vloc.VLocation#bearing
+                     * @see VLocation#altitude
+                     * @see VLocation#accuracy
+                     * @see VLocation#speed
+                     * @see VLocation#bearing
                      */
                     if (mVLocation == null) {
                         mVLocation = new VLocation();

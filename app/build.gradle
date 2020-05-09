@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "io.virtualapp268"
         minSdkVersion 15
-        targetSdkVersion 26
+        targetSdkVersion 23
         versionCode 24
         versionName "1.2.5"
         multiDexEnabled true
@@ -37,6 +37,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
 }
 
 android {
@@ -63,4 +70,9 @@ dependencies {
     compile 'org.jdeferred:jdeferred-android-aar:1.2.4'
     // ThirdParty
     compile 'com.jonathanfinerty.once:once:1.0.3'
+    //Glide
+    implementation ('com.github.bumptech.glide:glide:4.8.0') {
+        exclude(group: "com.android.support")
+    }
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 }

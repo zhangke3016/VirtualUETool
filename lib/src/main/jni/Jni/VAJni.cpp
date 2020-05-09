@@ -5,6 +5,7 @@
 #include <fb/include/fb/Build.h>
 #include <fb/include/fb/ALog.h>
 #include <fb/include/fb/fbjni.h>
+#include <ctime>
 #include "VAJni.h"
 
 using namespace facebook::jni;
@@ -15,6 +16,9 @@ static void jni_nativeLaunchEngine(alias_ref<jclass> clazz, JArrayClass<jobject>
     hookAndroidVM(javaMethods, packageName, isArt, apiLevel, cameraMethodType);
 }
 
+static void jni_disableJit(alias_ref<jclass> clazz, jint apiLevel) {
+    disableJit(apiLevel);
+}
 
 static void jni_nativeEnableIORedirect(alias_ref<jclass>, jstring selfSoPath, jint apiLevel,
                                        jint preview_api_level) {
@@ -58,8 +62,15 @@ static jstring jni_nativeReverseRedirectedPath(alias_ref<jclass> jclazz, jstring
 
 alias_ref<jclass> nativeEngineClass;
 
+const char hexcode[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+                        'F'};
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
+    JNIEnv* env;
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+        return -1;
+    }
+
     return initialize(vm, [] {
         nativeEngineClass = findClassStatic("com/lody/virtual/client/NativeEngine");
         nativeEngineClass->registerNatives({
@@ -77,6 +88,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
                                          jni_nativeReverseRedirectedPath),
                         makeNativeMethod("nativeLaunchEngine",
                                          jni_nativeLaunchEngine),
+                        makeNativeMethod("disableJit", jni_disableJit)
                 }
         );
     });

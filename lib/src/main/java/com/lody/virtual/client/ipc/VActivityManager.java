@@ -18,7 +18,6 @@ import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.env.VirtualRuntime;
 import com.lody.virtual.client.hook.secondary.ServiceConnectionDelegate;
 import com.lody.virtual.helper.compat.ActivityManagerCompat;
-import com.lody.virtual.helper.ipcbus.IPCSingleton;
 import com.lody.virtual.helper.utils.ComponentUtils;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.remote.AppTaskInfo;
@@ -26,7 +25,8 @@ import com.lody.virtual.remote.BadgerInfo;
 import com.lody.virtual.remote.PendingIntentData;
 import com.lody.virtual.remote.PendingResultData;
 import com.lody.virtual.remote.VParceledListSlice;
-import com.lody.virtual.server.interfaces.IActivityManager;
+import com.lody.virtual.server.IActivityManager;
+import com.lody.virtual.server.interfaces.IProcessObserver;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,14 +42,27 @@ public class VActivityManager {
 
     private static final VActivityManager sAM = new VActivityManager();
     private final Map<IBinder, ActivityClientRecord> mActivities = new HashMap<IBinder, ActivityClientRecord>(6);
-    private IPCSingleton<IActivityManager> singleton = new IPCSingleton<>(IActivityManager.class);
+    private IActivityManager mRemote;
 
     public static VActivityManager get() {
         return sAM;
     }
 
     public IActivityManager getService() {
-        return singleton.get();
+        if (mRemote == null ||
+                (!mRemote.asBinder().pingBinder() && !VirtualCore.get().isVAppProcess())) {
+            synchronized (VActivityManager.class) {
+                final Object remote = getRemoteInterface();
+                mRemote = LocalProxyUtils.genProxy(IActivityManager.class, remote);
+            }
+        }
+        return mRemote;
+    }
+
+
+    private Object getRemoteInterface() {
+        return IActivityManager.Stub
+                .asInterface(ServiceManagerNative.getService(ServiceManagerNative.ACTIVITY));
     }
 
 
@@ -100,6 +113,10 @@ public class VActivityManager {
 
     public void onActivityResumed(Activity activity) {
         IBinder token = mirror.android.app.Activity.mToken.get(activity);
+        onActivityResumed(token);
+    }
+
+    public void onActivityResumed(IBinder token) {
         try {
             getService().onActivityResumed(VUserHandle.myUserId(), token);
         } catch (RemoteException e) {
@@ -318,9 +335,25 @@ public class VActivityManager {
         }
     }
 
+    public void registerProcessObserver(IProcessObserver observer) {
+        try {
+            getService().registerProcessObserver(observer);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void killAppByPkg(String pkg, int userId) {
         try {
             getService().killAppByPkg(pkg, userId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void unregisterProcessObserver(IProcessObserver observer) {
+        try {
+            getService().unregisterProcessObserver(observer);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

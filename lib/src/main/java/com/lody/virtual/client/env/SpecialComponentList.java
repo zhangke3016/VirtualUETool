@@ -43,7 +43,6 @@ public final class SpecialComponentList {
         SYSTEM_BROADCAST_ACTION.add(Intent.ACTION_BATTERY_OKAY);
         SYSTEM_BROADCAST_ACTION.add(Intent.ACTION_POWER_CONNECTED);
         SYSTEM_BROADCAST_ACTION.add(Intent.ACTION_POWER_DISCONNECTED);
-        SYSTEM_BROADCAST_ACTION.add(Intent.ACTION_USER_PRESENT);
         SYSTEM_BROADCAST_ACTION.add("android.provider.Telephony.SMS_RECEIVED");
         SYSTEM_BROADCAST_ACTION.add("android.provider.Telephony.SMS_DELIVER");
         SYSTEM_BROADCAST_ACTION.add("android.net.wifi.STATE_CHANGE");
@@ -75,11 +74,9 @@ public final class SpecialComponentList {
         SPEC_SYSTEM_APP_LIST.add("com.google.android.webview");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try {
-                if(WebViewFactory.getUpdateService.call() != null){
-                    String webViewPkgN = IWebViewUpdateService.getCurrentWebViewPackageName.call(WebViewFactory.getUpdateService.call());
-                    if (webViewPkgN != null) {
-                        SPEC_SYSTEM_APP_LIST.add(webViewPkgN);
-                    }
+                String webViewPkgN = IWebViewUpdateService.getCurrentWebViewPackageName.call(WebViewFactory.getUpdateService.call());
+                if (webViewPkgN != null) {
+                    SPEC_SYSTEM_APP_LIST.add(webViewPkgN);
                 }
             } catch (Throwable e) {
                 e.printStackTrace();

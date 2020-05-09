@@ -9,6 +9,7 @@ import com.lody.virtual.client.env.VirtualRuntime;
 import com.lody.virtual.client.ipc.VActivityManager;
 import com.lody.virtual.client.natives.NativeMethods;
 import com.lody.virtual.helper.compat.BuildCompat;
+import com.lody.virtual.helper.utils.DeviceUtil;
 import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.remote.InstalledAppInfo;
@@ -24,8 +25,9 @@ import java.util.Map;
  * VirtualApp Native Project
  */
 public class NativeEngine {
-
     private static final String TAG = NativeEngine.class.getSimpleName();
+
+    private static final String VESCAPE = "/6decacfa7aad11e8a718985aebe4663a";
 
     private static Map<String, InstalledAppInfo> sDexOverrideMap;
 
@@ -56,13 +58,13 @@ public class NativeEngine {
         }
     }
 
-    public static String getRedirectedPath(String origPath) {
+    public static String getRedirectedPath(String redirectPath) {
         try {
-            return nativeGetRedirectedPath(origPath);
+            return nativeGetRedirectedPath(redirectPath);
         } catch (Throwable e) {
             VLog.e(TAG, VLog.getStackTraceString(e));
         }
-        return origPath;
+        return redirectPath;
     }
 
     public static String resverseRedirectedPath(String origPath) {
@@ -88,6 +90,17 @@ public class NativeEngine {
         }
     }
 
+    public static String getEscapePath(String path) {
+        if (path == null) {
+            return null;
+        }
+        File file = new File(path);
+        if (file.exists()) {
+            return file.getAbsolutePath();
+        }
+        return new File(VESCAPE, path).getAbsolutePath();
+    }
+
     public static void redirectFile(String origPath, String newPath) {
         if (origPath.endsWith("/")) {
             origPath = origPath.substring(0, origPath.length() - 1);
@@ -103,7 +116,12 @@ public class NativeEngine {
         }
     }
 
-    public static void whitelist(String path) {
+    public static void whitelist(String path, boolean directory) {
+        if (directory && !path.endsWith("/")) {
+            path = path + "/";
+        } else if (!directory && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
         try {
             nativeIOWhitelist(path);
         } catch (Throwable e) {
@@ -126,8 +144,9 @@ public class NativeEngine {
         try {
             String soPath = String.format("/data/data/%s/lib/libva++.so", VirtualCore.get().getHostPkg());
             if (!new File(soPath).exists()) {
-                throw new RuntimeException("Unable to find the so.");
+                throw new RuntimeException("io redirect failed.");
             }
+            redirectDirectory(VESCAPE, "/");
             nativeEnableIORedirect(soPath, Build.VERSION.SDK_INT, BuildCompat.getPreviewSDKInt());
         } catch (Throwable e) {
             VLog.e(TAG, VLog.getStackTraceString(e));
@@ -166,7 +185,7 @@ public class NativeEngine {
         if (vuid != -1) {
             return VUserHandle.getAppId(vuid);
         }
-        VLog.d(TAG, "Unknown uid: " + callingPid);
+        VLog.w(TAG, String.format("Unknown uid: %s", callingPid));
         return VClientImpl.get().getBaseVUid();
     }
 
@@ -177,7 +196,7 @@ public class NativeEngine {
         try {
             String canonical = new File(dexOrJarPath).getCanonicalPath();
             InstalledAppInfo info = sDexOverrideMap.get(canonical);
-            if (info != null && !info.dependSystem) {
+            if (info != null && !info.dependSystem || info != null && DeviceUtil.isMeizuBelowN() && params[1] == null) {
                 outputPath = info.getOdexFile().getPath();
                 params[1] = outputPath;
             }
@@ -202,6 +221,8 @@ public class NativeEngine {
     private static native void nativeIOForbid(String path);
 
     private static native void nativeEnableIORedirect(String selfSoPath, int apiLevel, int previewApiLevel);
+
+    public static native void disableJit(int apiLevel);
 
     public static int onGetUid(int uid) {
         return VClientImpl.get().getBaseVUid();

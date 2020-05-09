@@ -19,6 +19,7 @@ VirtualUETool 扩展自[UETool](https://github.com/eleme/UETool)实现，底层�
 - 显示两个 view 的相对位置关系
 - 显示网格栅栏，方便查看控件是否对齐
 - 新增支持查看布局层级
+- 功能扩展中...
 
 [下载体验](https://github.com/zhangke3016/VirtualUETool/blob/master/app-release.apk?raw=true)
 
@@ -58,6 +59,8 @@ UETool.putAttrsProviderClass(String customizeClassName);
 [UETool](https://github.com/eleme/UETool)
 
 [VirtualApp](https://github.com/asLody/VirtualApp)
+
+[VirtualXposed](https://github.com/android-hacker/VirtualXposed)
 
 ### About me
 

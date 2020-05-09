@@ -19,6 +19,7 @@ import com.lody.virtual.client.hook.base.StaticMethodProxy;
 import com.lody.virtual.client.ipc.VActivityManager;
 import com.lody.virtual.helper.compat.BuildCompat;
 import com.lody.virtual.helper.compat.ParceledListSliceCompat;
+import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.remote.AppTaskInfo;
 
 import java.lang.reflect.Method;
@@ -70,7 +71,9 @@ public class ActivityManagerStub extends MethodInvocationProxy<MethodInvocationS
             addMethodProxy(new StaticMethodProxy("navigateUpTo") {
                 @Override
                 public Object call(Object who, Method method, Object... args) throws Throwable {
-                    throw new RuntimeException("Call navigateUpTo!!!!");
+                    // throw new RuntimeException("Call navigateUpTo!!!!");
+                    VLog.e("VA", "Call navigateUpTo!!!!");
+                    return method.invoke(who, args);
                 }
             });
             addMethodProxy(new ReplaceLastUidMethodProxy("checkPermissionWithToken"));
@@ -111,6 +114,27 @@ public class ActivityManagerStub extends MethodInvocationProxy<MethodInvocationS
                         } catch (Throwable e) {
                             // ignore
                         }
+                    }
+                    return _infos;
+                }
+            });
+            addMethodProxy(new StaticMethodProxy("getRunningTasks") {
+                @Override
+                public Object call(Object who, Method method, Object... args) throws Throwable {
+                    Object _infos = method.invoke(who, args);
+                    //noinspection unchecked
+                    List<ActivityManager.RunningTaskInfo> infos =
+                            ParceledListSliceCompat.isReturnParceledListSlice(method)
+                                    ? ParceledListSlice.getList.call(_infos)
+                                    : (List) _infos;
+                    for (ActivityManager.RunningTaskInfo info : infos) {
+                        AppTaskInfo taskInfo = VActivityManager.get().getTaskInfo(info.id);
+                        if (taskInfo == null) {
+                            continue;
+                        }
+                        info.description = "Virtual";
+                        info.topActivity = taskInfo.topActivity;
+                        info.baseActivity = taskInfo.baseActivity;
                     }
                     return _infos;
                 }

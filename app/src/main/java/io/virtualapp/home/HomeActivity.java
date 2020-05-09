@@ -138,21 +138,9 @@ public class HomeActivity extends VActivity implements HomeContract.HomeView {
                     }).show();
             return false;
         });
-        menu.add("Virtual Storage").setIcon(R.drawable.ic_vs).setOnMenuItemClickListener(item -> {
-            Toast.makeText(this, "The coming", Toast.LENGTH_SHORT).show();
-            return false;
-        });
-        menu.add("Notification").setIcon(R.drawable.ic_notification).setOnMenuItemClickListener(item -> {
-            Toast.makeText(this, "The coming", Toast.LENGTH_SHORT).show();
-            return false;
-        });
         menu.add("Virtual Location").setIcon(R.drawable.ic_notification).setOnMenuItemClickListener(item -> {
             startActivity(new Intent(this, VirtualLocationSettings.class));
             return true;
-        });
-        menu.add("Settings").setIcon(R.drawable.ic_settings).setOnMenuItemClickListener(item -> {
-            Toast.makeText(this, "The coming", Toast.LENGTH_SHORT).show();
-            return false;
         });
         mMenuView.setOnClickListener(v -> mPopupMenu.show());
     }
@@ -328,20 +316,20 @@ public class HomeActivity extends VActivity implements HomeContract.HomeView {
 
     @Override
     public void askInstallGms() {
-        new AlertDialog.Builder(this)
-                .setTitle("Hi")
-                .setMessage("We found that your device has been installed the Google service, whether you need to install them?")
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    defer().when(() -> {
-                        GmsSupport.installGApps(0);
-                    }).done((res) -> {
-                        mPresenter.dataChanged();
-                    });
-                })
-                .setNegativeButton(android.R.string.cancel, (dialog, which) ->
-                        Toast.makeText(HomeActivity.this, "You can also find it in the Settings~", Toast.LENGTH_LONG).show())
-                .setCancelable(false)
-                .show();
+//        new AlertDialog.Builder(this)
+//                .setTitle("Hi")
+//                .setMessage("We found that your device has been installed the Google service, whether you need to install them?")
+//                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+//                    defer().when(() -> {
+//                        GmsSupport.installGApps(0);
+//                    }).done((res) -> {
+//                        mPresenter.dataChanged();
+//                    });
+//                })
+//                .setNegativeButton(android.R.string.cancel, (dialog, which) ->
+//                        Toast.makeText(HomeActivity.this, "You can also find it in the Settings~", Toast.LENGTH_LONG).show())
+//                .setCancelable(false)
+//                .show();
     }
 
     @Override

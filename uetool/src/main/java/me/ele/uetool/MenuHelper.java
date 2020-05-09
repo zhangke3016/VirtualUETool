@@ -3,6 +3,7 @@ package me.ele.uetool;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -15,26 +16,29 @@ import me.ele.uetool.base.DimenUtil;
 
 import static android.view.Gravity.BOTTOM;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static me.ele.uetool.MeasureToolHelper.Type.TYPE_EDIT_ATTR;
-import static me.ele.uetool.MeasureToolHelper.Type.TYPE_LAYOUT_LEVEL;
-import static me.ele.uetool.MeasureToolHelper.Type.TYPE_RELATIVE_POSITION;
-import static me.ele.uetool.MeasureToolHelper.Type.TYPE_SHOW_GRIDDING;
-import static me.ele.uetool.MeasureToolHelper.Type.TYPE_UNKNOWN;
+import static me.ele.uetool.MenuHelper.Type.TYPE_EDIT_ATTR;
+import static me.ele.uetool.MenuHelper.Type.TYPE_LAYOUT_LEVEL;
+import static me.ele.uetool.MenuHelper.Type.TYPE_RELATIVE_POSITION;
+import static me.ele.uetool.MenuHelper.Type.TYPE_SHOW_GRIDDING;
+import static me.ele.uetool.MenuHelper.Type.TYPE_UNKNOWN;
 
-public class MeasureToolHelper {
+public class MenuHelper {
 
-    public static final String EXTRA_TYPE = "extra_type";
+    public static final String TAG = "MenuHelper";
 
-    private static final String EXTRA_TYPE_LEVEL = "extra_type_level";
+    public static final String EXTRA_TYPE = "x_uetool_extra_type";
 
-    public static void onCreate(Activity activity,Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
+    private static final String EXTRA_TYPE_LEVEL = "x_uetool_extra_type_level";
+
+    public static void show(Activity activity,Bundle bundle) {
+        if (bundle == null) {
             return;
         }
+        Log.d(TAG, " show ");
         FrameLayout frameLayout = new FrameLayout(activity);
         ViewGroup vContainer = frameLayout;
         final BoardTextView board = new BoardTextView(activity);
-        int type = savedInstanceState.getInt(EXTRA_TYPE, TYPE_UNKNOWN);
+        int type = bundle.getInt(EXTRA_TYPE, TYPE_UNKNOWN);
 
         switch (type) {
             case TYPE_EDIT_ATTR:
@@ -94,12 +98,13 @@ public class MeasureToolHelper {
             vContainer.setTag(EXTRA_TYPE);
             vContainer.setFocusable(false);
             vContainer.setFocusableInTouchMode(false);
+            Log.d(TAG, " addView ");
             viewGroup.addView(vContainer,new ViewGroup.LayoutParams(viewGroup.getWidth(),viewGroup.getHeight()));
             viewGroup.postInvalidate();
         }
     }
 
-    public static boolean onDestroy(Activity activity) {
+    public static boolean dismiss(Activity activity) {
         View view = Util.getCurrentView(activity);
         ViewGroup viewGroup = null;
         if (view instanceof ViewGroup){
@@ -117,6 +122,7 @@ public class MeasureToolHelper {
                 }
             }
             if (viewWithTag != null){
+                Log.d(TAG, " removeView ");
                 viewGroup.removeView(viewWithTag);
                 return true;
             }

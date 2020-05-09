@@ -4,7 +4,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fb/include/fb/ALog.h>
-#include <Substrate/CydiaSubstrate.h>
+#include <Substrate/SubstrateHook.h>
+
+//extern "C" {
+//#include <HookZz/include/hookzz.h>
+//}
+
 
 #include "IOUniformer.h"
 #include "SandboxFs.h"
@@ -82,8 +87,7 @@ void IOUniformer::redirect(const char *orig_path, const char *new_path) {
 }
 
 const char *IOUniformer::query(const char *orig_path) {
-    int res;
-    return relocate_path(orig_path, &res);
+    return reverse_relocate_path(orig_path);
 }
 
 void IOUniformer::whitelist(const char *_path) {
@@ -543,6 +547,56 @@ char **build_new_env(char *const envp[]) {
     return new_envp;
 }
 
+char **build_new_argv(char *const envp[]) {
+    char *provided_ld_preload = NULL;
+    int provided_ld_preload_index = -1;
+    int orig_envp_count = getArrayItemCount(envp);
+
+    for (int i = 0; i < orig_envp_count; i++) {
+        if (strstr(envp[i], "compiler-filter")) {
+            provided_ld_preload = envp[i];
+            provided_ld_preload_index = i;
+        }
+    }
+    char ld_preload[40];
+    if (provided_ld_preload) {
+        sprintf(ld_preload, "--compiler-filter=%s", "everything");
+    }
+
+    char *api_level_char = getenv("V_API_LEVEL");
+    int api_level = atoi(api_level_char);
+
+    int new_envp_count = orig_envp_count + 4;
+    char **new_envp = (char **) malloc(new_envp_count * sizeof(char *));
+    int cur = 0;
+    for (int i = 0; i < orig_envp_count; ++i) {
+        if (i != provided_ld_preload_index) {
+            new_envp[cur++] = envp[i];
+        } else {
+            new_envp[i] = ld_preload;
+            cur++;
+        }
+    }
+
+    if (api_level >= 22) {
+        new_envp[cur++] = (char *) "--compile-pic";
+    }
+    if (api_level >= 23) {
+        new_envp[cur++] = (char *) (api_level > 25 ? "--inline-max-code-units=0" : "--inline-depth-limit=0");
+    }
+    if (api_level >= 28) {
+        new_envp[cur++] = (char *) "--debuggable";
+    }
+    new_envp[cur] = NULL;
+
+//    int n = getArrayItemCount(new_envp);
+//    for (int i = 0; i < n; i++) {
+//        ALOGE("dex2oat : %s", new_envp[i]);
+//    }
+
+    return new_envp;
+}
+
 // int (*origin_execve)(const char *pathname, char *const argv[], char *const envp[]);
 HOOK_DEF(int, execve, const char *pathname, char *argv[], char *const envp[]) {
     /**
@@ -563,9 +617,11 @@ HOOK_DEF(int, execve, const char *pathname, char *argv[], char *const envp[]) {
     }
     if (strstr(pathname, "dex2oat")) {
         char **new_envp = build_new_env(envp);
-        int ret = syscall(__NR_execve, redirect_path, argv, new_envp);
+        char **new_argv = build_new_argv(argv);
+        int ret = syscall(__NR_execve, redirect_path, new_argv, new_envp);
         FREE(redirect_path, pathname);
         free(new_envp);
+        free(new_argv);
         return ret;
     }
     int ret = syscall(__NR_execve, redirect_path, argv, envp);
@@ -638,7 +694,13 @@ int findSymbol(const char *name, const char *libn,
 
 void hook_dlopen(int api_level) {
     void *symbol = NULL;
-    if (api_level > 23) {
+    if (api_level > 25) {
+        if (findSymbol("__dl__Z9do_dlopenPKciPK17android_dlextinfoPKv", "linker",
+                       (unsigned long *) &symbol) == 0) {
+            MSHookFunction(symbol, (void *) new_do_dlopen_V24,
+                           (void **) &orig_do_dlopen_V24);
+        }
+    } else if (api_level > 23) {
         if (findSymbol("__dl__Z9do_dlopenPKciPK17android_dlextinfoPv", "linker",
                        (unsigned long *) &symbol) == 0) {
             MSHookFunction(symbol, (void *) new_do_dlopen_V24,
@@ -710,5 +772,5 @@ void IOUniformer::startUniformer(const char *so_path, int api_level, int preview
         }
         dlclose(handle);
     }
-    hook_dlopen(api_level);
+    // hook_dlopen(api_level);
 }

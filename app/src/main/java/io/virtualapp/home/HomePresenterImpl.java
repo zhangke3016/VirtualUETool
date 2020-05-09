@@ -3,6 +3,8 @@ package io.virtualapp.home;
 import android.app.Activity;
 import android.graphics.Bitmap;
 
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import com.lody.virtual.GmsSupport;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.os.VUserInfo;
@@ -10,6 +12,9 @@ import com.lody.virtual.os.VUserManager;
 import com.lody.virtual.remote.InstallResult;
 import com.lody.virtual.remote.InstalledAppInfo;
 
+import io.virtualapp.R;
+import io.virtualapp.sys.Installd;
+import io.virtualapp.sys.Installd.UpdateListener;
 import java.io.IOException;
 
 import io.virtualapp.VCommends;
@@ -79,62 +84,33 @@ class HomePresenterImpl implements HomeContract.HomePresenter {
 
     @Override
     public void addApp(AppInfoLite info) {
-        class AddResult {
-            private PackageAppData appData;
-            private int userId;
-            private boolean justEnableHidden;
-        }
-        AddResult addResult = new AddResult();
-        VUiKit.defer().when(() -> {
-            InstalledAppInfo installedAppInfo = VirtualCore.get().getInstalledAppInfo(info.packageName, 0);
-            addResult.justEnableHidden = installedAppInfo != null;
-            if (addResult.justEnableHidden) {
-                int[] userIds = installedAppInfo.getInstalledUsers();
-                int nextUserId = userIds.length;
-                /*
-                  Input : userIds = {0, 1, 3}
-                  Output: nextUserId = 2
-                 */
-                for (int i = 0; i < userIds.length; i++) {
-                    if (userIds[i] != i) {
-                        nextUserId = i;
-                        break;
+        Installd.addApp(info, new UpdateListener() {
+            private AppData appData;
+            @Override
+            public void update(AppData model) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if ((model.isInstalling() && !model.isLoading())
+                             || (!model.isInstalling() && model.isLoading()) && appData == null) {
+                            appData = model;
+                            mView.addAppToLauncher(model);
+                        } else if (!model.isLoading() && !model.isInstalling()) {
+                            appData = null;
+                            mView.refreshLauncherItem(model);
+                        }
                     }
-                }
-                addResult.userId = nextUserId;
-
-                if (VUserManager.get().getUserInfo(nextUserId) == null) {
-                    // user not exist, create it automatically.
-                    String nextUserName = "Space " + (nextUserId + 1);
-                    VUserInfo newUserInfo = VUserManager.get().createUser(nextUserName, VUserInfo.FLAG_ADMIN);
-                    if (newUserInfo == null) {
-                        throw new IllegalStateException();
-                    }
-                }
-                boolean success = VirtualCore.get().installPackageAsUser(nextUserId, info.packageName);
-                if (!success) {
-                    throw new IllegalStateException();
-                }
-            } else {
-                InstallResult res = mRepo.addVirtualApp(info);
-                if (!res.isSuccess) {
-                    throw new IllegalStateException();
-                }
+                });
             }
-        }).then((res) -> {
-            addResult.appData = PackageAppDataStorage.get().acquire(info.packageName);
-        }).done(res -> {
-            boolean multipleVersion = addResult.justEnableHidden && addResult.userId != 0;
-            if (!multipleVersion) {
-                PackageAppData data = addResult.appData;
-                data.isLoading = true;
-                mView.addAppToLauncher(data);
-                handleOptApp(data, info.packageName, true);
-            } else {
-                MultiplePackageAppData data = new MultiplePackageAppData(addResult.appData, addResult.userId);
-                data.isLoading = true;
-                mView.addAppToLauncher(data);
-                handleOptApp(data, info.packageName, false);
+
+            @Override
+            public void fail(String msg) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mView.removeAppToLauncher((AppData) info);
+                    }
+                });
             }
         });
     }

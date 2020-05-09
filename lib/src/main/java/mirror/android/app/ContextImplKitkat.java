@@ -10,5 +10,4 @@ public class ContextImplKitkat {
     public static RefObject<File[]> mExternalCacheDirs;
     public static RefObject<File[]> mExternalFilesDirs;
     public static RefObject<String> mOpPackageName;
-    public static RefObject<Object> mDisplayAdjustments;
 }

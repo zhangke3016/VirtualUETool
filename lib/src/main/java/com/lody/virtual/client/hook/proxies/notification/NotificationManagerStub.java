@@ -7,6 +7,12 @@ import com.lody.virtual.client.hook.base.Inject;
 import com.lody.virtual.client.hook.base.MethodInvocationProxy;
 import com.lody.virtual.client.hook.base.MethodInvocationStub;
 import com.lody.virtual.client.hook.base.ReplaceCallingPkgMethodProxy;
+import com.lody.virtual.client.hook.base.StaticMethodProxy;
+import com.lody.virtual.client.hook.utils.MethodParameterUtils;
+import com.lody.virtual.helper.compat.BuildCompat;
+import com.lody.virtual.helper.utils.DeviceUtil;
+
+import java.lang.reflect.Method;
 
 import mirror.android.app.NotificationManager;
 import mirror.android.widget.Toast;
@@ -36,7 +42,32 @@ public class NotificationManagerStub extends MethodInvocationProxy<MethodInvocat
             addMethodProxy(new ReplaceCallingPkgMethodProxy("getNotificationPolicy"));
             addMethodProxy(new ReplaceCallingPkgMethodProxy("isNotificationPolicyAccessGrantedForPackage"));
         }
-        if ("samsung".equalsIgnoreCase(Build.BRAND) || "samsung".equalsIgnoreCase(Build.MANUFACTURER)) {
+
+        // http://androidxref.com/8.0.0_r4/xref/frameworks/base/core/java/android/app/INotificationManager.aidl
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            addMethodProxy(new ReplaceCallingPkgMethodProxy("createNotificationChannelGroups"));
+            addMethodProxy(new ReplaceCallingPkgMethodProxy("getNotificationChannelGroups"));
+            addMethodProxy(new ReplaceCallingPkgMethodProxy("deleteNotificationChannelGroup"));
+            addMethodProxy(new ReplaceCallingPkgMethodProxy("createNotificationChannels"));
+            addMethodProxy(new ReplaceCallingPkgMethodProxy("getNotificationChannels") {
+                @Override
+                public boolean beforeCall(Object who, Method method, Object... args) {
+                    MethodParameterUtils.replaceLastUid(args);
+                    return super.beforeCall(who, method, args);
+                }
+            });
+            addMethodProxy(new StaticMethodProxy("getNotificationChannel") {
+                @Override
+                public boolean beforeCall(Object who, Method method, Object... args) {
+                    MethodParameterUtils.replaceLastUid(args);
+                    int sequence = BuildCompat.isQ() ? 2 : 1;
+                    MethodParameterUtils.replaceSequenceAppPkg(args, sequence);
+                    return super.beforeCall(who, method, args);
+                }
+            });
+            addMethodProxy(new ReplaceCallingPkgMethodProxy("deleteNotificationChannel"));
+        }
+        if (DeviceUtil.isSamsung()) {
             addMethodProxy(new ReplaceCallingPkgMethodProxy("removeEdgeNotification"));
         }
     }

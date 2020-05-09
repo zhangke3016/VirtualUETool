@@ -1,12 +1,16 @@
 package com.lody.virtual.server.device;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Build;
 import android.os.RemoteException;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 
+import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.helper.collection.SparseArray;
 import com.lody.virtual.remote.VDeviceInfo;
-import com.lody.virtual.server.interfaces.IDeviceInfoManager;
+import com.lody.virtual.server.IDeviceInfoManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +21,7 @@ import java.util.Random;
  * @author Lody
  */
 
-public class VDeviceManagerService implements IDeviceInfoManager {
+public class VDeviceManagerService extends IDeviceInfoManager.Stub {
 
     private static VDeviceManagerService sInstance = new VDeviceManagerService();
     private final SparseArray<VDeviceInfo> mDeviceInfos = new SparseArray<>();
@@ -53,12 +57,12 @@ public class VDeviceManagerService implements IDeviceInfoManager {
     }
 
     @Override
-    public VDeviceInfo getDeviceInfo(int userId) {
+    public VDeviceInfo getDeviceInfo(int userId) throws RemoteException {
         VDeviceInfo info;
         synchronized (mDeviceInfos) {
             info = mDeviceInfos.get(userId);
             if (info == null) {
-                info = generateRandomDeviceInfo();
+                info = generateDeviceInfo();
                 mDeviceInfos.put(userId, info);
                 mPersistenceLayer.save();
             }
@@ -67,7 +71,7 @@ public class VDeviceManagerService implements IDeviceInfoManager {
     }
 
     @Override
-    public void updateDeviceInfo(int userId, VDeviceInfo info) {
+    public void updateDeviceInfo(int userId, VDeviceInfo info) throws RemoteException {
         synchronized (mDeviceInfos) {
             if (info != null) {
                 mDeviceInfos.put(userId, info);
@@ -107,6 +111,35 @@ public class VDeviceManagerService implements IDeviceInfoManager {
         return info;
     }
 
+    @SuppressLint("HardwareIds")
+    private VDeviceInfo generateDeviceInfo() {
+        VDeviceInfo info = generateRandomDeviceInfo();
+        Context context = VirtualCore.get().getContext();
+        if (context == null) {
+            return info;
+        }
+
+        try {
+            String deviceId = null;
+            final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (tm != null) {
+                deviceId = tm.getDeviceId();
+            }
+            if (deviceId != null) {
+                info.deviceId = deviceId;
+            }
+
+            String android_id = Settings.System.getString(context.getContentResolver(), Settings.System.ANDROID_ID);
+            if (android_id != null) {
+                info.androidId = android_id;
+            }
+
+            info.serial = Build.SERIAL;
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return info;
+    }
 
     SparseArray<VDeviceInfo> getDeviceInfos() {
         return mDeviceInfos;

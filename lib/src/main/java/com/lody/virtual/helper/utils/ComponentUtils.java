@@ -5,19 +5,18 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ComponentInfo;
+import android.os.IBinder;
+import android.os.Parcelable;
 
+import com.lody.virtual.GmsSupport;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.env.SpecialComponentList;
-import com.lody.virtual.GmsSupport;
 import com.lody.virtual.client.ipc.VActivityManager;
 import com.lody.virtual.client.stub.StubPendingActivity;
 import com.lody.virtual.client.stub.StubPendingReceiver;
 import com.lody.virtual.client.stub.StubPendingService;
 import com.lody.virtual.helper.compat.ObjectsCompat;
 import com.lody.virtual.os.VUserHandle;
-
-import android.os.IBinder;
-import android.os.Parcelable;
 
 import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_INSTANCE;
 
@@ -135,7 +134,6 @@ public class ComponentUtils {
         }
         return newIntent;
     }
-
 
     public static Intent redirectIntentSender(int type, String creator, Intent intent, IBinder iBinder) {
         Intent cloneFilter = intent.cloneFilter();

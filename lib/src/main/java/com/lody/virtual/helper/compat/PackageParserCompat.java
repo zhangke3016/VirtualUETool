@@ -25,7 +25,7 @@ import mirror.android.content.pm.PackageParserLollipop;
 import mirror.android.content.pm.PackageParserLollipop22;
 import mirror.android.content.pm.PackageParserMarshmallow;
 import mirror.android.content.pm.PackageParserNougat;
-import mirror.android.content.pm.PackageParserP;
+import mirror.android.content.pm.PackageParserP28;
 import mirror.android.content.pm.PackageUserState;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
@@ -48,9 +48,7 @@ public class PackageParserCompat {
 
 
     public static PackageParser createParser(File packageFile) {
-        if (API_LEVEL >= 28) {
-            return PackageParserP.ctor.newInstance();
-        } else if (API_LEVEL >= M) {
+        if (API_LEVEL >= M) {
             return PackageParserMarshmallow.ctor.newInstance();
         } else if (API_LEVEL >= LOLLIPOP_MR1) {
             return PackageParserLollipop22.ctor.newInstance();
@@ -66,9 +64,11 @@ public class PackageParserCompat {
     }
 
     public static Package parsePackage(PackageParser parser, File packageFile, int flags) throws Throwable {
-        if (API_LEVEL >= 28) {
-            return PackageParserP.parsePackage.callWithException(parser, packageFile, flags);
-        } else if (API_LEVEL >= M) {
+        if (BuildCompat.isQ()) {
+            PackageParserP28.setCallback.call(parser, PackageParserP28.CallbackImpl.ctor.newInstance(VirtualCore.getPM()));
+        }
+
+        if (API_LEVEL >= M) {
             return PackageParserMarshmallow.parsePackage.callWithException(parser, packageFile, flags);
         } else if (API_LEVEL >= LOLLIPOP_MR1) {
             return PackageParserLollipop22.parsePackage.callWithException(parser, packageFile, flags);
@@ -87,9 +87,7 @@ public class PackageParserCompat {
     }
 
     public static ServiceInfo generateServiceInfo(Service service, int flags) {
-        if (API_LEVEL >= 28) {
-            return PackageParserP.generateServiceInfo.call(service, flags, sUserState, myUserId);
-        } else if (API_LEVEL >= M) {
+        if (API_LEVEL >= M) {
             return PackageParserMarshmallow.generateServiceInfo.call(service, flags, sUserState, myUserId);
         } else if (API_LEVEL >= LOLLIPOP_MR1) {
             return PackageParserLollipop22.generateServiceInfo.call(service, flags, sUserState, myUserId);
@@ -105,9 +103,7 @@ public class PackageParserCompat {
     }
 
     public static ApplicationInfo generateApplicationInfo(Package p, int flags) {
-        if (API_LEVEL >= 28) {
-            return PackageParserP.generateApplicationInfo.call(p, flags, sUserState);
-        } else if (API_LEVEL >= M) {
+        if (API_LEVEL >= M) {
             return PackageParserMarshmallow.generateApplicationInfo.call(p, flags, sUserState);
         } else if (API_LEVEL >= LOLLIPOP_MR1) {
             return PackageParserLollipop22.generateApplicationInfo.call(p, flags, sUserState);
@@ -123,9 +119,7 @@ public class PackageParserCompat {
     }
 
     public static ActivityInfo generateActivityInfo(Activity activity, int flags) {
-        if (API_LEVEL >= 28) {
-            return PackageParserP.generateActivityInfo.call(activity, flags, sUserState, myUserId);
-        } else if (API_LEVEL >= M) {
+        if (API_LEVEL >= M) {
             return PackageParserMarshmallow.generateActivityInfo.call(activity, flags, sUserState, myUserId);
         } else if (API_LEVEL >= LOLLIPOP_MR1) {
             return PackageParserLollipop22.generateActivityInfo.call(activity, flags, sUserState, myUserId);
@@ -141,9 +135,7 @@ public class PackageParserCompat {
     }
 
     public static ProviderInfo generateProviderInfo(Provider provider, int flags) {
-        if (API_LEVEL >= 28) {
-            return PackageParserP.generateProviderInfo.call(provider, flags, sUserState, myUserId);
-        } else if (API_LEVEL >= M) {
+        if (API_LEVEL >= M) {
             return PackageParserMarshmallow.generateProviderInfo.call(provider, flags, sUserState, myUserId);
         } else if (API_LEVEL >= LOLLIPOP_MR1) {
             return PackageParserLollipop22.generateProviderInfo.call(provider, flags, sUserState, myUserId);
@@ -159,10 +151,7 @@ public class PackageParserCompat {
     }
 
     public static PackageInfo generatePackageInfo(Package p, int flags, long firstInstallTime, long lastUpdateTime) {
-        if (API_LEVEL >= 28) {
-            return PackageParserP.generatePackageInfo.call(p, GIDS, flags, firstInstallTime, lastUpdateTime,
-                    null, sUserState);
-        } else if (API_LEVEL >= M) {
+        if (API_LEVEL >= M) {
             return PackageParserMarshmallow.generatePackageInfo.call(p, GIDS, flags, firstInstallTime, lastUpdateTime,
                     null, sUserState);
         } else if (API_LEVEL >= LOLLIPOP) {
@@ -185,9 +174,9 @@ public class PackageParserCompat {
         }
     }
 
-    public static void collectCertificates(PackageParser parser, Package p, int flags, boolean skipVerify) throws Throwable {
+    public static void collectCertificates(PackageParser parser, Package p, int flags) throws Throwable {
         if (API_LEVEL >= 28) {
-            PackageParserP.collectCertificates.callWithException(parser, p, skipVerify);
+            PackageParserP28.collectCertificates.callWithException(p, true);
         } else if (API_LEVEL >= N) {
             PackageParserNougat.collectCertificates.callWithException(p, flags);
         } else if (API_LEVEL >= M) {

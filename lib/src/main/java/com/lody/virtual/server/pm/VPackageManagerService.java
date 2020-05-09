@@ -13,7 +13,8 @@ import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
-import android.os.IBinder;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -24,15 +25,13 @@ import com.lody.virtual.helper.compat.ObjectsCompat;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.remote.VParceledListSlice;
 import com.lody.virtual.server.IPackageInstaller;
-import com.lody.virtual.server.interfaces.IPackageManager;
+import com.lody.virtual.server.IPackageManager;
 import com.lody.virtual.server.pm.installer.VPackageInstallerService;
 import com.lody.virtual.server.pm.parser.PackageParserEx;
 import com.lody.virtual.server.pm.parser.VPackage;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,11 +40,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static android.content.pm.PackageManager.MATCH_DIRECT_BOOT_UNAWARE;
 
 /**
  * @author Lody
  */
-public class VPackageManagerService implements IPackageManager {
+public class VPackageManagerService extends IPackageManager.Stub {
 
     static final String TAG = "PackageManager";
     static final Comparator<ResolveInfo> sResolvePrioritySorter = new Comparator<ResolveInfo>() {
@@ -269,7 +269,7 @@ public class VPackageManagerService implements IPackageManager {
             // give them what they want
         } else {
             // Caller expressed no opinion, so match based on user state
-            flags |= PackageManager.MATCH_DIRECT_BOOT_AWARE | PackageManager.MATCH_DIRECT_BOOT_UNAWARE;
+            flags |= PackageManager.MATCH_DIRECT_BOOT_AWARE | MATCH_DIRECT_BOOT_UNAWARE;
         }
         return flags;
     }
@@ -400,35 +400,21 @@ public class VPackageManagerService implements IPackageManager {
                 // If we have saved a preference for a preferred activity for
                 // this Intent, use that.
 
-                //从候选列表中查找一个最合适的，如果候选列表没有最合适的返回null
-                //然后从系统中查找合适的打开intent
                 ResolveInfo ri = findPreferredActivity(intent, resolvedType,
                         flags, query, r0.priority);
                 //noinspection ConstantConditions
                 if (ri != null) {
                     return ri;
                 }
-
-                return null;
+                return query.get(0);
             }
         }
         return null;
     }
 
     private ResolveInfo findPreferredActivity(Intent intent, String resolvedType, int flags, List<ResolveInfo> query, int priority) {
-
-        try {
-            Class clazz = Class.forName("com.virtual.helper.VALibHelper");
-            Method method = clazz.getDeclaredMethod("findPreferredActivity", Intent.class, String.class, int.class, List.class, int.class);
-            return (ResolveInfo) method.invoke(null, intent, resolvedType, flags, query, priority);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return query.get(0);
-        }
-
-//        return null;
+        return null;
     }
-
 
     @Override
     public List<ResolveInfo> queryIntentActivities(Intent intent, String resolvedType, int flags, int userId) {
@@ -788,7 +774,17 @@ public class VPackageManagerService implements IPackageManager {
     }
 
     @Override
-    public IBinder getPackageInstaller() {
+    public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+        try {
+            return super.onTransact(code, data, reply, flags);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Override
+    public IPackageInstaller getPackageInstaller() {
         return VPackageInstallerService.get();
     }
 

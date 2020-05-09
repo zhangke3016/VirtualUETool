@@ -12,7 +12,6 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.lody.virtual.client.core.InvocationStubManager;
 import com.lody.virtual.client.hook.proxies.am.ActivityManagerStub;
@@ -110,8 +109,6 @@ public class StubJob extends Service {
         super.onCreate();
         InvocationStubManager.getInstance().checkEnv(ActivityManagerStub.class);
         mScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-
-        Log.d("Q_M", "StubJob-->onCreate");
     }
 
     @Override

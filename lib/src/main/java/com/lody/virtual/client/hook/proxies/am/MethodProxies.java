@@ -27,16 +27,18 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.RemoteException;
+import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 
+import com.lody.virtual.client.NativeEngine;
 import com.lody.virtual.client.VClientImpl;
 import com.lody.virtual.client.badger.BadgerManager;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.env.Constants;
 import com.lody.virtual.client.env.SpecialComponentList;
 import com.lody.virtual.client.hook.base.MethodProxy;
+import com.lody.virtual.client.hook.base.ReplaceLastPkgMethodProxy;
 import com.lody.virtual.client.hook.delegate.TaskDescriptionDelegate;
 import com.lody.virtual.client.hook.providers.ProviderHook;
 import com.lody.virtual.client.hook.secondary.ServiceConnectionDelegate;
@@ -56,6 +58,7 @@ import com.lody.virtual.helper.utils.ArrayUtils;
 import com.lody.virtual.helper.utils.BitmapUtils;
 import com.lody.virtual.helper.utils.ComponentUtils;
 import com.lody.virtual.helper.utils.DrawableUtils;
+import com.lody.virtual.helper.utils.EncodeUtils;
 import com.lody.virtual.helper.utils.FileUtils;
 import com.lody.virtual.helper.utils.Reflect;
 import com.lody.virtual.helper.utils.VLog;
@@ -65,10 +68,6 @@ import com.lody.virtual.remote.AppTaskInfo;
 import com.lody.virtual.server.interfaces.IAppRequestListener;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -79,8 +78,6 @@ import mirror.android.app.LoadedApk;
 import mirror.android.content.ContentProviderHolderOreo;
 import mirror.android.content.IIntentReceiverJB;
 import mirror.android.content.pm.UserInfo;
-
-import static com.lody.virtual.client.stub.VASettings.INTERCEPT_BACK_HOME;
 
 /**
  * @author Lody
@@ -200,6 +197,11 @@ class MethodProxies {
         @Override
         public int getProviderNameIndex() {
             return 0;
+        }
+
+        @Override
+        public int getPackageIndex() {
+            return -1;
         }
 
         @Override
@@ -364,6 +366,20 @@ class MethodProxies {
     }
 
 
+    static class OverridePendingTransition extends MethodProxy {
+
+        @Override
+        public String getMethodName() {
+            return "overridePendingTransition";
+        }
+
+        @Override
+        public Object call(Object who, Method method, Object... args) throws Throwable {
+            // Many application crash/darkscreen if not return null.
+            return null;
+        }
+    }
+
     static class StartActivity extends MethodProxy {
 
         private static final String SCHEME_FILE = "file";
@@ -377,9 +393,6 @@ class MethodProxies {
 
         @Override
         public Object call(Object who, Method method, Object... args) throws Throwable {
-
-            Log.d("Q_M", "---->StartActivity 类");
-
             int intentIndex = ArrayUtils.indexOfObject(args, Intent.class, 1);
             if (intentIndex < 0) {
                 return ActivityManagerCompat.START_INTENT_NOT_RESOLVED;
@@ -408,6 +421,10 @@ class MethodProxies {
                 if (handleUninstallRequest(intent)) {
                     return 0;
                 }
+            } else if (MediaStore.ACTION_IMAGE_CAPTURE.equals(intent.getAction()) ||
+                    MediaStore.ACTION_VIDEO_CAPTURE.equals(intent.getAction()) ||
+                    MediaStore.ACTION_IMAGE_CAPTURE_SECURE.equals(intent.getAction())) {
+                handleMediaCaptureRequest(intent);
             }
 
             String resultWho = null;
@@ -438,23 +455,10 @@ class MethodProxies {
 
             ActivityInfo activityInfo = VirtualCore.get().resolveActivityInfo(intent, userId);
             if (activityInfo == null) {
-                VLog.e("VActivityManager", "Unable to resolve activityInfo : " + intent);
-
-                Log.d("Q_M", "---->StartActivity who=" + who);
-                Log.d("Q_M", "---->StartActivity intent=" + intent);
-                Log.d("Q_M", "---->StartActivity resultTo=" + resultTo);
-
+                VLog.e("VActivityManager", "Unable to resolve activityInfo : %s", intent);
                 if (intent.getPackage() != null && isAppPkg(intent.getPackage())) {
                     return ActivityManagerCompat.START_INTENT_NOT_RESOLVED;
                 }
-
-                if (INTERCEPT_BACK_HOME && Intent.ACTION_MAIN.equals(intent.getAction())
-                        && intent.getCategories().contains("android.intent.category.HOME")
-                        && resultTo != null) {
-                    VActivityManager.get().finishActivity(resultTo);
-                    return 0;
-                }
-
                 return method.invoke(who, args);
             }
             int res = VActivityManager.get().startActivity(intent, activityInfo, resultTo, options, resultWho, requestCode, VUserHandle.myUserId());
@@ -492,42 +496,13 @@ class MethodProxies {
             IAppRequestListener listener = VirtualCore.get().getAppRequestListener();
             if (listener != null) {
                 Uri packageUri = intent.getData();
-                if (SCHEME_FILE.equals(packageUri.getScheme())) {
-                    File sourceFile = new File(packageUri.getPath());
-                    try {
-                        listener.onRequestInstall(sourceFile.getPath());
-                        return true;
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                } else if (SCHEME_CONTENT.equals(packageUri.getScheme())) {
-                    InputStream inputStream = null;
-                    OutputStream outputStream = null;
-                    File sharedFileCopy = new File(getHostContext().getCacheDir(), packageUri.getLastPathSegment());
-                    try {
-                        inputStream = getHostContext().getContentResolver().openInputStream(packageUri);
-                        outputStream = new FileOutputStream(sharedFileCopy);
-                        byte[] buffer = new byte[1024];
-                        int count;
-                        while ((count = inputStream.read(buffer)) > 0) {
-                            outputStream.write(buffer, 0, count);
-                        }
-                        outputStream.flush();
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        FileUtils.closeQuietly(inputStream);
-                        FileUtils.closeQuietly(outputStream);
-                    }
-                    try {
-                        listener.onRequestInstall(sharedFileCopy.getPath());
-                        return true;
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+                String sourcePath = FileUtils.getFileFromUri(getHostContext(), packageUri);
+                try {
+                    listener.onRequestInstall(sourcePath);
+                    return true;
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
-
             }
             return false;
         }
@@ -548,6 +523,21 @@ class MethodProxies {
 
             }
             return false;
+        }
+
+        private void handleMediaCaptureRequest(Intent intent) {
+            Uri uri = intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+            if (uri == null || !SCHEME_FILE.equals(uri.getScheme())) {
+                return;
+            }
+            String path = uri.getPath();
+            String newPath = NativeEngine.getRedirectedPath(path);
+            if (newPath == null) {
+                return;
+            }
+            File realFile = new File(newPath);
+            Uri newUri = Uri.fromFile(realFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, newUri);
         }
 
     }
@@ -887,6 +877,20 @@ class MethodProxies {
         }
     }
 
+    // http://aospxref.com/android-10.0.0_r2/xref/frameworks/base/core/java/android/app/ContextImpl.java#1735
+    static class BindIsolatedService extends BindService {
+        @Override
+        public String getMethodName() {
+            return "bindIsolatedService";
+        }
+
+        @Override
+        public boolean beforeCall(Object who, Method method, Object... args) {
+            MethodParameterUtils.replaceLastAppPkg(args);
+            return super.beforeCall(who, method, args);
+        }
+    }
+
 
     static class StartService extends MethodProxy {
 
@@ -917,6 +921,9 @@ class MethodProxies {
             service.setDataAndType(service.getData(), resolvedType);
             ServiceInfo serviceInfo = VirtualCore.get().resolveServiceInfo(service, VUserHandle.myUserId());
             if (serviceInfo != null) {
+                if (isFiltered(service)) {
+                    return service.getComponent();
+                }
                 return VActivityManager.get().startService(appThread, service, resolvedType, userId);
             }
             return method.invoke(who, args);
@@ -925,6 +932,16 @@ class MethodProxies {
         @Override
         public boolean isEnable() {
             return isAppProcess() || isServerProcess();
+        }
+
+        private boolean isFiltered(Intent service) {
+            // disable tinker.
+            if (service != null && service.getComponent() != null
+                    && EncodeUtils.decode("Y29tLnRlbmNlbnQudGlua2VyLmxpYi5zZXJ2aWMuVGlua2VyUGF0Y2hTZXJ2aWNl") // com.tencent.tinker.lib.service.TinkerPatchService
+                    .equals(service.getComponent().getClassName())) {
+                return true;
+            }
+            return false;
         }
     }
 
@@ -1386,6 +1403,13 @@ class MethodProxies {
                 }
                 return holder;
             }
+
+            if (BuildCompat.isQ()) {
+                int packageIndex = getPackageIndex();
+                if (packageIndex > 0 && args[packageIndex] instanceof String) {
+                    args[packageIndex] = getHostPkg();
+                }
+            }
             Object holder = method.invoke(who, args);
             if (holder != null) {
                 if (BuildCompat.isOreo()) {
@@ -1410,7 +1434,17 @@ class MethodProxies {
 
 
         public int getProviderNameIndex() {
+            if (BuildCompat.isQ()) {
+                return 2;
+            }
             return 1;
+        }
+
+        public int getPackageIndex() {
+            if (BuildCompat.isQ()) {
+                return 1;
+            }
+            return -1;
         }
 
         @Override
@@ -1564,9 +1598,37 @@ class MethodProxies {
 
             } else if (BadgerManager.handleBadger(intent)) {
                 return null;
+            } else if (Intent.ACTION_MEDIA_SCANNER_SCAN_FILE.equals(action)) {
+                // intent send to system, do not modify it's action(may have other same intent)
+                return handleMediaScannerIntent(intent);
             } else {
                 return ComponentUtils.redirectBroadcastIntent(intent, VUserHandle.myUserId());
             }
+            return intent;
+        }
+
+        private Intent handleMediaScannerIntent(Intent intent) {
+            if (intent == null) {
+                return null;
+            }
+            Uri data = intent.getData();
+            if (data == null) {
+                return intent;
+            }
+            String scheme = data.getScheme();
+            if (!"file".equalsIgnoreCase(scheme)) {
+                return intent;
+            }
+            String path = data.getPath();
+            if (path == null) {
+                return intent;
+            }
+            String newPath = NativeEngine.getRedirectedPath(path);
+            File newFile = new File(newPath);
+            if (!newFile.exists()) {
+                return intent;
+            }
+            intent.setData(Uri.fromFile(newFile));
             return intent;
         }
 
@@ -1695,33 +1757,9 @@ class MethodProxies {
         }
     }
 
-    static class OverridePendingTransition extends MethodProxy {
-
-        @Override
-        public String getMethodName() {
-            return "overridePendingTransition";
-        }
-
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            try {
-                MethodParameterUtils.replaceFirstAppPkg(args);
-                for(int i = 0;i < args.length;i++){
-                    if(args[i] instanceof  Integer){
-                        args[i] = 0;
-                    }
-                }
-                return method.invoke(who,args);
-            }catch (Throwable e){
-                e.printStackTrace();
-            }
-
-            return 0;
-        }
-
-        @Override
-        public boolean isEnable() {
-            return isAppProcess();
+    static class GetPackageProcessState extends ReplaceLastPkgMethodProxy {
+        public GetPackageProcessState() {
+            super("getPackageProcessState");
         }
     }
 }

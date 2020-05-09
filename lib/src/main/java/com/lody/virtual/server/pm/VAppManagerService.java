@@ -3,7 +3,6 @@ package com.lody.virtual.server.pm;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 
@@ -20,11 +19,11 @@ import com.lody.virtual.os.VEnvironment;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.remote.InstallResult;
 import com.lody.virtual.remote.InstalledAppInfo;
+import com.lody.virtual.server.IAppManager;
 import com.lody.virtual.server.accounts.VAccountManagerService;
 import com.lody.virtual.server.am.BroadcastSystem;
 import com.lody.virtual.server.am.UidSystem;
 import com.lody.virtual.server.am.VActivityManagerService;
-import com.lody.virtual.server.interfaces.IAppManager;
 import com.lody.virtual.server.interfaces.IAppRequestListener;
 import com.lody.virtual.server.interfaces.IPackageObserver;
 import com.lody.virtual.server.pm.parser.PackageParserEx;
@@ -43,7 +42,7 @@ import dalvik.system.DexFile;
 /**
  * @author Lody
  */
-public class VAppManagerService implements IAppManager {
+public class VAppManagerService extends IAppManager.Stub {
 
     private static final String TAG = VAppManagerService.class.getSimpleName();
     private static final AtomicReference<VAppManagerService> sService = new AtomicReference<>();
@@ -83,11 +82,14 @@ public class VAppManagerService implements IAppManager {
     }
 
     private void cleanUpResidualFiles(PackageSetting ps) {
+        VLog.w(TAG, "cleanUpResidualFiles: " + ps.packageName);
         File dataAppDir = VEnvironment.getDataAppPackageDirectory(ps.packageName);
         FileUtils.deleteDir(dataAppDir);
-        for (int userId : VUserManagerService.get().getUserIds()) {
-            FileUtils.deleteDir(VEnvironment.getDataUserPackageDirectory(userId, ps.packageName));
-        }
+
+        // We shouldn't remove user data here!!! Just remove the package.
+        // for (int userId : VUserManagerService.get().getUserIds()) {
+        //     FileUtils.deleteDir(VEnvironment.getDataUserPackageDirectory(userId, ps.packageName));
+        // }
     }
 
 
@@ -172,7 +174,7 @@ public class VAppManagerService implements IAppManager {
                 return res;
             }
             if (!canUpdate(existOne, pkg, flags)) {
-                return InstallResult.makeFailure("Not allowed to update the package.");
+                return InstallResult.makeFailure("Can not update the package (such as version downrange).");
             }
             res.isUpdate = true;
         }
@@ -242,7 +244,7 @@ public class VAppManagerService implements IAppManager {
             boolean runDexOpt = false;
             if (VirtualRuntime.isArt()) {
                 try {
-                    ArtDexOptimizer.interpretDex2Oat(ps.apkPath, VEnvironment.getOdexFile(ps.packageName).getPath());
+                    ArtDexOptimizer.compileDex2Oat(ps.apkPath, VEnvironment.getOdexFile(ps.packageName).getPath());
                 } catch (IOException e) {
                     e.printStackTrace();
                     runDexOpt = true;
@@ -324,6 +326,48 @@ public class VAppManagerService implements IAppManager {
     }
 
     @Override
+    public boolean clearPackageAsUser(int userId, String packageName) throws RemoteException {
+        if (!VUserManagerService.get().exists(userId)) {
+            return false;
+        }
+        PackageSetting ps = PackageCacheManager.getSetting(packageName);
+        if (ps != null) {
+            int[] userIds = getPackageInstalledUsers(packageName);
+            if (!ArrayUtils.contains(userIds, userId)) {
+                return false;
+            }
+            if (userIds.length == 1) {
+                clearPackage(packageName);
+            } else {
+                // Just hidden it
+                VActivityManagerService.get().killAppByPkg(packageName, userId);
+                ps.setInstalled(userId, false);
+                mPersistenceLayer.save();
+                FileUtils.deleteDir(VEnvironment.getDataUserPackageDirectory(userId, packageName));
+                FileUtils.deleteDir(VEnvironment.getVirtualPrivateStorageDir(userId, packageName));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean clearPackage(String packageName) throws RemoteException {
+        try {
+            BroadcastSystem.get().stopApp(packageName);
+            VActivityManagerService.get().killAppByPkg(packageName, VUserHandle.USER_ALL);
+
+            for (int id : VUserManagerService.get().getUserIds()) {
+                FileUtils.deleteDir(VEnvironment.getDataUserPackageDirectory(id, packageName));
+                FileUtils.deleteDir(VEnvironment.getVirtualPrivateStorageDir(id, packageName));
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
     public synchronized boolean uninstallPackageAsUser(String packageName, int userId) {
         if (!VUserManagerService.get().exists(userId)) {
             return false;
@@ -343,6 +387,7 @@ public class VAppManagerService implements IAppManager {
                 notifyAppUninstalled(ps, userId);
                 mPersistenceLayer.save();
                 FileUtils.deleteDir(VEnvironment.getDataUserPackageDirectory(userId, packageName));
+                FileUtils.deleteDir(VEnvironment.getVirtualPrivateStorageDir(userId, packageName));
             }
             return true;
         }
@@ -359,6 +404,7 @@ public class VAppManagerService implements IAppManager {
             VEnvironment.getOdexFile(packageName).delete();
             for (int id : VUserManagerService.get().getUserIds()) {
                 FileUtils.deleteDir(VEnvironment.getDataUserPackageDirectory(id, packageName));
+                FileUtils.deleteDir(VEnvironment.getVirtualPrivateStorageDir(id, packageName));
             }
             PackageCacheManager.remove(packageName);
         } catch (Exception e) {
@@ -514,7 +560,7 @@ public class VAppManagerService implements IAppManager {
         this.mAppRequestListener = listener;
         if (listener != null) {
             try {
-                listener.asBinder().linkToDeath(new IBinder.DeathRecipient() {
+                listener.asBinder().linkToDeath(new DeathRecipient() {
                     @Override
                     public void binderDied() {
                         listener.asBinder().unlinkToDeath(this, 0);

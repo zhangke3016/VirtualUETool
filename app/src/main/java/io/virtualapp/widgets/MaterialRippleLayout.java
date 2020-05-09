@@ -119,7 +119,7 @@ public class MaterialRippleLayout extends FrameLayout {
             object.setRippleAlpha(value);
         }
     };
-    private SimpleOnGestureListener longClickListener = new GestureDetector.SimpleOnGestureListener() {
+    private SimpleOnGestureListener longClickListener = new SimpleOnGestureListener() {
         public void onLongPress(MotionEvent e) {
             hasPerformedLongPress = childView.performLongClick();
             if (hasPerformedLongPress) {

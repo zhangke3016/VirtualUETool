@@ -36,7 +36,7 @@ public class AppLocationAdapter extends BaseAdapterPlus<LocationData> {
         }
     }
 
-    static class ViewHolder extends BaseAdapterPlus.BaseViewHolder {
+    static class ViewHolder extends BaseViewHolder {
         public ViewHolder(View view) {
             super(view);
             icon = $(R.id.item_app_icon);

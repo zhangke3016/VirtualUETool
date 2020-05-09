@@ -3,9 +3,7 @@ package android.content.pm;
 import android.content.ComponentName;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.ArraySet;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 
 /**
@@ -58,7 +56,6 @@ public class PackageParser {
         public int mVersionCode;
         public ApplicationInfo applicationInfo;
         public String mVersionName;
-        public SigningDetails mSigningDetails;
 
         // Applications hardware preferences
         public ArrayList<ConfigurationInfo> configPreferences = null;
@@ -99,16 +96,5 @@ public class PackageParser {
 
     public class ProviderIntentInfo extends IntentInfo {
         public Provider provider;
-    }
-
-    public static  class SigningDetails {
-        public final Signature[] signatures;
-        public  int signatureSchemeVersion;
-        public ArraySet<PublicKey> publicKeys;
-        public  Signature[] pastSigningCertificates;
-
-        public SigningDetails(Signature[] signatures) {
-            this.signatures = signatures;
-        }
     }
 }

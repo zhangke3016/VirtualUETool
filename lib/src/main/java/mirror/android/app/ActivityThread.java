@@ -3,6 +3,7 @@ package mirror.android.app;
 
 import android.app.*;
 import android.app.Activity;
+import android.app.servertransaction.TransactionExecutor;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -43,10 +44,14 @@ public class ActivityThread {
     public static RefObject<Map> mProviderMap;
     @MethodParams({IBinder.class, List.class})
     public static RefMethod<Void> performNewIntents;
+    public static RefMethod<Void> handleNewIntent;
     public static RefStaticObject<IInterface> sPackageManager;
     @MethodParams({IBinder.class, String.class, int.class, int.class, Intent.class})
     public static RefMethod<Void> sendActivityResult;
     public static RefMethod<Binder> getApplicationThread;
+
+    // Android 9.0
+    public static RefObject<TransactionExecutor> mTransactionExecutor;
 
     public static Object installProvider(Object mainThread, Context context, ProviderInfo providerInfo, Object holder) {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
@@ -61,6 +66,7 @@ public class ActivityThread {
         public static RefObject<ActivityInfo> activityInfo;
         public static RefObject<Intent> intent;
         public static RefObject<IBinder> token;
+        public static RefObject<?> packageInfo;
     }
 
     public static class ProviderClientRecord {
@@ -98,6 +104,5 @@ public class ActivityThread {
         public static RefStaticInt LAUNCH_ACTIVITY;
         public static RefStaticInt CREATE_SERVICE;
         public static RefStaticInt SCHEDULE_CRASH;
-        public static RefStaticInt EXECUTE_TRANSACTION;
     }
 }

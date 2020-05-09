@@ -77,7 +77,7 @@ public class LaunchpadAdapter extends RecyclerView.Adapter<LaunchpadAdapter.View
         } else {
             holder.spaceLabelView.setVisibility(View.INVISIBLE);
         }
-        if (data.isLoading()) {
+        if (data.isInstalling() || data.isLoading()) {
             startLoadingAnimation(holder.iconView);
         } else {
             holder.iconView.setProgress(100, false);

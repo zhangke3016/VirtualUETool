@@ -191,7 +191,7 @@ public class ChooseTypeAndAccountActivity extends Activity
     @Override
     protected void onDestroy() {
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            Log.v(TAG, "ChooseTypeAndAccountActivity.onDestroy()");
+            Log.v(TAG, "ChooseTypeAndAccountActivity.dismiss()");
         }
         super.onDestroy();
     }
