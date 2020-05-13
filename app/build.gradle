@@ -6,7 +6,7 @@ android {
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "io.virtualapp268"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 24
         versionName "1.2.5"
@@ -77,4 +77,6 @@ dependencies {
         exclude(group: "com.android.support")
     }
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    //yahfa
+    implementation 'io.github.pagalaxylab:yahfa:0.10.0'
 }
