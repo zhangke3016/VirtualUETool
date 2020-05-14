@@ -44,7 +44,7 @@ public class MyComponentDelegate implements ComponentDelegate {
     @Override
     public void afterApplicationCreate(Application application) {
         VCore.init(application, "io.virtualapp268");
-        DexposedBridge.init(application);
+        DexposedHelper.init(application);
         VCore.getCore().subscribe(VEnv.ACTION_UETOOL, mEventCallback);
         //Hook test
         DexposedHelper.findAndHookMethod("com.hxy.app.aidlserver.MainActivity", application.getClassLoader(), "test", String.class, new XC_MethodHook() {
