@@ -107,7 +107,7 @@ public final class DexposedBridge {
         GenedClassInfo genedClassInfo = new GenedClassInfo(prefix + suffix++ + ";", hookedMethodInfo);
 
         byte[] dexbytes = GenClasses.genOneClassDexBytes(genedClassInfo);
-        String dexFileName = "BudHook" + suffix + ".dex";
+        String dexFileName = "XHook" + suffix + ".dex";
         String dexPath = "/data/data/" + context.getPackageName() + "/files/" + dexFileName;
 
         FileOutputStream fos = null;

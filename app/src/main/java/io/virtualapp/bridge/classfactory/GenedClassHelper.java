@@ -12,7 +12,7 @@ public class GenedClassHelper {
 
 	public static final String desc = "Lio/virtualapp/bridge/classfactory/GenedClassHelper;";
 	public static final String getMethodHookParamsMethodName = "getMethodHookParams";
-	public static final String getBudCallBackMethodName = "getCallBack";
+	public static final String getXCallBackMethodName = "getCallBack";
 
 	public static XC_MethodHook.MethodHookParams getMethodHookParams(Class<?> clazz) {
 

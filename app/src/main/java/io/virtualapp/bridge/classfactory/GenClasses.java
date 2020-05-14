@@ -93,7 +93,7 @@ public class GenClasses {
         mvReplace.visitMethodInsn(Opcodes.INSN_INVOKE_STATIC, GenedClassHelper.desc, GenedClassHelper.getMethodHookParamsMethodName,
                 XC_MethodHook.MethodHookParams.desc + FinalStr.classDesc, new int[]{0});
         mvReplace.visitIntInsn(Opcodes.INSN_MOVE_RESULT_OBJECT, 1);
-        mvReplace.visitMethodInsn(Opcodes.INSN_INVOKE_STATIC, GenedClassHelper.desc, GenedClassHelper.getBudCallBackMethodName,
+        mvReplace.visitMethodInsn(Opcodes.INSN_INVOKE_STATIC, GenedClassHelper.desc, GenedClassHelper.getXCallBackMethodName,
                 XC_MethodHook.desc + FinalStr.classDesc, new int[]{0});
         mvReplace.visitIntInsn(Opcodes.INSN_MOVE_RESULT_OBJECT, 2);
 
