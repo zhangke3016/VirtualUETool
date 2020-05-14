@@ -11,7 +11,10 @@ import android.view.View.OnClickListener;
 import com.cmprocess.ipc.VCore;
 import com.cmprocess.ipc.event.EventCallback;
 import com.lody.virtual.client.hook.delegate.ComponentDelegate;
-import io.virtualapp.hook.HookUtils;
+import io.virtualapp.bridge.DexposedBridge;
+import io.virtualapp.bridge.DexposedHelper;
+import io.virtualapp.bridge.XC_MethodHook;
+import io.virtualapp.hook.HookOnClickListener;
 import me.ele.uetool.MenuHelper.Type;
 import me.ele.uetool.UETMenu;
 import me.ele.uetool.VEnv;
@@ -26,7 +29,7 @@ public class MyComponentDelegate implements ComponentDelegate {
         public void onEventCallBack(Bundle event) {
             //main thread
             final int type = event.getInt(VEnv.INTENT_EXT_TYPE, Type.TYPE_UNKNOWN);
-            Log.d(TAG, "onEventCallBack type: " + type);
+            Log.d(TAG, " onEventCallBack type: " + type);
             if (type != Type.TYPE_UNKNOWN) {
                 UETMenu.open(type);
             }
@@ -41,13 +44,29 @@ public class MyComponentDelegate implements ComponentDelegate {
     @Override
     public void afterApplicationCreate(Application application) {
         VCore.init(application, "io.virtualapp268");
+        DexposedBridge.init(application);
         VCore.getCore().subscribe(VEnv.ACTION_UETOOL, mEventCallback);
         //Hook test
-        HookUtils.backupAndHook("com.hxy.app.aidlserver.MainActivity", "test", application.getClassLoader(), getClass().getClassLoader(),
-                "io.virtualapp.hook.HookTest", String.class);
+        DexposedHelper.findAndHookMethod("com.hxy.app.aidlserver.MainActivity", application.getClassLoader(), "test", String.class, new XC_MethodHook() {
+            @Override
+            public void beforeHookedMethod(MethodHookParams params) {
+                params.args[0] = params.args[0] + "hook!!!";
+            }
+        });
+
         //Hook setOnClickListener
-        HookUtils.backupAndHook(View.class, "setOnClickListener", getClass().getClassLoader(),
-                "io.virtualapp.hook.HookSetOnClickListener", OnClickListener.class);
+        DexposedHelper.findAndHookMethod(View.class, "setOnClickListener", OnClickListener.class, new XC_MethodHook() {
+            @Override
+            public void beforeHookedMethod(MethodHookParams params) {
+                params.args[0] = new HookOnClickListener((OnClickListener) params.args[0]);
+                Log.d(TAG, "beforeHookedMethod ");
+            }
+
+            @Override
+            public void afterHookedMethod(MethodHookParams params) {
+                Log.d(TAG, " afterHookedMethod ");
+            }
+        });
     }
 
     @Override
