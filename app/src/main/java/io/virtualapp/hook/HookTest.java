@@ -1,8 +1,6 @@
 package io.virtualapp.hook;
 
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
 
 public class HookTest {
 
