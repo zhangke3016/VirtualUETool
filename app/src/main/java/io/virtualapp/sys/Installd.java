@@ -98,6 +98,7 @@ public class Installd {
                     addResult.appData = data;
                     data.isInstalling = true;
                     data.isFirstOpen = false;
+                    data.isHook = info.isHook;
                     if (refreshListener != null) {
                         refreshListener.update(data);
                     }
@@ -121,6 +122,7 @@ public class Installd {
                 PackageAppData data = addResult.appData;
                 data.isInstalling = false;
                 data.isLoading = true;
+                data.isHook = info.isHook;
 
                 if (refreshListener != null) {
                     refreshListener.update(data);
@@ -130,6 +132,7 @@ public class Installd {
                 MultiplePackageAppData data = new MultiplePackageAppData(addResult.appData, addResult.userId);
                 data.isInstalling = false;
                 data.isLoading = true;
+                data.isHook = info.isHook;
 
                 if (refreshListener != null) {
                     refreshListener.update(data);
