@@ -53,6 +53,7 @@ import com.lody.virtual.remote.VDeviceInfo;
 import com.lody.virtual.server.interfaces.IUiCallback;
 
 import de.robv.android.xposed.XposedInit;
+import io.virtualapp.bridge.DexposedBridge;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -350,6 +351,7 @@ public final class VClientImpl extends IVClient.Stub {
         if (!xposedmodule) {
             try {
                 String[] installedHookPlugins = VPackageManager.get().getInstalledHookPlugins();
+                DexposedBridge.init(mInitialApplication);
                 for(String pluginName : installedHookPlugins) {
                     VLog.w("Xposed", "Applying hook " + pluginName);
 
