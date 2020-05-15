@@ -25,6 +25,13 @@ public class HookCacheManager {
         }
     }
 
+    public static boolean container(String packageName) {
+        synchronized (HookCacheManager.class) {
+            return HOOK_PLUGIN_NAME_CACHE.contains(packageName);
+        }
+    }
+
+
     public static String[] getAll() {
         synchronized (HookCacheManager.class) {
             return HOOK_PLUGIN_NAME_CACHE.toArray(new String[HOOK_PLUGIN_NAME_CACHE.size()]);

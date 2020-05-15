@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import com.lody.virtual.remote.InstalledAppInfo;
+import com.lody.virtual.server.pm.HookCacheManager;
 
 /**
  * @author Lody
@@ -29,6 +30,7 @@ public class PackageAppData implements AppData {
 
     public PackageAppData(Context context, ApplicationInfo appInfo) {
         this.packageName = appInfo.packageName;
+        this.isHook = HookCacheManager.container(appInfo.packageName);
         loadData(context, appInfo);
     }
 

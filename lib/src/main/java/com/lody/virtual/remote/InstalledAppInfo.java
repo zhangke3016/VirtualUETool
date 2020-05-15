@@ -64,6 +64,7 @@ public final class InstalledAppInfo implements Parcelable {
         dest.writeString(this.libPath);
         dest.writeByte(this.dependSystem ? (byte) 1 : (byte) 0);
         dest.writeInt(this.appId);
+        dest.writeByte(this.isHook ? (byte) 1 : (byte) 0);
     }
 
     protected InstalledAppInfo(Parcel in) {
@@ -72,6 +73,7 @@ public final class InstalledAppInfo implements Parcelable {
         this.libPath = in.readString();
         this.dependSystem = in.readByte() != 0;
         this.appId = in.readInt();
+        this.isHook = in.readByte() != 0;
     }
 
     public static final Creator<InstalledAppInfo> CREATOR = new Creator<InstalledAppInfo>() {

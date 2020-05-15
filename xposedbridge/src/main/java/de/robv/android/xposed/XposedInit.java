@@ -344,12 +344,12 @@ public final class XposedInit {
             closeSilently(zipFile);
             return;
         }
-        XposedBridge.BOOTCLASSLOADER = classLoader;
+        XposedBridge.BOOTCLASSLOADER = XposedBridge.class.getClassLoader();
 //        ClassLoader mcl = new PathClassLoader(apk, XposedBridge.BOOTCLASSLOADER);
         DexClassLoader mcl = new DexClassLoader(apk,
                 apkPath,
                 libPath,
-                application.getClassLoader());
+                XposedBridge.BOOTCLASSLOADER);
         BufferedReader moduleClassesReader = new BufferedReader(new InputStreamReader(is));
         try {
             String moduleClassName;
