@@ -69,4 +69,6 @@ public interface IPackageManager {
     String getNameForUid(int uid) throws RemoteException;
 
     IBinder getPackageInstaller() throws RemoteException;
+
+    String[] getInstalledHookPlugins() throws RemoteException;
 }

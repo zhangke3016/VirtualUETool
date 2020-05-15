@@ -25,4 +25,6 @@ public interface AppData {
     boolean canDelete();
 
     boolean canCreateShortcut();
+
+    boolean isHook();
 }

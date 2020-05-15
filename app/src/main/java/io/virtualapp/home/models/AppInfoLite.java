@@ -24,12 +24,14 @@ public class AppInfoLite implements Parcelable {
     public String path;
     public boolean fastOpen;
     public boolean disableMultiVersion;
+    public boolean isHook;
 
     public AppInfoLite(String packageName, String path, boolean fastOpen, boolean disableMultiVersion) {
         this.packageName = packageName;
         this.path = path;
         this.fastOpen = fastOpen;
         this.disableMultiVersion = disableMultiVersion;
+        this.isHook = disableMultiVersion;
     }
 
     protected AppInfoLite(Parcel in) {
@@ -37,6 +39,7 @@ public class AppInfoLite implements Parcelable {
         this.path = in.readString();
         this.fastOpen = in.readByte() != 0;
         this.disableMultiVersion = in.readByte() != 0;
+        this.isHook = in.readByte() != 0;
     }
 
     @Override
@@ -50,5 +53,6 @@ public class AppInfoLite implements Parcelable {
         dest.writeString(this.path);
         dest.writeByte(this.fastOpen ? (byte) 1 : (byte) 0);
         dest.writeByte(this.disableMultiVersion ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isHook ? (byte) 1 : (byte) 0);
     }
 }

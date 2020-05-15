@@ -20,14 +20,16 @@ public final class InstalledAppInfo implements Parcelable {
     public String apkPath;
     public String libPath;
     public boolean dependSystem;
+    public boolean isHook;
     public int appId;
 
-    public InstalledAppInfo(String packageName, String apkPath, String libPath, boolean dependSystem, boolean skipDexOpt, int appId) {
+    public InstalledAppInfo(String packageName, String apkPath, String libPath, boolean dependSystem, boolean skipDexOpt, boolean isHook,int appId) {
         this.packageName = packageName;
         this.apkPath = apkPath;
         this.libPath = libPath;
         this.dependSystem = dependSystem;
         this.appId = appId;
+        this.isHook = isHook;
     }
 
     public File getOdexFile() {

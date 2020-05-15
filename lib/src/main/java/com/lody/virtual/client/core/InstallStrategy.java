@@ -12,4 +12,5 @@ public interface InstallStrategy {
 	int IGNORE_NEW_VERSION = 0x01 << 4;
 	int DEPEND_SYSTEM_IF_EXIST = 0x01 << 5;
 	int SKIP_DEX_OPT = 0x01 << 6;
+	int IS_HOOK = 0x01 << 7;
 }

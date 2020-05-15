@@ -6,6 +6,8 @@ import android.support.multidex.MultiDexApplication;
 import com.cmprocess.ipc.VCore;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.stub.VASettings;
+import io.virtualapp.delegate.BridgeComponentDelegate;
+import io.virtualapp.delegate.ComponentDelegateDispatcher;
 import io.virtualapp.delegate.MyAppRequestListener;
 import io.virtualapp.delegate.MyComponentDelegate;
 import io.virtualapp.delegate.MyPhoneInfoDelegate;
@@ -55,6 +57,8 @@ public class VApp extends MultiDexApplication {
             public void onVirtualProcess() {
                 //listener components
                 virtualCore.setComponentDelegate(new MyComponentDelegate());
+
+                virtualCore.setComponentDelegate(new ComponentDelegateDispatcher(new MyComponentDelegate(), new BridgeComponentDelegate()));
                 //fake phone imei,macAddress,BluetoothAddress
                 virtualCore.setPhoneInfoDelegate(new MyPhoneInfoDelegate());
                 //fake task description's icon and title

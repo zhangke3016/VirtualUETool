@@ -69,6 +69,8 @@ public final class VirtualCore {
 
     public static final String TAICHI_PACKAGE = "me.weishu.exp";
 
+    public static final String XPOSED_PLUGIN_CATEGORY = "de.robv.android.xposed.category.MODULE_SETTINGS";
+
     @SuppressLint("StaticFieldLeak")
     private static VirtualCore gCore = new VirtualCore();
     private final int myUid = Process.myUid();
@@ -440,6 +442,16 @@ public final class VirtualCore {
             intentToResolve.setPackage(packageName);
             ris = pm.queryIntentActivities(intentToResolve, intentToResolve.resolveType(context), 0, userId);
         }
+
+        if (ris == null || ris.size() <= 0) {
+            // reuse the plugin intent instance
+            intentToResolve.removeCategory(Intent.CATEGORY_INFO);
+            intentToResolve.removeCategory(Intent.CATEGORY_LAUNCHER);
+            intentToResolve.addCategory(XPOSED_PLUGIN_CATEGORY);
+            intentToResolve.setPackage(packageName);
+            ris = pm.queryIntentActivities(intentToResolve, intentToResolve.resolveType(context), 0, userId);
+        }
+
         if (ris == null || ris.size() <= 0) {
             return null;
         }

@@ -280,6 +280,13 @@ public class VPackageManager {
         }
     }
 
+    public String[] getInstalledHookPlugins(){
+        try {
+            return getInterface().getInstalledHookPlugins();
+        } catch (RemoteException e) {
+            return VirtualRuntime.crash(e);
+        }
+    }
 
     public IPackageInstaller getPackageInstaller() {
         try {

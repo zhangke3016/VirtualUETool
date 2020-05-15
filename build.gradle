@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.versions = ['minSdk'        : 14,
+    ext.versions = ['minSdk'        : 21,
                     'targetSdk'     : 26,
                     'compileSdk'    : 26,
                     'buildTool'     : '26.0.2',

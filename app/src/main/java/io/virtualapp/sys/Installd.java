@@ -13,6 +13,7 @@ import com.lody.virtual.GmsSupport;
 import com.lody.virtual.client.core.InstallStrategy;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.helper.utils.DeviceUtil;
+import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VUserInfo;
 import com.lody.virtual.os.VUserManager;
 import com.lody.virtual.remote.InstallResult;
@@ -57,7 +58,7 @@ public class Installd {
             if (info.disableMultiVersion) {
                 addResult.justEnableHidden = false;
             }
-            if (addResult.justEnableHidden) {
+            if (addResult.justEnableHidden && !info.isHook) {
                 int[] userIds = installedAppInfo.getInstalledUsers();
                 int nextUserId = userIds.length;
                 /*
@@ -188,6 +189,11 @@ public class Installd {
         if (info.disableMultiVersion) {
             flags |= InstallStrategy.UPDATE_IF_EXIST;
         }
+        if (info.isHook) {
+            flags |= InstallStrategy.IS_HOOK;
+        }
+        VLog.d("Xposed", "info.isHook: " + info.isHook);
+
         return VirtualCore.get().installPackage(info.path, flags);
     }
 

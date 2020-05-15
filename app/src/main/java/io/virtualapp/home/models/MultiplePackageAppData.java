@@ -17,6 +17,7 @@ public class MultiplePackageAppData implements AppData {
     public boolean isLoading;
     public Drawable icon;
     public String name;
+    public boolean isHook;
 
     public MultiplePackageAppData(PackageAppData target, int userId) {
         this.userId = userId;
@@ -29,6 +30,7 @@ public class MultiplePackageAppData implements AppData {
             }
         }
         name = target.name;
+        isHook = target.isHook;
     }
 
     @Override
@@ -74,5 +76,10 @@ public class MultiplePackageAppData implements AppData {
     @Override
     public boolean canCreateShortcut() {
         return true;
+    }
+
+    @Override
+    public boolean isHook() {
+        return isHook;
     }
 }

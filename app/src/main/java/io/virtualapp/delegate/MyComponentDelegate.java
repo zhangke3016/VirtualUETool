@@ -6,15 +6,9 @@ import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
 import com.cmprocess.ipc.VCore;
 import com.cmprocess.ipc.event.EventCallback;
 import com.lody.virtual.client.hook.delegate.ComponentDelegate;
-import io.virtualapp.bridge.DexposedBridge;
-import io.virtualapp.bridge.DexposedHelper;
-import io.virtualapp.bridge.XC_MethodHook;
-import io.virtualapp.hook.HookOnClickListener;
 import me.ele.uetool.MenuHelper.Type;
 import me.ele.uetool.UETMenu;
 import me.ele.uetool.VEnv;
@@ -44,29 +38,45 @@ public class MyComponentDelegate implements ComponentDelegate {
     @Override
     public void afterApplicationCreate(Application application) {
         VCore.init(application, "io.virtualapp268");
-        DexposedHelper.init(application);
         VCore.getCore().subscribe(VEnv.ACTION_UETOOL, mEventCallback);
+//        DexposedHelper.init(application);
         //Hook test
-        DexposedHelper.findAndHookMethod("com.hxy.app.aidlserver.MainActivity", application.getClassLoader(), "test", String.class, new XC_MethodHook() {
-            @Override
-            public void beforeHookedMethod(MethodHookParams params) {
-                params.args[0] = params.args[0] + "hook!!!";
-            }
-        });
+//        DexposedHelper.findAndHookMethod("com.hxy.app.aidlserver.MainActivity", application.getClassLoader(), "test", String.class, new DXC_MethodHook() {
+//            @Override
+//            public void beforeHookedMethod(XMethodHookParams params) {
+//                params.args[0] = params.args[0] + "hook!!!";
+//            }
+//        });
 
         //Hook setOnClickListener
-        DexposedHelper.findAndHookMethod(View.class, "setOnClickListener", OnClickListener.class, new XC_MethodHook() {
-            @Override
-            public void beforeHookedMethod(MethodHookParams params) {
-                params.args[0] = new HookOnClickListener((OnClickListener) params.args[0]);
-                Log.d(TAG, "beforeHookedMethod ");
-            }
+//        DexposedHelper.findAndHookMethod(View.class, "setOnClickListener", OnClickListener.class, new DXC_MethodHook() {
+//            @Override
+//            public void beforeHookedMethod(XMethodHookParams params) {
+//                params.args[0] = new HookOnClickListener((OnClickListener) params.args[0]);
+//            }
+//        });
 
-            @Override
-            public void afterHookedMethod(MethodHookParams params) {
-                Log.d(TAG, " afterHookedMethod ");
-            }
-        });
+//        DexposedHelper.findAndHookMethod(URL.class, "openConnection", new DXC_MethodHook() {
+//            @Override
+//            public void beforeHookedMethod(XMethodHookParams params) {
+//                //protocol, host, port
+//                URL url = (URL) params.thisObject;
+//                URLConnection proxy = HttpUrlConnectionProxyUtil.proxy(url);
+//                params.setResult(proxy);
+//                Log.d(TAG, " url： " + url.toString());
+//            }
+//        });
+//
+//        NetworkManager.get().startMonitor();
+//        NetworkManager.get().setOnNetworkInfoUpdateListener(new OnNetworkInfoUpdateListener() {
+//            @Override
+//            public void onNetworkInfoUpdate(NetworkRecord record, boolean add) {
+//                if (record.mRequest != null) {
+//                    Log.d(TAG, " mRequest： " +  record.mRequest.postData);
+//                }
+//                Log.d(TAG, " mResponseBody： " +  record.mResponseBody);
+//            }
+//        });
     }
 
     @Override

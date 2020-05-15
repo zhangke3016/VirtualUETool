@@ -75,4 +75,6 @@ interface IPackageManager {
          String getNameForUid(int uid);
 
          IPackageInstaller getPackageInstaller();
+
+         String[] getInstalledHookPlugins();
 }

@@ -6,6 +6,7 @@ import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -59,6 +60,16 @@ public class LaunchpadAdapter extends RecyclerView.Adapter<LaunchpadAdapter.View
         holder.color = getColor(position);
         holder.iconView.setImageDrawable(data.getIcon());
         holder.nameView.setText(data.getName());
+        if(!data.isHook()) {
+            if (data.isFirstOpen() && !data.isLoading()) {
+                holder.firstOpenDot.setVisibility(View.VISIBLE);
+            } else {
+                holder.firstOpenDot.setVisibility(View.INVISIBLE);
+            }
+            holder.isHookIcon.setVisibility(View.INVISIBLE);
+        } else{
+            holder.isHookIcon.setVisibility(View.VISIBLE);
+        }
         if (data.isFirstOpen() && !data.isLoading()) {
             holder.firstOpenDot.setVisibility(View.VISIBLE);
         } else {
@@ -172,6 +183,7 @@ public class LaunchpadAdapter extends RecyclerView.Adapter<LaunchpadAdapter.View
         TextView nameView;
         LabelView spaceLabelView;
         View firstOpenDot;
+        ImageView isHookIcon;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -179,6 +191,7 @@ public class LaunchpadAdapter extends RecyclerView.Adapter<LaunchpadAdapter.View
             nameView = (TextView) itemView.findViewById(R.id.item_app_name);
             spaceLabelView = (LabelView) itemView.findViewById(R.id.item_app_space_idx);
             firstOpenDot = itemView.findViewById(R.id.item_first_open_dot);
+            isHookIcon = (ImageView)itemView.findViewById(R.id.item_app_ishook_launcher);
         }
     }
 }

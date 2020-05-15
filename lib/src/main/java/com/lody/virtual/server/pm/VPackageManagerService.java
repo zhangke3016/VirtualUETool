@@ -795,6 +795,10 @@ public class VPackageManagerService extends IPackageManager.Stub {
         }
     }
 
+    public String[] getInstalledHookPlugins(){
+        return HookCacheManager.getAll();
+    }
+
     void cleanUpUser(int userId) {
         for (VPackage p : mPackages.values()) {
             PackageSetting ps = (PackageSetting) p.mExtras;

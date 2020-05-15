@@ -18,6 +18,13 @@
         lv:lv_text="2"
         lv:lv_text_size="12sp"/>
 
+    <ImageView
+      android:id="@+id/item_app_ishook_launcher"
+      android:layout_width="23dp"
+      android:layout_height="23dp"
+      android:layout_gravity="top|start"
+      android:src="@drawable/ic_extension_black_24dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

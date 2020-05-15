@@ -59,6 +59,8 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':lib')
+    compile project(':magictool')
+    compile project(':xposedbridge')
     //Android Lib
     compile 'com.android.support:multidex:1.0.2'
     compile 'com.android.support:appcompat-v7:25.4.0'
@@ -77,6 +79,4 @@ dependencies {
         exclude(group: "com.android.support")
     }
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
-    //yahfa
-    implementation 'io.github.pagalaxylab:yahfa:0.10.0'
 }

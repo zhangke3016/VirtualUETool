@@ -73,6 +73,10 @@ public class VEnvironment {
                 EncodeUtils.decode("YmFzZS5hcGs=")); // base.apk
     }
 
+    public static File getPackageLibPath(String packgeName) {
+        return new File(getDataAppPackageDirectory(packgeName), "lib");
+    }
+
     public static File getDataAppDirectory() {
         return ensureCreated(new File(getDataDirectory(), "app"));
     }

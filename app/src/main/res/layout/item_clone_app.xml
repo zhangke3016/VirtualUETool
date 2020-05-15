@@ -10,6 +10,13 @@
       android:layout_gravity="top|end"
       android:src="@drawable/ic_no_check" />
 
+    <ImageView
+      android:id="@+id/item_app_ishook"
+      android:layout_width="23dp"
+      android:layout_height="23dp"
+      android:layout_gravity="top|start"
+      android:src="@drawable/ic_extension_black_24dp" />
+
     <io.virtualapp.widgets.LabelView xmlns:lv="http://schemas.android.com/apk/res-auto"
       android:id="@+id/item_app_clone_count"
       android:layout_width="wrap_content"

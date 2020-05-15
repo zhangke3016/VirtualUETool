@@ -1,1 +1,1 @@
-include ':lib', ':app', ':uetool', ':uetool-base', ':uetool-fresco', ':cmprocess'
+include ':lib', ':app', ':uetool', ':uetool-base', ':uetool-fresco', ':cmprocess', ':magictool', ':xposedbridge', ':xposedhiddenapistubs', ':xbridge'

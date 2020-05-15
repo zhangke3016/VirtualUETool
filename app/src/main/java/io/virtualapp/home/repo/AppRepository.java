@@ -8,6 +8,7 @@ import com.lody.virtual.GmsSupport;
 import com.lody.virtual.client.core.InstallStrategy;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.helper.utils.DeviceUtil;
+import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.remote.InstallResult;
 import com.lody.virtual.remote.InstalledAppInfo;
 import io.virtualapp.abs.ui.VUiKit;
@@ -32,6 +33,7 @@ import org.jdeferred.Promise;
 public class AppRepository implements AppDataSource {
 
     private static final Collator COLLATOR = Collator.getInstance(Locale.CHINA);
+    private static final String XPOSED_MODULE = "xposedmodule";
     private static final List<String> SCAN_PATH_LIST = Arrays.asList(
             ".",
             "wandoujia/app",
@@ -176,6 +178,10 @@ public class AppRepository implements AppDataSource {
                 continue;
             }
             ApplicationInfo ai = pkg.applicationInfo;
+            boolean isHookPlugin = false;
+            if(ai.metaData != null) {
+                isHookPlugin = ai.metaData.getBoolean(XPOSED_MODULE, false);
+            }
             String path = ai.publicSourceDir != null ? ai.publicSourceDir : ai.sourceDir;
             if (path == null) {
                 continue;
@@ -188,11 +194,12 @@ public class AppRepository implements AppDataSource {
             info.icon = null;  // Use Glide to load the icon async
             info.name = ai.loadLabel(pm);
             info.version = pkg.versionName;
+            info.isHook = isHookPlugin;
             InstalledAppInfo installedAppInfo = VirtualCore.get().getInstalledAppInfo(pkg.packageName, 0);
             if (installedAppInfo != null) {
                 info.cloneCount = installedAppInfo.getInstalledUsers().length;
             }
-            if (ai.metaData != null && ai.metaData.containsKey("xposedmodule")) {
+            if (ai.metaData != null && ai.metaData.containsKey(XPOSED_MODULE)) {
                 info.disableMultiVersion = true;
                 info.cloneCount = 0;
             }
@@ -215,12 +222,16 @@ public class AppRepository implements AppDataSource {
         if (DeviceUtil.isMeizuBelowN()) {
             info.fastOpen = true;
         }
-        if (info.fastOpen) {
+        if (info.fastOpen ) {//&& !info.isHook
             flags |= InstallStrategy.DEPEND_SYSTEM_IF_EXIST;
         }
         if (info.disableMultiVersion) {
             flags |= InstallStrategy.UPDATE_IF_EXIST;
         }
+        if(info.isHook) {
+            flags |= InstallStrategy.IS_HOOK;
+        }
+        VLog.d("Xposed", "info.isHook: " + info.isHook);
         return VirtualCore.get().installPackage(info.path, flags);
     }
 

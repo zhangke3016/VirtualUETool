@@ -118,6 +118,9 @@ public class VAppManagerService extends IAppManager.Stub {
         chmodPackageDictionary(cacheFile);
         PackageCacheManager.put(pkg, ps);
         BroadcastSystem.get().startApp(pkg);
+        if(ps.isHook) {
+            HookCacheManager.put(ps.packageName);
+        }
         return true;
     }
 
@@ -150,6 +153,7 @@ public class VAppManagerService extends IAppManager.Stub {
         if (path == null) {
             return InstallResult.makeFailure("path = NULL");
         }
+        boolean isHook = (flags & InstallStrategy.IS_HOOK) != 0;
         File packageFile = new File(path);
         if (!packageFile.exists() || !packageFile.isFile()) {
             return InstallResult.makeFailure("Package File is not exist.");
@@ -227,6 +231,7 @@ public class VAppManagerService extends IAppManager.Stub {
         ps.libPath = libDir.getPath();
         ps.packageName = pkg.packageName;
         ps.appId = VUserHandle.getAppId(mUidSystem.getOrCreateUid(pkg));
+        ps.isHook = isHook;
         if (res.isUpdate) {
             ps.lastUpdateTime = installTime;
         } else {
@@ -398,7 +403,11 @@ public class VAppManagerService extends IAppManager.Stub {
         String packageName = ps.packageName;
         try {
             BroadcastSystem.get().stopApp(packageName);
-            VActivityManagerService.get().killAppByPkg(packageName, VUserHandle.USER_ALL);
+            if(ps.isHook) {
+                VActivityManagerService.get().killAllApps();
+            } else {
+                VActivityManagerService.get().killAppByPkg(packageName, VUserHandle.USER_ALL);
+            }
             VEnvironment.getPackageResourcePath(packageName).delete();
             FileUtils.deleteDir(VEnvironment.getDataAppPackageDirectory(packageName));
             VEnvironment.getOdexFile(packageName).delete();

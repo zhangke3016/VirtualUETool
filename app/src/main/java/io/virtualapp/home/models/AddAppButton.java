@@ -63,4 +63,9 @@ public class AddAppButton implements AppData {
     public boolean canCreateShortcut() {
         return false;
     }
+
+    @Override
+    public boolean isHook() {
+        return false;
+    }
 }

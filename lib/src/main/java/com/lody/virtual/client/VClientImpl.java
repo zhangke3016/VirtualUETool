@@ -52,6 +52,7 @@ import com.lody.virtual.remote.PendingResultData;
 import com.lody.virtual.remote.VDeviceInfo;
 import com.lody.virtual.server.interfaces.IUiCallback;
 
+import de.robv.android.xposed.XposedInit;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -342,6 +343,26 @@ public final class VClientImpl extends IVClient.Stub {
             lock.open();
             mTempLock = null;
         }
+        boolean xposedmodule = false;
+        if (mInitialApplication.getApplicationInfo() != null && mInitialApplication.getApplicationInfo().metaData != null) {
+            xposedmodule = mInitialApplication.getApplicationInfo().metaData.getBoolean("xposedmodule", false);
+        }
+        if (!xposedmodule) {
+            try {
+                String[] installedHookPlugins = VPackageManager.get().getInstalledHookPlugins();
+                for(String pluginName : installedHookPlugins) {
+                    VLog.w("Xposed", "Applying hook " + pluginName);
+
+                    applyXposedPlugin(VEnvironment.getPackageResourcePath(pluginName).getAbsolutePath(),
+                            VEnvironment.getPackageLibPath(pluginName).getAbsolutePath(), mInitialApplication);
+                }
+                XposedInit.callAll(mInitialApplication);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         VirtualCore.get().getComponentDelegate().beforeApplicationCreate(mInitialApplication);
         try {
             mInstrumentation.callApplicationOnCreate(mInitialApplication);
@@ -373,6 +394,15 @@ public final class VClientImpl extends IVClient.Stub {
         }
         VActivityManager.get().appDoneExecuting();
         VirtualCore.get().getComponentDelegate().afterApplicationCreate(mInitialApplication);
+    }
+
+    private void applyXposedPlugin(String apkPath, String libPath, Application application) {
+//        DexClassLoader dexClassLoader = new DexClassLoader(apkPath,
+//                VEnvironment.getDalvikCacheDirectory().getAbsolutePath(),
+//                libPath,
+//                application.getClassLoader());
+        XposedInit.loadModule(apkPath, VEnvironment.getDalvikCacheDirectory().getAbsolutePath(), libPath, application);
+//        HookMain.doHookDefault(dexClassLoader, appClassLoader);
     }
 
     private void fixWeChatRecovery(Application app) {
