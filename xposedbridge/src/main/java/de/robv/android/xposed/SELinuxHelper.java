@@ -59,13 +59,13 @@ public final class SELinuxHelper {
 	private static boolean sIsSELinuxEnabled = false;
 	private static BaseService sServiceAppDataFile = null;
 
-	/*package*/ static void initOnce() {
+	public static void initOnce() {
 		try {
 			sIsSELinuxEnabled = SELinux.isSELinuxEnabled();
 		} catch (NoClassDefFoundError ignored) {}
 	}
 
-	/*package*/ static void initForProcess(String packageName) {
+	public static void initForProcess(String packageName) {
 		if (sIsSELinuxEnabled) {
 			if (packageName == null) {  // Zygote
 				sServiceAppDataFile = new ZygoteService();
