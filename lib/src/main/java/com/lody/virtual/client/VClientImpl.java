@@ -345,29 +345,6 @@ public final class VClientImpl extends IVClient.Stub {
             lock.open();
             mTempLock = null;
         }
-        boolean xposedmodule = false;
-        if (mInitialApplication.getApplicationInfo() != null && mInitialApplication.getApplicationInfo().metaData != null) {
-            xposedmodule = mInitialApplication.getApplicationInfo().metaData.getBoolean("xposedmodule", false);
-        }
-        if (!xposedmodule) {
-            try {
-                String[] installedHookPlugins = VPackageManager.get().getInstalledHookPlugins();
-                DexposedBridge.init(mInitialApplication);
-                SELinuxHelper.initOnce();
-                SELinuxHelper.initForProcess(packageName);
-                for(String pluginName : installedHookPlugins) {
-                    VLog.w("Xposed", "Applying hook " + pluginName);
-
-                    applyXposedPlugin(VEnvironment.getPackageResourcePath(pluginName).getAbsolutePath(),
-                            VEnvironment.getPackageLibPath(pluginName).getAbsolutePath(), mInitialApplication);
-                }
-                XposedInit.callAll(mInitialApplication);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         VirtualCore.get().getComponentDelegate().beforeApplicationCreate(mInitialApplication);
         try {
             mInstrumentation.callApplicationOnCreate(mInitialApplication);
@@ -398,16 +375,42 @@ public final class VClientImpl extends IVClient.Stub {
             }
         }
         VActivityManager.get().appDoneExecuting();
+        boolean xposedmodule = false;
+        if (mInitialApplication.getApplicationInfo() != null && mInitialApplication.getApplicationInfo().metaData != null) {
+            xposedmodule = mInitialApplication.getApplicationInfo().metaData.getBoolean("xposedmodule", false);
+        }
+        if (!xposedmodule) {
+            try {
+                String[] installedHookPlugins = VPackageManager.get().getInstalledHookPlugins();
+                DexposedBridge.init(mInitialApplication);
+                SELinuxHelper.initOnce();
+                SELinuxHelper.initForProcess(packageName);
+                for(String pluginName : installedHookPlugins) {
+                    VLog.d("Xposed", "Applying hook " + pluginName);
+                    applyXposedPlugin(VEnvironment.getPackageResourcePath(pluginName).getAbsolutePath(),
+                            VEnvironment.getPackageLibPath(pluginName).getAbsolutePath(), mInitialApplication);
+                }
+                XposedInit.callAll(mInitialApplication);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         VirtualCore.get().getComponentDelegate().afterApplicationCreate(mInitialApplication);
     }
 
+    private void startPluginIOUniformer(String pluginName) {
+        int userId = VUserHandle.myUserId();
+        ApplicationInfo appPlguinInfo = VPackageManager.get().getApplicationInfo(pluginName, 0, userId);
+        NativeEngine.redirectDirectory("/data/data/" + appPlguinInfo.packageName, appPlguinInfo.dataDir);
+        NativeEngine.redirectDirectory("/data/user/0/" + appPlguinInfo.packageName, appPlguinInfo.dataDir);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            NativeEngine.redirectDirectory("/data/user_de/0/" + appPlguinInfo.packageName, appPlguinInfo.dataDir);
+        }
+    }
+
     private void applyXposedPlugin(String apkPath, String libPath, Application application) {
-//        DexClassLoader dexClassLoader = new DexClassLoader(apkPath,
-//                VEnvironment.getDalvikCacheDirectory().getAbsolutePath(),
-//                libPath,
-//                application.getClassLoader());
         XposedInit.loadModule(apkPath, VEnvironment.getDalvikCacheDirectory().getAbsolutePath(), libPath, application);
-//        HookMain.doHookDefault(dexClassLoader, appClassLoader);
     }
 
     private void fixWeChatRecovery(Application app) {
@@ -491,6 +494,12 @@ public final class VClientImpl extends IVClient.Stub {
             } catch (ErrnoException e) {
                 VLog.w(TAG, "symlink error", e);
             }
+        }
+
+        String[] installedHookPlugins = VPackageManager.get().getInstalledHookPlugins();
+        for(String pluginName : installedHookPlugins) {
+            VLog.d("Xposed", "installedHookPlugins hook " + pluginName);
+            startPluginIOUniformer(pluginName);
         }
 
         setupVirtualStorage(info, userId);
