@@ -262,12 +262,12 @@ public final class XposedInit {
 //		apks.close();
 
 
-	public static void callAll(Application application) {
+	public static void callAll(Context context) {
         XC_LoadPackage.LoadPackageParam lpparam = new XC_LoadPackage.LoadPackageParam(XposedBridge.sLoadedPackageCallbacks);
-        lpparam.packageName = application.getPackageName();
-        lpparam.processName = getProcessName(application, Process.myPid());
-        lpparam.classLoader = application.getClassLoader();
-        lpparam.appInfo = application.getApplicationInfo();
+        lpparam.packageName = context.getPackageName();
+        lpparam.processName = getProcessName(context, Process.myPid());
+        lpparam.classLoader = context.getClassLoader();
+        lpparam.appInfo = context.getApplicationInfo();
         lpparam.isFirstApplication = true;
         XC_LoadPackage.callAll(lpparam);
     }
@@ -295,7 +295,7 @@ public final class XposedInit {
 //        loadModule(apkPath, dexClassLoader, application, true);
 //    }
 
-    public static void loadModule(String apk, String apkPath, String libPath, Application application) {
+    public static void loadModule(String apk, String apkPath, String libPath, Context context) {
         Log.i(TAG, "Loading modules from " + apk);
 
         if (!new File(apk).exists()) {
@@ -310,7 +310,7 @@ public final class XposedInit {
             Log.e(TAG, "  Cannot load module", e);
             return;
         }
-        ClassLoader classLoader = application.getClassLoader();
+        ClassLoader classLoader = context.getClassLoader();
         if (dexFile.loadClass(INSTANT_RUN_CLASS, classLoader) != null) {
             Log.e(TAG, "  Cannot load module, please disable \"Instant Run\" in Android Studio.");
             closeSilently(dexFile);

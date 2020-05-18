@@ -331,6 +331,29 @@ public final class VClientImpl extends IVClient.Stub {
             applicationInfo.splitNames = new String[1];
         }
 
+        //hook xposed
+        boolean xposedmodule = false;
+        if (applicationInfo != null && applicationInfo.metaData != null) {
+            xposedmodule = applicationInfo.metaData.getBoolean("xposedmodule", false);
+        }
+        if (!xposedmodule) {
+            try {
+                String[] installedHookPlugins = VPackageManager.get().getInstalledHookPlugins();
+                DexposedBridge.init(context);
+                SELinuxHelper.initOnce();
+                SELinuxHelper.initForProcess(packageName);
+                for(String pluginName : installedHookPlugins) {
+                    VLog.d("Xposed", "Applying hook " + pluginName);
+                    applyXposedPlugin(VEnvironment.getPackageResourcePath(pluginName).getAbsolutePath(),
+                            VEnvironment.getPackageLibPath(pluginName).getAbsolutePath(), context);
+                }
+                XposedInit.callAll(context);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         mInitialApplication = LoadedApk.makeApplication.call(data.info, false, null);
 
         ActivityThread.mInitialApplication.set(mainThread, mInitialApplication);
@@ -375,27 +398,6 @@ public final class VClientImpl extends IVClient.Stub {
             }
         }
         VActivityManager.get().appDoneExecuting();
-        boolean xposedmodule = false;
-        if (mInitialApplication.getApplicationInfo() != null && mInitialApplication.getApplicationInfo().metaData != null) {
-            xposedmodule = mInitialApplication.getApplicationInfo().metaData.getBoolean("xposedmodule", false);
-        }
-        if (!xposedmodule) {
-            try {
-                String[] installedHookPlugins = VPackageManager.get().getInstalledHookPlugins();
-                DexposedBridge.init(mInitialApplication);
-                SELinuxHelper.initOnce();
-                SELinuxHelper.initForProcess(packageName);
-                for(String pluginName : installedHookPlugins) {
-                    VLog.d("Xposed", "Applying hook " + pluginName);
-                    applyXposedPlugin(VEnvironment.getPackageResourcePath(pluginName).getAbsolutePath(),
-                            VEnvironment.getPackageLibPath(pluginName).getAbsolutePath(), mInitialApplication);
-                }
-                XposedInit.callAll(mInitialApplication);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
         VirtualCore.get().getComponentDelegate().afterApplicationCreate(mInitialApplication);
     }
 
@@ -409,8 +411,8 @@ public final class VClientImpl extends IVClient.Stub {
         }
     }
 
-    private void applyXposedPlugin(String apkPath, String libPath, Application application) {
-        XposedInit.loadModule(apkPath, VEnvironment.getDalvikCacheDirectory().getAbsolutePath(), libPath, application);
+    private void applyXposedPlugin(String apkPath, String libPath, Context context) {
+        XposedInit.loadModule(apkPath, VEnvironment.getDalvikCacheDirectory().getAbsolutePath(), libPath, context);
     }
 
     private void fixWeChatRecovery(Application app) {
