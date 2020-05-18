@@ -21,6 +21,9 @@ VirtualUETool 扩展自[UETool](https://github.com/eleme/UETool)实现，底层�
 - 新增支持查看布局层级
 - 功能扩展中...
 
+- 支持加载Xposed插件
+- 支持dex脱壳，见dumpDex文件夹 参考[dumpDex](https://github.com/WrBug/dumpDex), 作为xposed插件使用即可，无需其他操作
+- 功能扩展中...
 [下载体验](https://github.com/zhangke3016/VirtualUETool/blob/master/app-release.apk?raw=true)
 
 ## 效果
