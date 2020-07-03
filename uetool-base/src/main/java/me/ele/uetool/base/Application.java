@@ -10,9 +10,7 @@ public class Application {
 
     private Application() {
     }
-//    public static void setApplicationContext(android.app.Application application){
-//        CONTEXT = application;
-//    }
+
     public static Context getApplicationContext() {
         if (CONTEXT != null) {
             return CONTEXT;

@@ -1,14 +1,9 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
-
+    compileSdkVersion versions.compileSdk
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion versions.minSdk
         externalNativeBuild {
             ndkBuild {
                 abiFilters "armeabi-v7a", "x86"
@@ -34,6 +29,6 @@ android {
 
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':uetool')
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api project(':uetool')
 }

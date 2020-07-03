@@ -19,12 +19,20 @@ import android.graphics.drawable.NinePatchDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannedString;
 import android.text.style.ImageSpan;
 import android.util.Pair;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -39,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 
 import me.ele.uetool.base.Application;
+import me.ele.uetool.base.ReflectionP;
+import me.ele.uetool.base.ReflectionP.Func;
 
 import static android.view.View.NO_ID;
 
@@ -312,4 +322,94 @@ public class Util {
         return null;
     }
 
+    //  获取当前 view 所在的最上层 fragment
+    @Nullable
+    public static Fragment getCurrentFragment(View targetView) {
+
+        Activity activity = UETool.getInstance().getTargetActivity();
+        if (activity instanceof FragmentActivity) {
+            List<Fragment> fragments = collectVisibleFragment(((FragmentActivity) activity).getSupportFragmentManager());
+            for (int i = fragments.size() - 1; i >= 0; i--) {
+                Fragment fragment = fragments.get(i);
+                if (findTargetView(fragment.getView(), targetView)) {
+                    return fragment;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    //  收集所有可见 fragment
+    private static List<Fragment> collectVisibleFragment(FragmentManager fragmentManager) {
+        List<Fragment> fragments = new ArrayList<>();
+
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            if (fragment.isVisible()) {
+                fragments.add(fragment);
+                fragments.addAll(collectVisibleFragment(fragment.getChildFragmentManager()));
+            }
+        }
+
+        return fragments;
+    }
+
+    //  获取当前 fragment 类名
+    @Nullable
+    public static String getCurrentFragmentName(View targetView) {
+
+        Fragment fragment = getCurrentFragment(targetView);
+
+        if (fragment != null) {
+            return fragment.getClass().getName();
+        }
+
+        return null;
+    }
+
+    //  获取当前 view 的 view holder 类名
+    public static String getViewHolderName(View targetView) {
+        View currentView = targetView;
+        while (currentView != null) {
+            ViewParent parent = currentView.getParent();
+            if (parent instanceof RecyclerView) {
+                return ((RecyclerView) parent).getChildViewHolder(currentView).getClass().getName();
+            }
+            currentView = parent instanceof View ? (View) parent : null;
+        }
+        return null;
+    }
+
+    //  遍历目标 view 是否在指定 view 内
+    private static boolean findTargetView(View view, View targetView) {
+        if (view == targetView) {
+            return true;
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup parent = (ViewGroup) view;
+            for (int i = 0; i < parent.getChildCount(); i++) {
+                if (findTargetView(parent.getChildAt(i), targetView)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static String getViewClickListener(final View view) {
+        return ReflectionP.breakAndroidP(new Func<String>() {
+            @Override public String call() {
+                try {
+                    final Field mListenerInfoField = View.class.getDeclaredField("mListenerInfo");
+                    mListenerInfoField.setAccessible(true);
+                    final Field mClickListenerField = Class.forName("android.view.View$ListenerInfo").getDeclaredField("mOnClickListener");
+                    mClickListenerField.setAccessible(true);
+                    OnClickListener listener = (OnClickListener) mClickListenerField.get(mListenerInfoField.get(view));
+                    return listener.getClass().getName();
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        });
+    }
 }

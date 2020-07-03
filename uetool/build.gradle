@@ -10,13 +10,12 @@ android {
     lintOptions {
         abortOnError false
     }
-    buildToolsVersion '26.0.2'
 }
 
 dependencies {
-    compile project(':uetool-base')
-    compile project(':uetool-fresco')
-    compile project(':cmprocess')
+    api project(':uetool-base')
+    api project(':uetool-fresco')
+    api project(':cmprocess')
     //  compile "me.ele:uetool-base:${versions.release}"
-    compile "com.android.support:recyclerview-v7:${versions.supportLibrary}"
+    implementation 'com.github.bmelnychuk:atv:1.2.9'
 }

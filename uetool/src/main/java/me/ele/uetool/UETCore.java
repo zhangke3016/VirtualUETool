@@ -1,5 +1,6 @@
 package me.ele.uetool;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.util.Pair;
 import android.view.View;
@@ -30,6 +31,14 @@ public class UETCore implements IAttrs {
 
         View view = element.getView();
 
+        items.add(new TextItem("Fragment", Util.getCurrentFragmentName(element.getView()), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity activity = Util.getCurrentActivity();
+                new FragmentListTreeDialog(v.getContext()).show();
+            }
+        }));
+        items.add(new TextItem("ViewHolder", Util.getViewHolderName(element.getView())));
         items.add(new SwitchItem("Move", element, SwitchItem.Type.TYPE_MOVE));
         items.add(new SwitchItem("ValidViews", element, SwitchItem.Type.TYPE_SHOW_VALID_VIEWS));
 
@@ -43,6 +52,7 @@ public class UETCore implements IAttrs {
         items.add(new TextItem("Id", Util.getResId(view)));
         items.add(new TextItem("ResName", Util.getResourceName(view.getId())));
         items.add(new TextItem("Clickable", Boolean.toString(view.isClickable()).toUpperCase()));
+        items.add(new TextItem("OnClickListener", Util.getViewClickListener(view)));
         items.add(new TextItem("Focused", Boolean.toString(view.isFocused()).toUpperCase()));
         items.add(new AddMinusEditItem("Width（dp）", element, EditTextItem.Type.TYPE_WIDTH, px2dip(view.getWidth())));
         items.add(new AddMinusEditItem("Height（dp）", element, EditTextItem.Type.TYPE_HEIGHT, px2dip(view.getHeight())));

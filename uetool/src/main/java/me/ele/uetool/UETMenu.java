@@ -73,7 +73,7 @@ public class UETMenu extends LinearLayout {
                         sendCommand(MenuHelper.Type.TYPE_SHOW_GRIDDING);
                     }
                 }));
-        subMenus.add(new UETSubMenu.SubMenu("布局层级", R.drawable.uet_show_gridding,
+        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_scalpel), R.drawable.uet_scalpel,
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -94,7 +94,7 @@ public class UETMenu extends LinearLayout {
             }
         });
 
-        vMenu.setOnTouchListener(new View.OnTouchListener() {
+        vMenu.setOnTouchListener(new OnTouchListener() {
             private float downX, downY;
             private float lastY;
 
@@ -121,8 +121,8 @@ public class UETMenu extends LinearLayout {
                                 field = object.getClass().getDeclaredField("mOnClickListener");
                                 field.setAccessible(true);
                                 object = field.get(object);
-                                if (object != null && object instanceof View.OnClickListener) {
-                                    ((View.OnClickListener) object).onClick(vMenu);
+                                if (object != null && object instanceof OnClickListener) {
+                                    ((OnClickListener) object).onClick(vMenu);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();

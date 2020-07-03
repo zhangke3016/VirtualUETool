@@ -2,9 +2,7 @@ package me.ele.uetool.base;
 
 import android.graphics.Rect;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 public class Element {
 
@@ -33,7 +31,7 @@ public class Element {
     }
 
     public void reset() {
-        view.getLocationInWindow(location);
+        view.getLocationOnScreen(location);
         int width = view.getWidth();
         int height = view.getHeight();
 
@@ -56,6 +54,11 @@ public class Element {
             }
         }
         return parentElement;
+    }
+
+    //  view 的面积
+    public int getArea() {
+        return view.getWidth() * view.getHeight();
     }
 
     @Override

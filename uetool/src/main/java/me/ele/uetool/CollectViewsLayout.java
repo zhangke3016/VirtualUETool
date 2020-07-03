@@ -192,12 +192,12 @@ public class CollectViewsLayout extends View {
                 } else if (parentElement != null) {
                     parentElement = parentElement.getParentElement();
                 }
-                target = parentElement;
+                target = parentElement == null ? element : parentElement;
                 break;
             }
         }
         if (target == null) {
-            Toast.makeText(getContext(), String.format("could not found view in (%1$.0f , %2$.0f), please select view again", x, y), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getResources().getString(R.string.uet_target_element_not_found, x, y), Toast.LENGTH_SHORT).show();
         }
         return target;
     }
