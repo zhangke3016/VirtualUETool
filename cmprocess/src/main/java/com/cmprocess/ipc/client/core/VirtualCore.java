@@ -23,7 +23,6 @@ import android.os.Process;
  */
 public final class VirtualCore {
 
-
     private static final String TAG = VirtualCore.class.getSimpleName();
 
     private static VirtualCore gCore = new VirtualCore();

@@ -2,12 +2,12 @@ package me.ele.uetool;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
+import android.widget.TextView;
 
 import me.ele.uetool.base.DimenUtil;
 
-public class BoardTextView extends AppCompatTextView {
+public class BoardTextView extends TextView {
 
     private final String defaultInfo = UETool.getInstance().getTargetActivity().getPackageName() + " / " + UETool.getInstance().getTargetActivity().getClass().getName();
 

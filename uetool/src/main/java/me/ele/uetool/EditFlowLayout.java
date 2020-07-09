@@ -28,7 +28,7 @@ public class EditFlowLayout extends CollectViewsLayout {
     };
 
     private Element targetElement;
-    private AttrsDialog dialog;
+    private FlowDialog dialog;
     private IMode mode = new ShowMode();
     private float lastX, lastY;
     private OnDragListener onDragListener;
@@ -161,8 +161,8 @@ public class EditFlowLayout extends CollectViewsLayout {
                 targetElement = element;
                 invalidate();
                 if (dialog == null) {
-                    dialog = new AttrsDialog(getContext());
-                    dialog.setAttrDialogCallback(new AttrsDialog.AttrDialogCallback() {
+                    dialog = new FlowDialog(getContext());
+                    dialog.setAttrDialogCallback(new AttrDialogCallback() {
                         @Override
                         public void enableMove() {
                             mode = new MoveMode();

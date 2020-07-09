@@ -1,11 +1,13 @@
 package io.virtualapp;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.multidex.MultiDexApplication;
+
 import com.cmprocess.ipc.VCore;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.stub.VASettings;
+import com.tencent.mmkv.MMKV;
+
 import io.virtualapp.delegate.MyAppRequestListener;
 import io.virtualapp.delegate.MyComponentDelegate;
 import io.virtualapp.delegate.MyPhoneInfoDelegate;
@@ -18,7 +20,6 @@ import jonathanfinerty.once.Once;
 public class VApp extends MultiDexApplication {
 
     private static VApp gApp;
-    private SharedPreferences mPreferences;
 
     public static VApp getApp() {
         return gApp;
@@ -27,7 +28,6 @@ public class VApp extends MultiDexApplication {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        mPreferences = base.getSharedPreferences("va", Context.MODE_MULTI_PROCESS);
         VASettings.ENABLE_IO_REDIRECT = true;
         VASettings.ENABLE_INNER_SHORTCUT = false;
         try {
@@ -41,6 +41,8 @@ public class VApp extends MultiDexApplication {
     public void onCreate() {
         gApp = this;
         super.onCreate();
+        String rootDir = MMKV.initialize(this);
+        System.out.println("mmkv root: " + rootDir);
         VirtualCore virtualCore = VirtualCore.get();
         virtualCore.initialize(new VirtualCore.VirtualInitializer() {
 
@@ -48,7 +50,6 @@ public class VApp extends MultiDexApplication {
             public void onMainProcess() {
                 Once.initialise(VApp.this);
                 VCore.init(VApp.this, getPackageName());
-
             }
 
             @Override
@@ -75,9 +76,4 @@ public class VApp extends MultiDexApplication {
             }
         });
     }
-
-    public static SharedPreferences getPreferences() {
-        return getApp().mPreferences;
-    }
-
 }

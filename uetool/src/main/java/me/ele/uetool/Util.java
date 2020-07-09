@@ -120,10 +120,12 @@ public class Util {
                     mColorsField.setAccessible(true);
                     int[] mColors = (int[]) mColorsField.get(shader);
                     StringBuilder sb = new StringBuilder();
-                    for (int i = 0, N = mColors.length; i < N; i++) {
-                        sb.append(intToHexColor(mColors[i]));
-                        if (i < N - 1) {
-                            sb.append(" -> ");
+                    if (mColors != null) {
+                        for (int i = 0, N = mColors.length; i < N; i++) {
+                            sb.append(intToHexColor(mColors[i]));
+                            if (i < N - 1) {
+                                sb.append(" -> ");
+                            }
                         }
                     }
                     return sb.toString();
@@ -131,6 +133,8 @@ public class Util {
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
         } else {
@@ -234,7 +238,7 @@ public class Util {
         Toast.makeText(context, "copied", Toast.LENGTH_SHORT).show();
     }
 
-    public static View getCurrentView(Activity activity){
+    public static View getCurrentView(Activity activity) {
         try {
             Activity targetActivity = UETool.getInstance().getTargetActivity();
             WindowManager windowManager = targetActivity.getWindowManager();
@@ -298,6 +302,7 @@ public class Util {
         }
         return targetView;
     }
+
     public static Activity getCurrentActivity() {
         try {
             Class activityThreadClass = Class.forName("android.app.ActivityThread");
@@ -398,7 +403,8 @@ public class Util {
 
     public static String getViewClickListener(final View view) {
         return ReflectionP.breakAndroidP(new Func<String>() {
-            @Override public String call() {
+            @Override
+            public String call() {
                 try {
                     final Field mListenerInfoField = View.class.getDeclaredField("mListenerInfo");
                     mListenerInfoField.setAccessible(true);

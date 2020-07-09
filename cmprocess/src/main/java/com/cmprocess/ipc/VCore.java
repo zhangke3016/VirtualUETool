@@ -6,7 +6,6 @@ import com.cmprocess.ipc.client.ipc.ServiceManagerNative;
 import com.cmprocess.ipc.event.EventCallback;
 import com.cmprocess.ipc.event.EventCenter;
 import com.cmprocess.ipc.helper.ipcbus.IPCBus;
-import com.cmprocess.ipc.helper.utils.AppUtil;
 
 import android.content.Context;
 import android.os.Bundle;

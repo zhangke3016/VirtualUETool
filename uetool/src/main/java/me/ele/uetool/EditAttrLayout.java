@@ -162,7 +162,7 @@ public class EditAttrLayout extends CollectViewsLayout {
                 invalidate();
                 if (dialog == null) {
                     dialog = new AttrsDialog(getContext());
-                    dialog.setAttrDialogCallback(new AttrsDialog.AttrDialogCallback() {
+                    dialog.setAttrDialogCallback(new AttrDialogCallback() {
                         @Override
                         public void enableMove() {
                             mode = new MoveMode();

@@ -40,4 +40,12 @@ public class AttrsDialogMultiTypePool {
         }
         return index;
     }
+
+    public Class getItemClass(Object item) {
+        int index = classes.indexOf(item.getClass());
+        if (index == -1) {
+            throw new RuntimeException("un support class type:" + item.getClass().getName());
+        }
+        return classes.get(index);
+    }
 }
