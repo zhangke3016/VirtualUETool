@@ -10,12 +10,12 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
+
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -86,11 +86,11 @@ public class CollectViewsLayout extends View {
         try {
             Activity targetActivity = UETool.getInstance().getTargetActivity();
             WindowManager windowManager = targetActivity.getWindowManager();
-            Field mGlobalField = getClass().forName("android.view.WindowManagerImpl").getDeclaredField("mGlobal");
+            Field mGlobalField = Class.forName("android.view.WindowManagerImpl").getDeclaredField("mGlobal");
             mGlobalField.setAccessible(true);
 
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                Field mViewsField = getClass().forName("android.view.WindowManagerGlobal").getDeclaredField("mViews");
+                Field mViewsField = Class.forName("android.view.WindowManagerGlobal").getDeclaredField("mViews");
                 mViewsField.setAccessible(true);
                 List<View> views = (List<View>) mViewsField.get(mGlobalField.get(windowManager));
                 for (int i = views.size() - 1; i >= 0; i--) {
@@ -101,7 +101,7 @@ public class CollectViewsLayout extends View {
                     }
                 }
             } else {
-                Field mRootsField = getClass().forName("android.view.WindowManagerGlobal").getDeclaredField("mRoots");
+                Field mRootsField = Class.forName("android.view.WindowManagerGlobal").getDeclaredField("mRoots");
                 mRootsField.setAccessible(true);
                 List viewRootImpls;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -110,7 +110,7 @@ public class CollectViewsLayout extends View {
                     viewRootImpls = Arrays.asList((Object[]) mRootsField.get(mGlobalField.get(windowManager)));
                 }
                 for (int i = viewRootImpls.size() - 1; i >= 0; i--) {
-                    Class clazz = getClass().forName("android.view.ViewRootImpl");
+                    Class clazz = Class.forName("android.view.ViewRootImpl");
                     Object object = viewRootImpls.get(i);
                     Field mWindowAttributesField = clazz.getDeclaredField("mWindowAttributes");
                     mWindowAttributesField.setAccessible(true);
@@ -141,21 +141,25 @@ public class CollectViewsLayout extends View {
 
     private void traverse(View view) {
         String name = view.getClass().getName();
-        if (UETool.getInstance().getFilterClasses().contains(name)) return;
-        if (view.getAlpha() == 0 || view.getVisibility() != View.VISIBLE) return;
+        if (UETool.getInstance().getFilterClasses().contains(name)) {
+            return;
+        }
+        if (view.getAlpha() == 0 || view.getVisibility() != View.VISIBLE) {
+            return;
+        }
 //        if (getResources().getString(R.string.uet_disable).equals(view.getTag())) return;
 
         if (view instanceof ViewGroup) {
             if (!"com.android.internal.policy.impl.PhoneWindow$DecorView".equals(name)
-                    && view.getWidth() == screenWidth && view.getHeight() == screenHeight){
-            }else {
+                    && view.getWidth() == screenWidth && view.getHeight() == screenHeight) {
+            } else {
                 elements.add(new Element(view));
             }
             ViewGroup parent = (ViewGroup) view;
             for (int i = 0; i < parent.getChildCount(); i++) {
                 traverse(parent.getChildAt(i));
             }
-        }else {
+        } else {
             elementsChild.add(new Element(view));
         }
     }
@@ -197,7 +201,7 @@ public class CollectViewsLayout extends View {
             }
         }
         if (target == null) {
-            Toast.makeText(getContext(), getResources().getString(R.string.uet_target_element_not_found, x, y), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), String.format("could not found view in (%1$.0f , %2$.0f), please select view again", x, y), Toast.LENGTH_SHORT).show();
         }
         return target;
     }

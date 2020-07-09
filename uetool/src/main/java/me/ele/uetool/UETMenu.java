@@ -56,6 +56,12 @@ public class UETMenu extends LinearLayout {
         subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_catch_view), R.drawable.uet_edit_attr, new OnClickListener() {
             @Override
             public void onClick(View v) {
+                sendCommand(MenuHelper.Type.TYPE_EDIT_FLOW);
+            }
+        }));
+        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_catch_view), R.drawable.uet_edit_attr, new OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 sendCommand(MenuHelper.Type.TYPE_EDIT_ATTR);
             }
         }));
@@ -185,7 +191,6 @@ public class UETMenu extends LinearLayout {
         if (currentTopActivity == null) {
             return;
         } else if (UETMenu.dismiss(currentTopActivity)) {
-//            UETool.getInstance().setTargetActivity(currentTopActivity);
             return;
         }
         Bundle bundle = new Bundle();
