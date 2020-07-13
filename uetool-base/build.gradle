@@ -24,5 +24,7 @@ dependencies {
     api 'com.tencent:mmkv-static:1.2.1'
     //gson
     api 'com.google.code.gson:gson:2.8.5'
+    //AndroidTreeView
+    api 'com.github.bmelnychuk:atv:1.2.9'
 }
 

@@ -59,6 +59,12 @@ public class UETMenu extends LinearLayout {
                 sendCommand(MenuHelper.Type.TYPE_EDIT_ATTR);
             }
         }));
+        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_edit_view), R.drawable.uet_edit_attr, new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendCommand(MenuHelper.Type.TYPE_SHOW_EDIT);
+            }
+        }));
         subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_relative_location), R.drawable.uet_relative_position,
                 new OnClickListener() {
                     @Override

@@ -19,6 +19,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static me.ele.uetool.MenuHelper.Type.TYPE_EDIT_ATTR;
 import static me.ele.uetool.MenuHelper.Type.TYPE_LAYOUT_LEVEL;
 import static me.ele.uetool.MenuHelper.Type.TYPE_RELATIVE_POSITION;
+import static me.ele.uetool.MenuHelper.Type.TYPE_SHOW_EDIT;
 import static me.ele.uetool.MenuHelper.Type.TYPE_SHOW_GRIDDING;
 import static me.ele.uetool.MenuHelper.Type.TYPE_UNKNOWN;
 
@@ -50,6 +51,10 @@ public class MenuHelper {
                     }
                 });
                 vContainer.addView(editAttrLayout);
+                break;
+            case TYPE_SHOW_EDIT:
+                EditTouchLayout editTouchLayout = new EditTouchLayout(activity);
+                vContainer.addView(editTouchLayout);
                 break;
             case TYPE_RELATIVE_POSITION:
                 vContainer.addView(new RelativePositionLayout(activity));
@@ -133,6 +138,7 @@ public class MenuHelper {
     @IntDef({
             TYPE_UNKNOWN,
             TYPE_EDIT_ATTR,
+            TYPE_SHOW_EDIT,
             TYPE_SHOW_GRIDDING,
             TYPE_RELATIVE_POSITION,
             TYPE_LAYOUT_LEVEL
@@ -141,8 +147,9 @@ public class MenuHelper {
     public @interface Type {
         int TYPE_UNKNOWN = -1;
         int TYPE_EDIT_ATTR = 1;
-        int TYPE_SHOW_GRIDDING = 2;
-        int TYPE_RELATIVE_POSITION = 3;
-        int TYPE_LAYOUT_LEVEL = 4;
+        int TYPE_SHOW_EDIT = 2;
+        int TYPE_SHOW_GRIDDING = 3;
+        int TYPE_RELATIVE_POSITION = 4;
+        int TYPE_LAYOUT_LEVEL = 5;
     }
 }

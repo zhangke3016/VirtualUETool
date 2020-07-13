@@ -283,11 +283,11 @@ public class Util {
         try {
             Activity targetActivity = UETool.getInstance().getTargetActivity();
             WindowManager windowManager = targetActivity.getWindowManager();
-            Field mGlobalField = activity.getClass().forName("android.view.WindowManagerImpl").getDeclaredField("mGlobal");
+            Field mGlobalField = Class.forName("android.view.WindowManagerImpl").getDeclaredField("mGlobal");
             mGlobalField.setAccessible(true);
 
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                Field mViewsField = activity.getClass().forName("android.view.WindowManagerGlobal").getDeclaredField("mViews");
+                Field mViewsField = Class.forName("android.view.WindowManagerGlobal").getDeclaredField("mViews");
                 mViewsField.setAccessible(true);
                 List<View> views = (List<View>) mViewsField.get(mGlobalField.get(windowManager));
                 for (int i = views.size() - 1; i >= 0; i--) {
@@ -297,7 +297,7 @@ public class Util {
                     }
                 }
             } else {
-                Field mRootsField = activity.getClass().forName("android.view.WindowManagerGlobal").getDeclaredField("mRoots");
+                Field mRootsField = Class.forName("android.view.WindowManagerGlobal").getDeclaredField("mRoots");
                 mRootsField.setAccessible(true);
                 List viewRootImpls;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -306,7 +306,7 @@ public class Util {
                     viewRootImpls = Arrays.asList((Object[]) mRootsField.get(mGlobalField.get(windowManager)));
                 }
                 for (int i = viewRootImpls.size() - 1; i >= 0; i--) {
-                    Class clazz = activity.getClass().forName("android.view.ViewRootImpl");
+                    Class clazz = Class.forName("android.view.ViewRootImpl");
                     Object object = viewRootImpls.get(i);
                     Field mWindowAttributesField = clazz.getDeclaredField("mWindowAttributes");
                     mWindowAttributesField.setAccessible(true);

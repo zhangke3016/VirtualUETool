@@ -59,7 +59,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':lib')
+    implementation project(':automate')
     //Android Lib
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.melnykov:floatingactionbutton:1.3.0'

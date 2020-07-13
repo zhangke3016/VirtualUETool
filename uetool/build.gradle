@@ -16,6 +16,4 @@ dependencies {
     api project(':uetool-base')
     api project(':uetool-fresco')
     api project(':cmprocess')
-    //  compile "me.ele:uetool-base:${versions.release}"
-    implementation 'com.github.bmelnychuk:atv:1.2.9'
 }
