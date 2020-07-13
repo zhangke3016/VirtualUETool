@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannedString;
+import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.util.Pair;
 import android.view.ContextThemeWrapper;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.ele.uetool.base.Application;
+import me.ele.uetool.base.ElementBean;
 import me.ele.uetool.base.ReflectionP;
 import me.ele.uetool.base.ReflectionP.Func;
 
@@ -73,6 +75,40 @@ public class Util {
         }
     }
 
+    public static Pair<Integer, Integer> getSwitchIndex(List<ElementBean> beforeElement, int id) {
+        String resName = getResourceName(id);
+        int index = 0;
+        int size = 0;
+        if (!TextUtils.isEmpty(resName)) {
+            if (beforeElement != null) {
+                size = beforeElement.size();
+                ElementBean bean;
+                for (int i = 0; i < size; i++) {
+                    bean = beforeElement.get(i);
+                    if (bean.getResName().equals(resName)) {
+                        index = i + 1;
+                        break;
+                    }
+                }
+            }
+        }
+        return new Pair<>(index, size);
+    }
+
+    public static int getSwitchState(List<ElementBean> beforeElement, int id) {
+        String resName = getResourceName(id);
+        if (!TextUtils.isEmpty(resName)) {
+            if (beforeElement != null) {
+                for (ElementBean bean : beforeElement) {
+                    if (bean.getResName().equals(resName)) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
     public static String getResourceName(int id) {
         Resources resources = Application.getApplicationContext().getResources();
         try {
@@ -85,6 +121,11 @@ public class Util {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static String getViewTag(final View view) {
+        final Object tag = view.getTag();
+        return tag == null ? "" : tag.toString();
     }
 
     public static String getResId(View view) {

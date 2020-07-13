@@ -2,6 +2,11 @@ package me.ele.uetool.base;
 
 import com.tencent.mmkv.MMKV;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,7 +35,7 @@ public class MMKVUtil {
         }
     }
 
-    public MMKV getMMKV() {
+    private MMKV getMMKV() {
         return myMMKV;
     }
 
@@ -49,26 +54,50 @@ public class MMKVUtil {
             myMMKV.encode(key, (String) value);
         } else if (value instanceof byte[]) {
             myMMKV.encode(key, (byte[]) value);
-        } else if (value instanceof Set) {
-            myMMKV.encode(key, (Set) value);
         }
     }
 
-    public <T> T get(String key, Object type) {
-        if (type instanceof Boolean) {
-            myMMKV.decodeBool(key);
-        } else if (type instanceof Integer) {
-            myMMKV.decodeInt(key);
-        } else if (type instanceof Long) {
-            myMMKV.decodeLong(key);
-        } else if (type instanceof Float) {
-            myMMKV.decodeFloat(key);
-        } else if (type instanceof Double) {
-            myMMKV.decodeDouble(key);
-        } else if (type instanceof String) {
-            myMMKV.decodeString(key);
-        } else if (type instanceof byte[]) {
-            myMMKV.decodeBytes(key);
+    public Set<String> getStringSet(String key) {
+        return myMMKV.decodeStringSet(key, null);
+    }
+
+    public boolean setElement(String key, List<ElementBean> value) {
+        if (value == null) {
+            myMMKV.removeValueForKey(key);
+            return true;
+        } else {
+            Set<String> stringSet = new HashSet<>(value.size());
+            for (ElementBean bean : value) {
+                stringSet.add(JsonUtil.getInstance().toJsonString(bean));
+            }
+            return myMMKV.encode(key, stringSet);
+        }
+    }
+
+    /**
+     * 排好序的list
+     *
+     * @param key
+     * @return
+     */
+    public List<ElementBean> getElements(String key) {
+        try {
+            Set<String> strings = getStringSet(key);
+            if (strings != null && strings.size() > 0) {
+                List<ElementBean> result = new ArrayList<ElementBean>(strings.size());
+                for (String item : strings) {
+                    result.add(JsonUtil.getInstance().parse(item, ElementBean.class));
+                }
+                Collections.sort(result, new Comparator<ElementBean>() {
+                    @Override
+                    public int compare(ElementBean o1, ElementBean o2) {
+                        return o1.getSort() - o2.getSort();
+                    }
+                });
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

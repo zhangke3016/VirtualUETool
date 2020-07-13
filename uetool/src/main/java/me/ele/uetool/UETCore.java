@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.ele.uetool.base.Element;
+import me.ele.uetool.base.ElementBean;
 import me.ele.uetool.base.IAttrs;
+import me.ele.uetool.base.MMKVUtil;
 import me.ele.uetool.base.item.AddMinusEditItem;
 import me.ele.uetool.base.item.BitmapItem;
 import me.ele.uetool.base.item.EditTextItem;
@@ -20,6 +22,7 @@ import me.ele.uetool.base.item.SwitchItem;
 import me.ele.uetool.base.item.TextItem;
 import me.ele.uetool.base.item.TitleItem;
 
+import static android.view.View.NO_ID;
 import static me.ele.uetool.base.DimenUtil.px2dip;
 import static me.ele.uetool.base.DimenUtil.px2sp;
 
@@ -31,14 +34,26 @@ public class UETCore implements IAttrs {
 
         View view = element.getView();
 
-        items.add(new TextItem("Fragment", Util.getCurrentFragmentName(element.getView()), new View.OnClickListener() {
+        List<ElementBean> beforeElement = MMKVUtil.getInstance().getElements("elementBeans");
+        int state;
+        if (view.getId() == NO_ID || view.getId() == 0) {
+            state = 2;
+        } else {
+            state = Util.getSwitchState(beforeElement, view.getId());
+        }
+        Pair<Integer, Integer> pair = Util.getSwitchIndex(beforeElement, view.getId());
+        String text = "未设置";
+        if (pair.first > 0) {
+            text = pair.first + "/" + pair.second;
+        }
+        items.add(new SwitchItem(text, element, SwitchItem.Type.TYPE_SELECT_STEP, state));
+        items.add(new TextItem("Fragment", Util.getCurrentFragmentName(view), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Activity activity = Util.getCurrentActivity();
                 new FragmentListTreeDialog(v.getContext()).show();
             }
         }));
-        items.add(new TextItem("ViewHolder", Util.getViewHolderName(element.getView())));
+        items.add(new TextItem("ViewHolder", Util.getViewHolderName(view)));
         items.add(new SwitchItem("Move", element, SwitchItem.Type.TYPE_MOVE));
         items.add(new SwitchItem("ValidViews", element, SwitchItem.Type.TYPE_SHOW_VALID_VIEWS));
 
@@ -51,6 +66,7 @@ public class UETCore implements IAttrs {
         items.add(new TextItem("Class", view.getClass().getName()));
         items.add(new TextItem("Id", Util.getResId(view)));
         items.add(new TextItem("ResName", Util.getResourceName(view.getId())));
+        items.add(new TextItem("Tag", Util.getViewTag(view)));
         items.add(new TextItem("Clickable", Boolean.toString(view.isClickable()).toUpperCase()));
         items.add(new TextItem("OnClickListener", Util.getViewClickListener(view)));
         items.add(new TextItem("Focused", Boolean.toString(view.isFocused()).toUpperCase()));

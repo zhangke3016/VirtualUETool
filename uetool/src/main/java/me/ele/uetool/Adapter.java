@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +23,17 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import me.ele.uetool.attrdialog.AttrsDialogItemViewBinder;
 import me.ele.uetool.attrdialog.AttrsDialogMultiTypePool;
 import me.ele.uetool.base.Element;
+import me.ele.uetool.base.ElementBean;
 import me.ele.uetool.base.IAttrs;
 import me.ele.uetool.base.ItemArrayList;
+import me.ele.uetool.base.JsonUtil;
+import me.ele.uetool.base.MMKVUtil;
 import me.ele.uetool.base.item.AddMinusEditItem;
 import me.ele.uetool.base.item.BitmapItem;
 import me.ele.uetool.base.item.BriefDescItem;
@@ -495,8 +500,57 @@ public class Adapter extends RecyclerView.Adapter {
             vSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    //防止初始化的时候发出监听
+                    if (!buttonView.isPressed()) {
+                        return;
+                    }
                     try {
-                        if (item.getType() == SwitchItem.Type.TYPE_MOVE) {
+                        if (item.getType() == SwitchItem.Type.TYPE_SELECT_STEP) {
+                            try {
+                                View view = item.getElement().getView();
+                                String id = Util.getResId(view);
+                                String resName = Util.getResourceName(view.getId());
+                                String zClass = view.getClass().getName();
+                                String clickable = Boolean.toString(view.isClickable()).toUpperCase();
+                                String onClickListener = Util.getViewClickListener(view);
+                                String text = "";
+                                if (view instanceof TextView) {
+                                    text = ((TextView) view).getText().toString();
+                                }
+                                List<ElementBean> beforeElement = MMKVUtil.getInstance().getElements("elementBeans");
+                                if (beforeElement == null) {
+                                    beforeElement = new ArrayList<>();
+                                }
+                                int index = beforeElement.size();
+                                ElementBean currentElement = new ElementBean(index, id, resName, zClass, clickable, onClickListener, text);
+                                if (isChecked) {
+                                    beforeElement.add(currentElement);
+                                    MMKVUtil.getInstance().setElement("elementBeans", beforeElement);
+                                } else {
+                                    //取消选择
+                                    if (index > 0) {
+                                        for (ElementBean item : beforeElement) {
+                                            if (item.getId().equals(id)) {
+                                                beforeElement.remove(item);
+                                                break;
+                                            }
+                                        }
+                                        MMKVUtil.getInstance().setElement("elementBeans", beforeElement);
+                                    }
+                                }
+                                item.setChecked(isChecked);
+                                Pair<Integer, Integer> pair = Util.getSwitchIndex(beforeElement, view.getId());
+                                String name = "未设置";
+                                if (pair.first > 0) {
+                                    name = pair.first + "/" + pair.second;
+                                }
+                                vName.setText(name);
+                            } catch (Exception e) {
+                                item.setChecked(false);
+                                e.printStackTrace();
+                            }
+                            return;
+                        } else if (item.getType() == SwitchItem.Type.TYPE_MOVE) {
                             if (callback != null && isChecked) {
                                 callback.enableMove();
                             }
@@ -561,6 +615,7 @@ public class Adapter extends RecyclerView.Adapter {
 
             vName.setText(switchItem.getName());
             vSwitch.setChecked(switchItem.isChecked());
+            vSwitch.setEnabled(!switchItem.isDisEnable());
         }
     }
 

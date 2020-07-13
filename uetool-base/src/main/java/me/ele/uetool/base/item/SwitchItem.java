@@ -9,6 +9,7 @@ import me.ele.uetool.base.Element;
 
 import static me.ele.uetool.base.item.SwitchItem.Type.TYPE_IS_BOLD;
 import static me.ele.uetool.base.item.SwitchItem.Type.TYPE_MOVE;
+import static me.ele.uetool.base.item.SwitchItem.Type.TYPE_SELECT_STEP;
 import static me.ele.uetool.base.item.SwitchItem.Type.TYPE_SHOW_VALID_VIEWS;
 
 public class SwitchItem extends ElementItem {
@@ -16,6 +17,7 @@ public class SwitchItem extends ElementItem {
     @Type
     private int type;
     private boolean isChecked;
+    private boolean disEnable;
 
     public SwitchItem(String name, Element element, @Type int type) {
         super(name, element);
@@ -28,12 +30,23 @@ public class SwitchItem extends ElementItem {
         this.isChecked = isChecked;
     }
 
+    public SwitchItem(String name, Element element, @Type int type, int state) {
+        super(name, element);
+        this.type = type;
+        this.isChecked = state == 1;
+        this.disEnable = state == 2;
+    }
+
     public void setChecked(boolean checked) {
         isChecked = checked;
     }
 
     public boolean isChecked() {
         return isChecked;
+    }
+
+    public boolean isDisEnable() {
+        return disEnable;
     }
 
     public int getType() {
@@ -44,11 +57,13 @@ public class SwitchItem extends ElementItem {
             TYPE_IS_BOLD,
             TYPE_MOVE,
             TYPE_SHOW_VALID_VIEWS,
+            TYPE_SELECT_STEP,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         int TYPE_IS_BOLD = 1;
         int TYPE_MOVE = 2;
         int TYPE_SHOW_VALID_VIEWS = 3;
+        int TYPE_SELECT_STEP = 4;
     }
 }

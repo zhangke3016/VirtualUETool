@@ -17,7 +17,6 @@ import me.ele.uetool.base.DimenUtil;
 import static android.view.Gravity.BOTTOM;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static me.ele.uetool.MenuHelper.Type.TYPE_EDIT_ATTR;
-import static me.ele.uetool.MenuHelper.Type.TYPE_EDIT_FLOW;
 import static me.ele.uetool.MenuHelper.Type.TYPE_LAYOUT_LEVEL;
 import static me.ele.uetool.MenuHelper.Type.TYPE_RELATIVE_POSITION;
 import static me.ele.uetool.MenuHelper.Type.TYPE_SHOW_GRIDDING;
@@ -42,17 +41,6 @@ public class MenuHelper {
         int type = bundle.getInt(EXTRA_TYPE, TYPE_UNKNOWN);
 
         switch (type) {
-            case TYPE_EDIT_FLOW:
-                //编辑事件流
-                EditFlowLayout editFlowLayout = new EditFlowLayout(activity);
-                editFlowLayout.setOnDragListener(new EditFlowLayout.OnDragListener() {
-                    @Override
-                    public void showOffset(String offsetContent) {
-                        board.updateInfo(offsetContent);
-                    }
-                });
-                vContainer.addView(editFlowLayout);
-                break;
             case TYPE_EDIT_ATTR:
                 EditAttrLayout editAttrLayout = new EditAttrLayout(activity);
                 editAttrLayout.setOnDragListener(new EditAttrLayout.OnDragListener() {
@@ -152,10 +140,9 @@ public class MenuHelper {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         int TYPE_UNKNOWN = -1;
-        int TYPE_EDIT_FLOW = 1;
-        int TYPE_EDIT_ATTR = 2;
-        int TYPE_SHOW_GRIDDING = 3;
-        int TYPE_RELATIVE_POSITION = 4;
-        int TYPE_LAYOUT_LEVEL = 5;
+        int TYPE_EDIT_ATTR = 1;
+        int TYPE_SHOW_GRIDDING = 2;
+        int TYPE_RELATIVE_POSITION = 3;
+        int TYPE_LAYOUT_LEVEL = 4;
     }
 }
