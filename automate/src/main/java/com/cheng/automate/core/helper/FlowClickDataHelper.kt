@@ -13,6 +13,8 @@ object FlowClickDataHelper {
 
     var index = 0
 
+    var loop = true
+
     /**
      * 重置列表
      */
@@ -28,8 +30,10 @@ object FlowClickDataHelper {
         beforeElement?.let {
             if (index < it.size) {
                 return it[index]
+            } else if (loop) {
+                index = 0
+                getCurrentElement();
             }
-            return null
         }
         return null
     }
