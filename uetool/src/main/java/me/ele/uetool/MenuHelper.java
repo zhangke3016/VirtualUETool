@@ -1,7 +1,9 @@
 package me.ele.uetool;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.IntDef;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,7 @@ import me.ele.uetool.base.DimenUtil;
 
 import static android.view.Gravity.BOTTOM;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static me.ele.uetool.MenuHelper.Type.TYPE_AUTO_TOUCH;
 import static me.ele.uetool.MenuHelper.Type.TYPE_EDIT_ATTR;
 import static me.ele.uetool.MenuHelper.Type.TYPE_LAYOUT_LEVEL;
 import static me.ele.uetool.MenuHelper.Type.TYPE_RELATIVE_POSITION;
@@ -31,7 +34,7 @@ public class MenuHelper {
 
     private static final String EXTRA_TYPE_LEVEL = "x_uetool_extra_type_level";
 
-    public static void show(Activity activity,Bundle bundle) {
+    public static void show(Activity activity, Bundle bundle) {
         if (bundle == null) {
             return;
         }
@@ -56,6 +59,14 @@ public class MenuHelper {
                 EditTouchLayout editTouchLayout = new EditTouchLayout(activity);
                 vContainer.addView(editTouchLayout);
                 break;
+            case TYPE_AUTO_TOUCH:
+                if (Util.isAccessibilitySettingsOn(activity)) {
+
+                } else {
+                    //打开系统设置中辅助功能
+                    activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                }
+                return;
             case TYPE_RELATIVE_POSITION:
                 vContainer.addView(new RelativePositionLayout(activity));
                 break;
@@ -76,11 +87,11 @@ public class MenuHelper {
 
         View view = Util.getCurrentView(activity);
         ViewGroup viewGroup = null;
-        if (view instanceof ViewGroup){
+        if (view instanceof ViewGroup) {
             viewGroup = (ViewGroup) view;
         }
-        if (viewGroup != null && viewGroup.getChildCount() > 0){
-            if (type == TYPE_LAYOUT_LEVEL){
+        if (viewGroup != null && viewGroup.getChildCount() > 0) {
+            if (type == TYPE_LAYOUT_LEVEL) {
                 ScalpelFrameLayout scalpelFrameLayout = new ScalpelFrameLayout(activity);
                 View v = viewGroup.getChildAt(0);
                 viewGroup.removeView(v);
@@ -94,17 +105,17 @@ public class MenuHelper {
             }
             View viewWithTag = viewGroup.findViewWithTag(EXTRA_TYPE);
             View viewWithTagLevel = viewGroup.findViewWithTag(EXTRA_TYPE_LEVEL);
-            if (viewWithTag != null){
+            if (viewWithTag != null) {
                 viewGroup.removeView(viewWithTag);
             }
-            if (viewWithTagLevel != null){
+            if (viewWithTagLevel != null) {
                 viewGroup.removeView(viewWithTagLevel);
             }
             vContainer.setTag(EXTRA_TYPE);
             vContainer.setFocusable(false);
             vContainer.setFocusableInTouchMode(false);
             Log.d(TAG, " addView ");
-            viewGroup.addView(vContainer,new ViewGroup.LayoutParams(viewGroup.getWidth(),viewGroup.getHeight()));
+            viewGroup.addView(vContainer, new ViewGroup.LayoutParams(viewGroup.getWidth(), viewGroup.getHeight()));
             viewGroup.postInvalidate();
         }
     }
@@ -112,21 +123,21 @@ public class MenuHelper {
     public static boolean dismiss(Activity activity) {
         View view = Util.getCurrentView(activity);
         ViewGroup viewGroup = null;
-        if (view instanceof ViewGroup){
+        if (view instanceof ViewGroup) {
             viewGroup = (ViewGroup) view;
         }
-        if (viewGroup != null){
+        if (viewGroup != null) {
             View viewWithTag = viewGroup.findViewWithTag(EXTRA_TYPE);
             ViewGroup viewWithTagLevel = viewGroup.findViewWithTag(EXTRA_TYPE_LEVEL);
-            if (viewWithTagLevel != null){
+            if (viewWithTagLevel != null) {
                 View child = viewWithTagLevel.getChildAt(0);
                 if (child != null) {
                     viewWithTagLevel.removeView(child);
                     ViewGroup vg = (ViewGroup) Util.getCurrentView(activity);
-                    vg.addView(child,0);
+                    vg.addView(child, 0);
                 }
             }
-            if (viewWithTag != null){
+            if (viewWithTag != null) {
                 Log.d(TAG, " removeView ");
                 viewGroup.removeView(viewWithTag);
                 return true;
@@ -141,7 +152,8 @@ public class MenuHelper {
             TYPE_SHOW_EDIT,
             TYPE_SHOW_GRIDDING,
             TYPE_RELATIVE_POSITION,
-            TYPE_LAYOUT_LEVEL
+            TYPE_LAYOUT_LEVEL,
+            TYPE_AUTO_TOUCH
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
@@ -151,5 +163,6 @@ public class MenuHelper {
         int TYPE_SHOW_GRIDDING = 3;
         int TYPE_RELATIVE_POSITION = 4;
         int TYPE_LAYOUT_LEVEL = 5;
+        int TYPE_AUTO_TOUCH = 6;
     }
 }

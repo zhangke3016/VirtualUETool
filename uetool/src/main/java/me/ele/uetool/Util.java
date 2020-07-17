@@ -18,6 +18,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -28,6 +29,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannedString;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.util.Pair;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -48,13 +50,15 @@ import java.util.List;
 import java.util.Map;
 
 import me.ele.uetool.base.Application;
-import me.ele.uetool.base.ElementBean;
+import com.cheng.automate.core.model.ElementBean;
 import me.ele.uetool.base.ReflectionP;
 import me.ele.uetool.base.ReflectionP.Func;
 
 import static android.view.View.NO_ID;
 
 public class Util {
+
+    public static final String TAG = "Util";
 
     public static void enableFullscreen(@NonNull Window window) {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -458,5 +462,46 @@ public class Util {
                 }
             }
         });
+    }
+
+    /**
+     * To check if service is enabled
+     * @param mContext
+     * @return
+     */
+    public static boolean isAccessibilitySettingsOn(Context mContext) {
+        int accessibilityEnabled = 0;
+        final String service = "io.virtualapp268/com.cheng.automate.core.AutoAccessibility";
+        try {
+            accessibilityEnabled = Settings.Secure.getInt(
+                    mContext.getApplicationContext().getContentResolver(),
+                    Settings.Secure.ACCESSIBILITY_ENABLED);
+            Log.v(TAG, "accessibilityEnabled = " + accessibilityEnabled);
+        } catch (Settings.SettingNotFoundException e) {
+            Log.e(TAG, "Error finding setting, default accessibility to not found: "
+                    + e.getMessage());
+        }
+        TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
+        if (accessibilityEnabled == 1) {
+            Log.v(TAG, "***ACCESSIBILITY IS ENABLED*** -----------------");
+            String settingValue = Settings.Secure.getString(
+                    mContext.getApplicationContext().getContentResolver(),
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+            if (settingValue != null) {
+                mStringColonSplitter.setString(settingValue);
+                while (mStringColonSplitter.hasNext()) {
+                    String accessibilityService = mStringColonSplitter.next();
+
+                    Log.v(TAG, "-------------- > accessibilityService :: " + accessibilityService + " " + service);
+                    if (accessibilityService.equalsIgnoreCase(service)) {
+                        Log.v(TAG, "We've found the correct setting - accessibility is switched on!");
+                        return true;
+                    }
+                }
+            }
+        } else {
+            Log.v(TAG, "***ACCESSIBILITY IS DISABLED***");
+        }
+        return false;
     }
 }

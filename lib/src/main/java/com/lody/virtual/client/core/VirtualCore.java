@@ -45,6 +45,7 @@ import com.lody.virtual.client.stub.VASettings;
 import com.lody.virtual.helper.compat.BundleCompat;
 import com.lody.virtual.helper.utils.BitmapUtils;
 import com.lody.virtual.os.VUserHandle;
+import com.lody.virtual.remote.AppTaskInfo;
 import com.lody.virtual.remote.InstallResult;
 import com.lody.virtual.remote.InstalledAppInfo;
 import com.lody.virtual.server.IAppManager;
@@ -218,6 +219,19 @@ public final class VirtualCore {
             }
         }
         return false;
+    }
+
+    public AppTaskInfo getForegroundTask(String processName) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        AppTaskInfo taskInfo;
+        for (ActivityManager.RunningTaskInfo info : am.getRunningTasks(1)) {
+            taskInfo = VActivityManager.get().getTaskInfo(info.id);
+            if (taskInfo != null && taskInfo.topActivity.getPackageName().equals(processName)) {
+                //前台显示
+                return taskInfo;
+            }
+        }
+        return null;
     }
 
     public String getEngineProcessName() {

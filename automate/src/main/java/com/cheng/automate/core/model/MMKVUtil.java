@@ -1,4 +1,4 @@
-package me.ele.uetool.base;
+package com.cheng.automate.core.model;
 
 import com.tencent.mmkv.MMKV;
 
@@ -8,6 +8,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import me.ele.uetool.base.JsonUtil;
 
 /**
  * @author zijian.cheng
@@ -37,6 +39,14 @@ public class MMKVUtil {
 
     private MMKV getMMKV() {
         return myMMKV;
+    }
+
+    public boolean decodeBool(String key, boolean value) {
+        return myMMKV.decodeBool(key, value);
+    }
+
+    public boolean encodeBool(String key, boolean value) {
+        return myMMKV.encode(key, value);
     }
 
     public void set(String key, Object value) {

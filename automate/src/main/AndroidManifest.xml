@@ -7,7 +7,7 @@
     <application>
 
         <service
-            android:name=".core.AutoAccessibility"
+            android:name=".core.AutoAccessibilityService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/accessibility"

@@ -22,18 +22,20 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.lody.virtual.client.core.VirtualCore;
+import com.lody.virtual.remote.AppTaskInfo;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import me.ele.uetool.attrdialog.AttrsDialogItemViewBinder;
 import me.ele.uetool.attrdialog.AttrsDialogMultiTypePool;
 import me.ele.uetool.base.Element;
-import me.ele.uetool.base.ElementBean;
+import com.cheng.automate.core.model.ElementBean;
 import me.ele.uetool.base.IAttrs;
 import me.ele.uetool.base.ItemArrayList;
-import me.ele.uetool.base.JsonUtil;
-import me.ele.uetool.base.MMKVUtil;
+
+import com.cheng.automate.core.model.MMKVUtil;
 import me.ele.uetool.base.item.AddMinusEditItem;
 import me.ele.uetool.base.item.BitmapItem;
 import me.ele.uetool.base.item.BriefDescItem;
@@ -522,7 +524,14 @@ public class Adapter extends RecyclerView.Adapter {
                                     beforeElement = new ArrayList<>();
                                 }
                                 int index = beforeElement.size();
-                                ElementBean currentElement = new ElementBean(index, id, resName, zClass, clickable, onClickListener, text);
+                                String currentWindow = "";
+                                //TODO
+                                AppTaskInfo appTaskInfo = VirtualCore.get().getForegroundTask("com.banban.kuxiu");
+                                if (appTaskInfo != null) {
+                                    currentWindow = appTaskInfo.topActivity.getClassName();
+                                }
+                                ElementBean currentElement = new ElementBean(
+                                        index, id, resName, zClass, clickable, onClickListener, text, currentWindow);
                                 if (isChecked) {
                                     beforeElement.add(currentElement);
                                     MMKVUtil.getInstance().setElement("elementBeans", beforeElement);

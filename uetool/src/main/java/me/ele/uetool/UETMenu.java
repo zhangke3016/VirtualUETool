@@ -28,6 +28,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cheng.automate.core.model.MMKVUtil;
+
 public class UETMenu extends LinearLayout {
 
     private View vMenu;
@@ -65,27 +67,34 @@ public class UETMenu extends LinearLayout {
                 sendCommand(MenuHelper.Type.TYPE_SHOW_EDIT);
             }
         }));
-        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_relative_location), R.drawable.uet_relative_position,
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        sendCommand(MenuHelper.Type.TYPE_RELATIVE_POSITION);
-                    }
-                }));
-        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_grid), R.drawable.uet_show_gridding,
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        sendCommand(MenuHelper.Type.TYPE_SHOW_GRIDDING);
-                    }
-                }));
-        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_scalpel), R.drawable.uet_scalpel,
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        sendCommand(MenuHelper.Type.TYPE_LAYOUT_LEVEL);
-                    }
-                }));
+        subMenus.add(new UETSubMenu.SubMenu("自动化", R.drawable.uet_edit_attr, new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //开始自动点击
+                sendCommand(MenuHelper.Type.TYPE_AUTO_TOUCH);
+            }
+        }));
+//        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_relative_location), R.drawable.uet_relative_position,
+//                new OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        sendCommand(MenuHelper.Type.TYPE_RELATIVE_POSITION);
+//                    }
+//                }));
+//        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_grid), R.drawable.uet_show_gridding,
+//                new OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        sendCommand(MenuHelper.Type.TYPE_SHOW_GRIDDING);
+//                    }
+//                }));
+//        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_scalpel), R.drawable.uet_scalpel,
+//                new OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        sendCommand(MenuHelper.Type.TYPE_LAYOUT_LEVEL);
+//                    }
+//                }));
 
         for (UETSubMenu.SubMenu subMenu : subMenus) {
             UETSubMenu uetSubMenu = new UETSubMenu(getContext());
@@ -193,6 +202,7 @@ public class UETMenu extends LinearLayout {
         } else if (UETMenu.dismiss(currentTopActivity)) {
             return;
         }
+        MMKVUtil.getInstance().encodeBool("isStart", false);
         Bundle bundle = new Bundle();
         bundle.putInt(MenuHelper.EXTRA_TYPE, type);
         MenuHelper.show(currentTopActivity, bundle);

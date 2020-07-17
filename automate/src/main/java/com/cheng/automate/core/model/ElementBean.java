@@ -1,4 +1,4 @@
-package me.ele.uetool.base;
+package com.cheng.automate.core.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,6 +15,27 @@ public class ElementBean implements Parcelable {
     private String clickable;
     private String onClickListener;
     private String text;
+    private String currentActivity;
+
+    public String getClickable() {
+        return clickable;
+    }
+
+    public String getCurrentActivity() {
+        return currentActivity;
+    }
+
+    public String getOnClickListener() {
+        return onClickListener;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getzClass() {
+        return zClass;
+    }
 
     public String getId() {
         return id;
@@ -29,7 +50,8 @@ public class ElementBean implements Parcelable {
                        String zClass,
                        String clickable,
                        String onClickListener,
-                       String text) {
+                       String text,
+                       String currentActivity) {
         this.sort = sort;
         this.id = id;
         this.resName = resName;
@@ -37,6 +59,7 @@ public class ElementBean implements Parcelable {
         this.clickable = clickable;
         this.onClickListener = onClickListener;
         this.text = text;
+        this.currentActivity = currentActivity;
     }
 
     protected ElementBean(Parcel in) {
@@ -47,10 +70,15 @@ public class ElementBean implements Parcelable {
         clickable = in.readString();
         onClickListener = in.readString();
         text = in.readString();
+        currentActivity = in.readString();
     }
 
     public int getSort() {
         return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 
     public static final Creator<ElementBean> CREATOR = new Creator<ElementBean>() {
@@ -96,5 +124,6 @@ public class ElementBean implements Parcelable {
         dest.writeString(clickable);
         dest.writeString(onClickListener);
         dest.writeString(text);
+        dest.writeString(currentActivity);
     }
 }
