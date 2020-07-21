@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -18,13 +19,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.cheng.automate.core.helper.FlowClickDataHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.cheng.automate.core.model.ElementBean;
 import com.cheng.automate.core.model.MMKVUtil;
+
 import me.ele.uetool.itemtouch.SwipeAndDragHelper;
 
 import static me.ele.uetool.base.DimenUtil.dip2px;
@@ -93,20 +93,6 @@ public class EditTouchLayout extends FrameLayout {
         clearBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         childLinearLayout.addView(clearBtn);
 
-        final boolean isStart = MMKVUtil.getInstance().decodeBool("isStart", false);
-        final Button startBtn = new Button(getContext());
-        startBtn.setText(isStart ? "停止" : "开始");
-        startBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MMKVUtil.getInstance().encodeBool("isStart", !isStart);
-                startBtn.setText(!isStart ? "停止" : "开始");
-                UETMenu.dismiss(null);
-            }
-        });
-        startBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        childLinearLayout.addView(startBtn);
-
 //        Button closeBtn = new Button(getContext());
 //        closeBtn.setText("关闭");
 //        closeBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
@@ -135,11 +121,19 @@ public class EditTouchLayout extends FrameLayout {
     }
 
     private void saveList() {
-        List<ElementBean> mElementList = new ArrayList<>(adapter.getElementList());
-        ElementBean bean;
-        for (int i = 0; i < mElementList.size(); i++) {
-            bean = mElementList.get(i);
-            bean.setSort(i);
+        final List<ElementBean> adapterList = adapter.getElementList();
+        List<ElementBean> mElementList = null;
+        if (adapterList != null) {
+            int size = adapterList.size();
+            if (size > 0) {
+                mElementList = new ArrayList<>(size);
+                ElementBean bean;
+                for (int i = 0; i < size; i++) {
+                    bean = adapterList.get(i);
+                    bean.setSort(i);
+                    mElementList.add(bean);
+                }
+            }
         }
         MMKVUtil.getInstance().setElement("elementBeans", mElementList);
     }
@@ -197,10 +191,32 @@ public class EditTouchLayout extends FrameLayout {
             return new EditViewHolder(linearLayout);
         }
 
+        private String getLastName(String string) {
+            return string.substring(string.lastIndexOf(".") + 1);
+        }
+
         @Override
         public void onBindViewHolder(@NonNull final EditViewHolder holder, int position) {
-            ElementBean elementBean = mElementList.get(position);
-            holder.vName.setText(elementBean.getResName());
+            ElementBean item = mElementList.get(position);
+
+            StringBuffer stringBuffer = new StringBuffer(item.getResName());
+            if (stringBuffer.length() == 0) {
+                stringBuffer.append(getLastName(item.getClassName()));
+            }
+            stringBuffer.append("->");
+            stringBuffer.append(item.getRect().toShortString());
+            String clickClass = item.getViewClickClass();
+            if (!TextUtils.isEmpty(clickClass)) {
+                stringBuffer.append("->");
+                int lastLength = 5;
+                if (clickClass.length() > lastLength) {
+                    stringBuffer.append(clickClass.substring(clickClass.length() - lastLength));
+                } else {
+                    stringBuffer.append(clickClass);
+                }
+            }
+
+            holder.vName.setText(stringBuffer);
             holder.vDetail.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {

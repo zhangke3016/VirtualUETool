@@ -8,8 +8,6 @@ import com.cheng.automate.core.base.BaseAccessibilityJob
 import com.cheng.automate.core.config.ConfigCt
 import com.cheng.automate.core.helper.AccessibilityHelper
 import com.cheng.automate.core.helper.FlowClickDataHelper
-import com.cheng.automate.core.model.ElementBean
-import com.cheng.automate.core.model.MMKVUtil
 import com.lody.virtual.client.core.VirtualCore
 
 /**
@@ -40,14 +38,25 @@ class FlowClick : BaseAccessibilityJob(null) {
             val appTaskInfo = VirtualCore.get().getForegroundTask(ConfigCt.AppName)
             if (appTaskInfo != null) {
                 val currentWindow = appTaskInfo.topActivity.className ?: return
-                Log.e("FlowClick", "currentWindow:>" + currentWindow)
-                if (currentElement.currentActivity == currentWindow) {
-                    val resId = "${ConfigCt.AppName}:id/${currentElement.resName}"
-                    val nodeInfo = AccessibilityHelper.findNodeInfosById(rootNode, resId, 0)
+                Log.e("FlowClick", "currentWindow:> $currentWindow")
+                if (currentElement.currentPage == currentWindow) {
+                    val nodeInfo = if (currentElement.resName.isNullOrEmpty()) {
+                        if (currentElement.text.isNullOrEmpty()) {
+                            return
+                        }
+                        Log.e("FlowClick", "find nodeText ${currentElement.text}")
+                        AccessibilityHelper.findNodeInfosByText(rootNode, currentElement.text, it.rect)
+                    } else {
+                        val resId = "${ConfigCt.AppName}:id/${currentElement.resName}"
+                        Log.e("FlowClick", "find nodeRes $resId")
+                        AccessibilityHelper.findNodeInfosById(rootNode, resId, it.rect)
+                    }
                     if (nodeInfo != null) {
-                        FlowClickDataHelper.ascendIndex()
                         AccessibilityHelper.performClick(nodeInfo)
-                        Log.e("FlowClick", "find node ${nodeInfo.viewIdResourceName}, $resId")
+                        if (!it.text.isNullOrEmpty() && nodeInfo.text != it.text) {
+                            AccessibilityHelper.nodeInput(context!!, nodeInfo, it.text)
+                        }
+                        FlowClickDataHelper.ascendIndex()
                     }
                 }
             }

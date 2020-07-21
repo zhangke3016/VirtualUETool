@@ -9,6 +9,8 @@ import android.os.Build;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import com.cheng.automate.core.model.MMKVUtil;
+
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -113,6 +115,7 @@ public class UETool {
             }
         }
         if (uetMenu == null) {
+            MMKVUtil.getInstance().encodeBool("isStart", false);
             uetMenu = new UETMenu(Application.getApplicationContext(), y);
         }
         if (!uetMenu.isShown()) {

@@ -24,9 +24,6 @@ object FlowClickDataHelper {
     }
 
     fun getCurrentElement(): ElementBean? {
-        if (beforeElement == null) {
-            resetElementList()
-        }
         beforeElement?.let {
             if (index < it.size) {
                 return it[index]

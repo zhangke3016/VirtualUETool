@@ -72,12 +72,15 @@ public class MMKVUtil {
     }
 
     public boolean setElement(String key, List<ElementBean> value) {
-        if (value == null) {
+        if (value == null || value.size() == 0) {
             myMMKV.removeValueForKey(key);
             return true;
         } else {
             Set<String> stringSet = new HashSet<>(value.size());
-            for (ElementBean bean : value) {
+            ElementBean bean;
+            for (int i = 0; i < value.size(); i++) {
+                bean = value.get(i);
+                bean.setSort(i + 1);
                 stringSet.add(JsonUtil.getInstance().toJsonString(bean));
             }
             return myMMKV.encode(key, stringSet);

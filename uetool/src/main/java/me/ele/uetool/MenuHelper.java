@@ -18,7 +18,6 @@ import me.ele.uetool.base.DimenUtil;
 
 import static android.view.Gravity.BOTTOM;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static me.ele.uetool.MenuHelper.Type.TYPE_AUTO_TOUCH;
 import static me.ele.uetool.MenuHelper.Type.TYPE_EDIT_ATTR;
 import static me.ele.uetool.MenuHelper.Type.TYPE_LAYOUT_LEVEL;
 import static me.ele.uetool.MenuHelper.Type.TYPE_RELATIVE_POSITION;
@@ -59,14 +58,6 @@ public class MenuHelper {
                 EditTouchLayout editTouchLayout = new EditTouchLayout(activity);
                 vContainer.addView(editTouchLayout);
                 break;
-            case TYPE_AUTO_TOUCH:
-                if (Util.isAccessibilitySettingsOn(activity)) {
-
-                } else {
-                    //打开系统设置中辅助功能
-                    activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-                }
-                return;
             case TYPE_RELATIVE_POSITION:
                 vContainer.addView(new RelativePositionLayout(activity));
                 break;
@@ -153,7 +144,6 @@ public class MenuHelper {
             TYPE_SHOW_GRIDDING,
             TYPE_RELATIVE_POSITION,
             TYPE_LAYOUT_LEVEL,
-            TYPE_AUTO_TOUCH
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
@@ -163,6 +153,5 @@ public class MenuHelper {
         int TYPE_SHOW_GRIDDING = 3;
         int TYPE_RELATIVE_POSITION = 4;
         int TYPE_LAYOUT_LEVEL = 5;
-        int TYPE_AUTO_TOUCH = 6;
     }
 }

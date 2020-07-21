@@ -20,7 +20,7 @@ import com.lody.virtual.client.core.VirtualCore
 class AutoAccessibilityService : AccessibilityService() {
 
     companion object {
-        private var service: AutoAccessibilityService? = null
+        var service: AutoAccessibilityService? = null
         private val job: ManageAccessibilityJob = ManageAccessibilityJob.instance
         private val hookPackName = ConfigCt.AppName
 

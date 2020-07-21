@@ -42,6 +42,10 @@ public class UETSubMenu extends LinearLayout {
         setOnClickListener(subMenu.getOnClickListener());
     }
 
+    public void setTitleText(CharSequence text) {
+        vTitle.setText(text);
+    }
+
     public static class SubMenu {
         private String title;
         private int imageRes;

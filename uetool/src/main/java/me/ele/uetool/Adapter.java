@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +21,9 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.cheng.automate.core.config.ConfigCt;
+import com.cheng.automate.core.model.ElementBean;
+import com.cheng.automate.core.model.MMKVUtil;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.remote.AppTaskInfo;
 
@@ -31,11 +33,9 @@ import java.util.List;
 import me.ele.uetool.attrdialog.AttrsDialogItemViewBinder;
 import me.ele.uetool.attrdialog.AttrsDialogMultiTypePool;
 import me.ele.uetool.base.Element;
-import com.cheng.automate.core.model.ElementBean;
 import me.ele.uetool.base.IAttrs;
 import me.ele.uetool.base.ItemArrayList;
 
-import com.cheng.automate.core.model.MMKVUtil;
 import me.ele.uetool.base.item.AddMinusEditItem;
 import me.ele.uetool.base.item.BitmapItem;
 import me.ele.uetool.base.item.BriefDescItem;
@@ -509,51 +509,57 @@ public class Adapter extends RecyclerView.Adapter {
                     try {
                         if (item.getType() == SwitchItem.Type.TYPE_SELECT_STEP) {
                             try {
+                                String currentWindow = "";
+                                AppTaskInfo appTaskInfo = VirtualCore.get().getForegroundTask(ConfigCt.INSTANCE.getAppName());
+                                if (appTaskInfo != null) {
+                                    currentWindow = appTaskInfo.topActivity.getClassName();
+                                }
+                                ElementBean currentElement = new ElementBean(currentWindow);
                                 View view = item.getElement().getView();
-                                String id = Util.getResId(view);
-                                String resName = Util.getResourceName(view.getId());
-                                String zClass = view.getClass().getName();
-                                String clickable = Boolean.toString(view.isClickable()).toUpperCase();
-                                String onClickListener = Util.getViewClickListener(view);
-                                String text = "";
+                                currentElement.setResId(Util.getResId(view.getId()));
+                                currentElement.setResName(Util.getResourceName(view.getId()));
+                                currentElement.setClassName(view.getClass().getName());
+                                currentElement.setClickable(Boolean.toString(view.isClickable()).toUpperCase());
+                                currentElement.setViewClickListener(Util.getViewClickListener(view));
+                                currentElement.setRect(item.getElement().getRect());
                                 if (view instanceof TextView) {
-                                    text = ((TextView) view).getText().toString();
+                                    currentElement.setText(((TextView) view).getText().toString());
                                 }
                                 List<ElementBean> beforeElement = MMKVUtil.getInstance().getElements("elementBeans");
                                 if (beforeElement == null) {
                                     beforeElement = new ArrayList<>();
                                 }
-                                int index = beforeElement.size();
-                                String currentWindow = "";
-                                //TODO
-                                AppTaskInfo appTaskInfo = VirtualCore.get().getForegroundTask("com.banban.kuxiu");
-                                if (appTaskInfo != null) {
-                                    currentWindow = appTaskInfo.topActivity.getClassName();
-                                }
-                                ElementBean currentElement = new ElementBean(
-                                        index, id, resName, zClass, clickable, onClickListener, text, currentWindow);
                                 if (isChecked) {
                                     beforeElement.add(currentElement);
                                     MMKVUtil.getInstance().setElement("elementBeans", beforeElement);
                                 } else {
                                     //取消选择
+                                    int index = beforeElement.size();
                                     if (index > 0) {
-                                        for (ElementBean item : beforeElement) {
-                                            if (item.getId().equals(id)) {
-                                                beforeElement.remove(item);
-                                                break;
+                                        String currentResId = currentElement.getResId();
+                                        String currentResName = currentElement.getResName();
+                                        for (ElementBean elementBean : beforeElement) {
+                                            if (elementBean.getCurrentPage().equals(currentWindow)) {
+                                                if (TextUtils.isEmpty(currentResId) || TextUtils.isEmpty(currentResName)) {
+                                                    if (elementBean.getRect().contains(currentElement.getRect())) {
+                                                        beforeElement.remove(elementBean);
+                                                        break;
+                                                    }
+                                                } else {
+                                                    String resId = elementBean.getResId();
+                                                    String resName = elementBean.getResName();
+                                                    if (resId.equals(currentResId) && resName.equals(currentResName)) {
+                                                        beforeElement.remove(elementBean);
+                                                        break;
+                                                    }
+                                                }
                                             }
                                         }
                                         MMKVUtil.getInstance().setElement("elementBeans", beforeElement);
                                     }
                                 }
+                                vName.setText(Util.getSwitchText(beforeElement, item.getElement()));
                                 item.setChecked(isChecked);
-                                Pair<Integer, Integer> pair = Util.getSwitchIndex(beforeElement, view.getId());
-                                String name = "未设置";
-                                if (pair.first > 0) {
-                                    name = pair.first + "/" + pair.second;
-                                }
-                                vName.setText(name);
                             } catch (Exception e) {
                                 item.setChecked(false);
                                 e.printStackTrace();

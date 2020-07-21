@@ -1,6 +1,11 @@
 package com.cheng.automate.core.helper
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.graphics.Rect
 import android.os.Build
+import android.os.Bundle
 import android.view.accessibility.AccessibilityNodeInfo
 
 /**
@@ -27,13 +32,36 @@ object AccessibilityHelper {
         return tmp
     }
 
-    /** 通过文本查找 */
+    /**
+     * 通过文本查找
+     */
     fun findNodeInfosByText(nodeInfo: AccessibilityNodeInfo, text: String?, i: Int): AccessibilityNodeInfo? {
         val list = nodeInfo.findAccessibilityNodeInfosByText(text)
         if (list == null || list.isEmpty()) {
             return null
         }
         return if (i == -1) list[list.size - 1] else list[i]
+    }
+
+    /**
+     * 通过文本查找
+     */
+    fun findNodeInfosByText(nodeInfo: AccessibilityNodeInfo, text: String?, rect: Rect?): AccessibilityNodeInfo? {
+        val list = nodeInfo.findAccessibilityNodeInfosByText(text)
+        if (list != null && list.isNotEmpty()) {
+            if (rect != null && list.size > 1) {
+                val screenRect = Rect()
+                for (item in list) {
+                    item.getBoundsInScreen(screenRect)
+                    if (screenRect.contains(rect)) {
+                        return item
+                    }
+                }
+            } else {
+                return list[0]
+            }
+        }
+        return null
     }
 
     /** 通过文本查找 */
@@ -49,11 +77,21 @@ object AccessibilityHelper {
         return null
     }
 
-    fun findNodeInfosById(nodeInfo: AccessibilityNodeInfo, resId: String?, i: Int): AccessibilityNodeInfo? {
+    fun findNodeInfosById(nodeInfo: AccessibilityNodeInfo, resId: String?, rect: Rect?): AccessibilityNodeInfo? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             val list = nodeInfo.findAccessibilityNodeInfosByViewId(resId)
             if (list != null && list.isNotEmpty()) {
-                return if (i == -1) list[list.size - 1] else list[i]
+                if (rect != null && list.size > 1) {
+                    val screenRect = Rect()
+                    for (item in list) {
+                        item.getBoundsInScreen(screenRect)
+                        if (screenRect.contains(rect)) {
+                            return item
+                        }
+                    }
+                } else {
+                    return list[0]
+                }
             }
         }
         return null
@@ -69,5 +107,25 @@ object AccessibilityHelper {
         } else {
             performClick(nodeInfo.parent)
         }
+    }
+
+    fun nodeInput(context: Context, edtNode: AccessibilityNodeInfo, txt: String): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //android 5.0
+            val arguments = Bundle()
+            arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, txt)
+            edtNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+            return true
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) { //android 4.3
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("text", txt)
+            clipboard.primaryClip = clip
+            //edtNode.fo
+            edtNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
+            ////粘贴进入内容
+            edtNode.performAction(AccessibilityNodeInfo.ACTION_PASTE)
+            return true
+        }
+        return false
     }
 }

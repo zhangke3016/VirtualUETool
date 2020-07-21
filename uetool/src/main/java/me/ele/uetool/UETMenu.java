@@ -8,10 +8,12 @@ import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -21,9 +23,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import com.cheng.automate.core.AutoAccessibilityService;
+import com.cheng.automate.core.helper.FlowClickDataHelper;
 import com.cmprocess.ipc.VCore;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,11 +74,25 @@ public class UETMenu extends LinearLayout {
                 sendCommand(MenuHelper.Type.TYPE_SHOW_EDIT);
             }
         }));
-        subMenus.add(new UETSubMenu.SubMenu("自动化", R.drawable.uet_edit_attr, new OnClickListener() {
+        boolean isStart = MMKVUtil.getInstance().decodeBool("isStart", false);
+        String text = isStart ? "停止" : "开始";
+        subMenus.add(new UETSubMenu.SubMenu(text, R.drawable.uet_edit_attr, new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //开始自动点击
-                sendCommand(MenuHelper.Type.TYPE_AUTO_TOUCH);
+                AutoAccessibilityService.Companion companion = AutoAccessibilityService.Companion;
+                if (companion != null && companion.getService() != null) {
+                    boolean isStart = !MMKVUtil.getInstance().decodeBool("isStart", false);
+                    ((UETSubMenu) v).setTitleText(isStart ? "停止" : "开始");
+                    MMKVUtil.getInstance().encodeBool("isStart", isStart);
+                    if (isStart) {
+                        FlowClickDataHelper.INSTANCE.resetElementList();
+                    }
+                } else {
+                    //打开系统设置中辅助功能
+                    Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
             }
         }));
 //        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_relative_location), R.drawable.uet_relative_position,

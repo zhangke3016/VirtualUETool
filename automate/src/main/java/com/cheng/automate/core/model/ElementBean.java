@@ -1,129 +1,90 @@
 package com.cheng.automate.core.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.graphics.Rect;
+
+import java.io.Serializable;
 
 /**
  * @author zijian.cheng
- * @date 2020/7/10
+ * @date 2020/7/20
  */
-public class ElementBean implements Parcelable {
+public class ElementBean implements Serializable {
+
+    private String currentPage;
     private int sort;
-    private String id;
-    private String resName;
-    private String zClass;
-    private String clickable;
-    private String onClickListener;
+    private String resId;
     private String text;
-    private String currentActivity;
-
-    public String getClickable() {
-        return clickable;
-    }
-
-    public String getCurrentActivity() {
-        return currentActivity;
-    }
-
-    public String getOnClickListener() {
-        return onClickListener;
-    }
+    private String resName;
+    private String className;
+    private String clickable;
+    private String viewClickClass;
+    private Rect rect;
 
     public String getText() {
         return text;
     }
 
-    public String getzClass() {
-        return zClass;
+    public ElementBean(String currentPage) {
+        this.currentPage = currentPage;
     }
 
-    public String getId() {
-        return id;
+    public void setRect(Rect rect) {
+        this.rect = rect;
+    }
+
+    public String getCurrentPage() {
+        return currentPage;
+    }
+
+    public String getViewClickClass() {
+        return viewClickClass;
+    }
+
+    public String getResId() {
+        return resId;
+    }
+
+    public Rect getRect() {
+        return rect;
     }
 
     public String getResName() {
         return resName;
     }
 
-    public ElementBean(int sort, String id,
-                       String resName,
-                       String zClass,
-                       String clickable,
-                       String onClickListener,
-                       String text,
-                       String currentActivity) {
-        this.sort = sort;
-        this.id = id;
-        this.resName = resName;
-        this.zClass = zClass;
-        this.clickable = clickable;
-        this.onClickListener = onClickListener;
-        this.text = text;
-        this.currentActivity = currentActivity;
-    }
-
-    protected ElementBean(Parcel in) {
-        sort = in.readInt();
-        id = in.readString();
-        resName = in.readString();
-        zClass = in.readString();
-        clickable = in.readString();
-        onClickListener = in.readString();
-        text = in.readString();
-        currentActivity = in.readString();
-    }
-
-    public int getSort() {
-        return sort;
+    public String getClassName() {
+        return className;
     }
 
     public void setSort(int sort) {
         this.sort = sort;
     }
 
-    public static final Creator<ElementBean> CREATOR = new Creator<ElementBean>() {
-        @Override
-        public ElementBean createFromParcel(Parcel in) {
-            return new ElementBean(in);
-        }
-
-        @Override
-        public ElementBean[] newArray(int size) {
-            return new ElementBean[size];
-        }
-    };
-
-    /**
-     * Describe the kinds of special objects contained in this Parcelable
-     * instance's marshaled representation. For example, if the object will
-     * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
-     * the return value of this method must include the
-     * {@link #CONTENTS_FILE_DESCRIPTOR} bit.
-     *
-     * @return a bitmask indicating the set of special object types marshaled
-     * by this Parcelable object instance.
-     */
-    @Override
-    public int describeContents() {
-        return 0;
+    public int getSort() {
+        return sort;
     }
 
-    /**
-     * Flatten this object in to a Parcel.
-     *
-     * @param dest  The Parcel in which the object should be written.
-     * @param flags Additional flags about how the object should be written.
-     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(sort);
-        dest.writeString(id);
-        dest.writeString(resName);
-        dest.writeString(zClass);
-        dest.writeString(clickable);
-        dest.writeString(onClickListener);
-        dest.writeString(text);
-        dest.writeString(currentActivity);
+    public void setResId(String resId) {
+        this.resId = resId;
+    }
+
+    public void setResName(String resName) {
+        this.resName = resName;
+    }
+
+    public void setClassName(String name) {
+        this.className = name;
+    }
+
+    public void setClickable(String clickable) {
+        this.clickable = clickable;
+    }
+
+    public void setViewClickListener(String viewClickClass) {
+        this.viewClickClass = viewClickClass;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

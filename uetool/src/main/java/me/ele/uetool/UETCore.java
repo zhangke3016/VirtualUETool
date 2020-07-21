@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.ele.uetool.base.Element;
+
 import com.cheng.automate.core.model.ElementBean;
+
 import me.ele.uetool.base.IAttrs;
+
 import com.cheng.automate.core.model.MMKVUtil;
+
 import me.ele.uetool.base.item.AddMinusEditItem;
 import me.ele.uetool.base.item.BitmapItem;
 import me.ele.uetool.base.item.EditTextItem;
@@ -34,17 +38,8 @@ public class UETCore implements IAttrs {
         View view = element.getView();
 
         List<ElementBean> beforeElement = MMKVUtil.getInstance().getElements("elementBeans");
-        int state;
-        if (view.getId() == NO_ID || view.getId() == 0) {
-            state = 2;
-        } else {
-            state = Util.getSwitchState(beforeElement, view.getId());
-        }
-        Pair<Integer, Integer> pair = Util.getSwitchIndex(beforeElement, view.getId());
-        String text = "未设置";
-        if (pair.first > 0) {
-            text = pair.first + "/" + pair.second;
-        }
+        int state = Util.getSwitchState(beforeElement, element);
+        String text = Util.getSwitchText(beforeElement, element);
         items.add(new SwitchItem(text, element, SwitchItem.Type.TYPE_SELECT_STEP, state));
         items.add(new TextItem("Fragment", Util.getCurrentFragmentName(view), new View.OnClickListener() {
             @Override
@@ -63,7 +58,7 @@ public class UETCore implements IAttrs {
 
         items.add(new TitleItem("COMMON"));
         items.add(new TextItem("Class", view.getClass().getName()));
-        items.add(new TextItem("Id", Util.getResId(view)));
+        items.add(new TextItem("Id", Util.getResId(view.getId())));
         items.add(new TextItem("ResName", Util.getResourceName(view.getId())));
         items.add(new TextItem("Tag", Util.getViewTag(view)));
         items.add(new TextItem("Clickable", Boolean.toString(view.isClickable()).toUpperCase()));
