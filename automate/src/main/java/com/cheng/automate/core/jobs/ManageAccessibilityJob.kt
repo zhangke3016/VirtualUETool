@@ -32,7 +32,7 @@ class ManageAccessibilityJob : BaseAccessibilityJob(null) {
 //        mSaveNotification.onCreateJob(service)
 //        mShotOnVideo.onCreateJob(service)
 //        mExeClick.onCreateJob(service)
-        mFlowClick.onCreateJob(service)
+//        mFlowClick.onCreateJob(service)
     }
 
     override fun onStopJob() {
@@ -42,7 +42,7 @@ class ManageAccessibilityJob : BaseAccessibilityJob(null) {
 //        mSaveNotification.onStopJob()
 //        mShotOnVideo.onStopJob()
 //        mExeClick.onStopJob()
-        mFlowClick.onStopJob()
+//        mFlowClick.onStopJob()
     }
 
     override fun onReceiveJob(event: AccessibilityEvent?) {
@@ -52,7 +52,7 @@ class ManageAccessibilityJob : BaseAccessibilityJob(null) {
         //debug(event);
 //        mGivePermission.onReceiveJob(event)
 //        mProtectMe.onReceiveJob(event)
-        mFlowClick.onReceiveJob(event)
+//        mFlowClick.onReceiveJob(event)
 //        mSaveNotification.onReceiveJob(event)
 //        mShotOnVideo.onReceiveJob(event)
     }

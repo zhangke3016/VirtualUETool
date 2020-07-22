@@ -1,12 +1,26 @@
 package com.cheng.automate.core.helper
 
+import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.GestureDescription
+import android.annotation.TargetApi
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Path
+import android.graphics.Point
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
+import android.support.v4.view.ViewCompat
+import android.util.Log
+import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
+import com.cheng.automate.core.AutoAccessibilityService
+import com.cheng.automate.core.config.ConfigCt
+import com.cheng.automate.core.model.ElementBean
+import com.lody.virtual.client.core.VirtualCore
+
 
 /**
  * @author zijian.cheng
@@ -33,6 +47,43 @@ object AccessibilityHelper {
     }
 
     /**
+     * 设置无障碍焦点
+     * 若关闭，用户控件将失去焦点，不会播报内容
+     * @param view  指定控件
+     * @param focused true打开，false关闭
+     */
+    fun setAccessibilityFocusable(view: View?, focused: Boolean) {
+        if (focused) {
+            ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES)
+        } else {
+            ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO)
+        }
+    }
+
+    /**
+     * 根据元素获取nodeinfo
+     */
+    fun findNodeInfoByElement(element: ElementBean): Parcelable? {
+        val rootNode = AutoAccessibilityService.service?.rootInActiveWindow ?: return null
+        val appTaskInfo = VirtualCore.get().getForegroundTask(ConfigCt.AppName) ?: return null
+        val currentWindow = appTaskInfo.topActivity.className ?: return null
+        Log.e("FlowClick", "currentWindow:> $currentWindow")
+        if (element.currentPage == currentWindow) {
+            if (element.resName.isNotEmpty()) {
+                val resId = "${ConfigCt.AppName}:id/${element.resName}"
+                Log.e("FlowClick", "find nodeRes $resId")
+                return findNodeInfosById(rootNode, resId, element.rect)
+            } else if (element.text.isNotEmpty()) {
+                Log.e("FlowClick", "find nodeText ${element.text}")
+                return findNodeInfosByText(rootNode, element.text, element.rect)
+            } else if (element.rect != null && !element.className.isNullOrEmpty()) {
+                return OnlyClickNodeInfo()
+            }
+        }
+        return null
+    }
+
+    /**
      * 通过文本查找
      */
     fun findNodeInfosByText(nodeInfo: AccessibilityNodeInfo, text: String?, i: Int): AccessibilityNodeInfo? {
@@ -53,7 +104,7 @@ object AccessibilityHelper {
                 val screenRect = Rect()
                 for (item in list) {
                     item.getBoundsInScreen(screenRect)
-                    if (screenRect.contains(rect)) {
+                    if (rect.contains(screenRect)) {
                         return item
                     }
                 }
@@ -64,7 +115,9 @@ object AccessibilityHelper {
         return null
     }
 
-    /** 通过文本查找 */
+    /**
+     * 通过文本查找
+     */
     fun findNodeInfosByTextAndClassName(rootNode: AccessibilityNodeInfo, text: String?, className: String): AccessibilityNodeInfo? {
         val list = rootNode.findAccessibilityNodeInfosByText(text)
         if (list == null || list.isEmpty()) {
@@ -77,6 +130,9 @@ object AccessibilityHelper {
         return null
     }
 
+    /**
+     * 通过ID查找
+     */
     fun findNodeInfosById(nodeInfo: AccessibilityNodeInfo, resId: String?, rect: Rect?): AccessibilityNodeInfo? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             val list = nodeInfo.findAccessibilityNodeInfosByViewId(resId)
@@ -85,7 +141,7 @@ object AccessibilityHelper {
                     val screenRect = Rect()
                     for (item in list) {
                         item.getBoundsInScreen(screenRect)
-                        if (screenRect.contains(rect)) {
+                        if (rect.contains(screenRect)) {
                             return item
                         }
                     }
@@ -95,6 +151,37 @@ object AccessibilityHelper {
             }
         }
         return null
+    }
+
+    /** 通过控件查找 */
+    fun findNodeInfosByClassName(rootNode: AccessibilityNodeInfo?, className: String?, rect: Rect): AccessibilityNodeInfo? {
+        val classNames = mutableListOf<AccessibilityNodeInfo?>()
+        recycleClassName(classNames, rootNode, className)
+        if (classNames.isNullOrEmpty()) return null
+        val screenRect = Rect()
+        for (item in classNames) {
+            item?.let {
+                it.getBoundsInScreen(screenRect)
+                if (rect.contains(screenRect)) {
+                    return item
+                }
+            }
+        }
+        return null
+    }
+
+    private fun recycleClassName(classNames: MutableList<AccessibilityNodeInfo?>, info: AccessibilityNodeInfo?, className: String?, findChild: Boolean = true) {
+        if (info == null || className.isNullOrEmpty()) return
+        if (className == info.className) {
+            classNames.add(info)
+        }
+        if (findChild && info.childCount > 0) {
+            for (i in 0 until info.childCount) {
+                if (info.getChild(i) != null) {
+                    recycleClassName(classNames, info.getChild(i), className, false)
+                }
+            }
+        }
     }
 
     /** 点击事件 */
@@ -109,7 +196,7 @@ object AccessibilityHelper {
         }
     }
 
-    fun nodeInput(context: Context, edtNode: AccessibilityNodeInfo, txt: String): Boolean {
+    fun nodeInput(edtNode: AccessibilityNodeInfo, txt: String): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //android 5.0
             val arguments = Bundle()
             arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, txt)
@@ -117,7 +204,8 @@ object AccessibilityHelper {
             return true
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) { //android 4.3
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            //Application.getApplicationContext();
+            val clipboard = VirtualCore.get().context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("text", txt)
             clipboard.primaryClip = clip
             //edtNode.fo
@@ -127,5 +215,52 @@ object AccessibilityHelper {
             return true
         }
         return false
+    }
+
+    fun performClickByRect(rect: Rect) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            dispatch_gesture(
+                    floatArrayOf(rect.centerX().toFloat(), rect.centerY().toFloat()),
+                    floatArrayOf(rect.centerX().toFloat(), rect.centerY().toFloat()),
+                    100,
+                    50,
+                    null)
+        } else {
+            GestureShellCmd.processClick(Point(rect.centerX(), rect.centerY()))
+        }
+    }
+
+    /**
+     * 手势模拟
+     *
+     * @param start_position 开始位置，长度为2的数组，下标0为x轴，下标1为y轴
+     * @param end_position
+     * @param startTime      开始间隔时间
+     * @param duration       持续时间
+     * @param callback       回调
+     */
+    @TargetApi(Build.VERSION_CODES.N)
+    fun dispatch_gesture(
+            start_position: FloatArray,
+            end_position: FloatArray,
+            startTime: Long,
+            duration: Long,
+            callback: GestureCallBack?
+    ) {
+        val path = Path()
+        path.moveTo(start_position[0], start_position[1])
+        path.lineTo(end_position[0], end_position[1])
+        val builder = GestureDescription.Builder()
+        val strokeDescription = GestureDescription.StrokeDescription(path, startTime, duration)
+        val gestureDescription = builder.addStroke(strokeDescription).build()
+        AutoAccessibilityService.service?.dispatchGesture(gestureDescription, object : AccessibilityService.GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription) {
+                callback?.succ(gestureDescription)
+            }
+
+            override fun onCancelled(gestureDescription: GestureDescription) {
+                callback?.fail(gestureDescription)
+            }
+        }, null)
     }
 }

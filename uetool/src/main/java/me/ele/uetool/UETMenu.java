@@ -23,12 +23,11 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.cheng.automate.core.AutoAccessibilityService;
-import com.cheng.automate.core.helper.FlowClickDataHelper;
+import com.cheng.automate.core.helper.AutoClickableManager;
 import com.cmprocess.ipc.VCore;
 
 import java.lang.reflect.Field;
@@ -85,7 +84,9 @@ public class UETMenu extends LinearLayout {
                     ((UETSubMenu) v).setTitleText(isStart ? "停止" : "开始");
                     MMKVUtil.getInstance().encodeBool("isStart", isStart);
                     if (isStart) {
-                        FlowClickDataHelper.INSTANCE.resetElementList();
+                        AutoClickableManager.INSTANCE.start();
+                    } else {
+                        AutoClickableManager.INSTANCE.stop();
                     }
                 } else {
                     //打开系统设置中辅助功能
@@ -95,27 +96,27 @@ public class UETMenu extends LinearLayout {
                 }
             }
         }));
-//        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_relative_location), R.drawable.uet_relative_position,
-//                new OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        sendCommand(MenuHelper.Type.TYPE_RELATIVE_POSITION);
-//                    }
-//                }));
-//        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_grid), R.drawable.uet_show_gridding,
-//                new OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        sendCommand(MenuHelper.Type.TYPE_SHOW_GRIDDING);
-//                    }
-//                }));
-//        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_scalpel), R.drawable.uet_scalpel,
-//                new OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        sendCommand(MenuHelper.Type.TYPE_LAYOUT_LEVEL);
-//                    }
-//                }));
+        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_relative_location), R.drawable.uet_relative_position,
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sendCommand(MenuHelper.Type.TYPE_RELATIVE_POSITION);
+                    }
+                }));
+        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_grid), R.drawable.uet_show_gridding,
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sendCommand(MenuHelper.Type.TYPE_SHOW_GRIDDING);
+                    }
+                }));
+        subMenus.add(new UETSubMenu.SubMenu(resources.getString(R.string.uet_scalpel), R.drawable.uet_scalpel,
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sendCommand(MenuHelper.Type.TYPE_LAYOUT_LEVEL);
+                    }
+                }));
 
         for (UETSubMenu.SubMenu subMenu : subMenus) {
             UETSubMenu uetSubMenu = new UETSubMenu(getContext());

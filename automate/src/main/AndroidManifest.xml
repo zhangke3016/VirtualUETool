@@ -12,7 +12,7 @@
             android:exported="true"
             android:label="@string/accessibility"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
 
