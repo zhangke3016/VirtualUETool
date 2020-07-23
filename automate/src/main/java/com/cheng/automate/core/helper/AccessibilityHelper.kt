@@ -69,11 +69,11 @@ object AccessibilityHelper {
         val currentWindow = appTaskInfo.topActivity.className ?: return null
         Log.e("FlowClick", "currentWindow:> $currentWindow")
         if (element.currentPage == currentWindow) {
-            if (element.resName.isNotEmpty()) {
+            if (!element.resName.isNullOrEmpty()) {
                 val resId = "${ConfigCt.AppName}:id/${element.resName}"
                 Log.e("FlowClick", "find nodeRes $resId")
                 return findNodeInfosById(rootNode, resId, element.rect)
-            } else if (element.text.isNotEmpty()) {
+            } else if (!element.text.isNullOrEmpty()) {
                 Log.e("FlowClick", "find nodeText ${element.text}")
                 return findNodeInfosByText(rootNode, element.text, element.rect)
             } else if (element.rect != null && !element.className.isNullOrEmpty()) {

@@ -15,7 +15,7 @@ import com.cheng.automate.core.model.MMKVUtil
  */
 object AutoClickableManager {
 
-    const val mStepMsgDelayMillis: Long = 1000 //每一步延迟发送时间
+    const val mStepMsgDelayMillis: Long = 2000 //每一步延迟发送时间
     const val millisInFuture: Long = 10000 //寻找节点总时长
     const val countDownInterval: Long = 500 //寻找节点间隔时间
     const val NEXT_STEP = 0x00
@@ -49,7 +49,7 @@ object AutoClickableManager {
                 }
 
                 override fun onFinish() {
-                    Log.e("", "onFinish")
+                    Log.e(" ", "not find!")
                 }
             }, *orders)
         }
