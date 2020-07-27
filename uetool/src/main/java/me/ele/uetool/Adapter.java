@@ -510,7 +510,7 @@ public class Adapter extends RecyclerView.Adapter {
                         if (item.getType() == SwitchItem.Type.TYPE_SELECT_STEP) {
                             try {
                                 String currentWindow = "";
-                                AppTaskInfo appTaskInfo = VirtualCore.get().getForegroundTask(ConfigCt.INSTANCE.getAppName());
+                                AppTaskInfo appTaskInfo = VirtualCore.get().getForegroundTask(ConfigCt.AppName);
                                 if (appTaskInfo != null) {
                                     currentWindow = appTaskInfo.topActivity.getClassName();
                                 }

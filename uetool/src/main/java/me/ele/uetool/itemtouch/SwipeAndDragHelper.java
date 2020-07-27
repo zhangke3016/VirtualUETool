@@ -2,7 +2,6 @@ package me.ele.uetool.itemtouch;
 
 import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 
 /**
  * @author zijian.cheng

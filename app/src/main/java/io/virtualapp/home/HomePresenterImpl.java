@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
+
+import com.cheng.automate.core.config.ConfigCt;
 import com.lody.virtual.GmsSupport;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.os.VUserInfo;
@@ -64,10 +66,12 @@ class HomePresenterImpl implements HomeContract.HomePresenter {
             if (data instanceof PackageAppData) {
                 PackageAppData appData = (PackageAppData) data;
                 appData.isFirstOpen = false;
+                ConfigCt.AppName = appData.packageName;
                 LoadingActivity.launch(mActivity, appData.packageName, 0);
             } else if (data instanceof MultiplePackageAppData) {
                 MultiplePackageAppData multipleData = (MultiplePackageAppData) data;
                 multipleData.isFirstOpen = false;
+                ConfigCt.AppName = multipleData.appInfo.packageName;
                 LoadingActivity.launch(mActivity, multipleData.appInfo.packageName, ((MultiplePackageAppData) data).userId);
             }
         } catch (Throwable e) {

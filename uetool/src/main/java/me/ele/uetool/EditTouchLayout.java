@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -25,6 +24,7 @@ import java.util.List;
 import com.cheng.automate.core.model.ElementBean;
 import com.cheng.automate.core.model.MMKVUtil;
 
+import me.ele.uetool.itemtouch.ItemTouchHelper;
 import me.ele.uetool.itemtouch.SwipeAndDragHelper;
 
 import static me.ele.uetool.base.DimenUtil.dip2px;

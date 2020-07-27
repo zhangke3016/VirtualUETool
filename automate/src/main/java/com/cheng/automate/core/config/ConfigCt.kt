@@ -14,8 +14,9 @@ object ConfigCt {
     @Volatile
     var LocalPath = "" //本地工作路径；
 
+    @JvmField
     @Volatile
-    var AppName = "com.banban.kuxiu" //本app名称；
+    var AppName = "" //本app名称；
 
     const val TAG = "byc001" //调试标识：
     const val TAG2 = "byc002" //调试标识：

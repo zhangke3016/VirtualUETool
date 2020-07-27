@@ -67,19 +67,19 @@ object AccessibilityHelper {
         val rootNode = AutoAccessibilityService.service?.rootInActiveWindow ?: return null
         val appTaskInfo = VirtualCore.get().getForegroundTask(ConfigCt.AppName) ?: return null
         val currentWindow = appTaskInfo.topActivity.className ?: return null
-        Log.e("FlowClick", "currentWindow:> $currentWindow")
-        if (element.currentPage == currentWindow) {
-            if (!element.resName.isNullOrEmpty()) {
-                val resId = "${ConfigCt.AppName}:id/${element.resName}"
-                Log.e("FlowClick", "find nodeRes $resId")
-                return findNodeInfosById(rootNode, resId, element.rect)
-            } else if (!element.text.isNullOrEmpty()) {
-                Log.e("FlowClick", "find nodeText ${element.text}")
-                return findNodeInfosByText(rootNode, element.text, element.rect)
-            } else if (element.rect != null && !element.className.isNullOrEmpty()) {
-                return OnlyClickNodeInfo()
-            }
+        Log.e("FlowClick", "currentWindow:> $currentWindow, ${element.currentPage}")
+        if (!element.resName.isNullOrEmpty()) {
+            val resId = "${ConfigCt.AppName}:id/${element.resName}"
+            Log.e("FlowClick", "find nodeRes $resId")
+            return findNodeInfosById(rootNode, resId, element.rect)
+        } else if (!element.text.isNullOrEmpty()) {
+            Log.e("FlowClick", "find nodeText ${element.text}")
+            return findNodeInfosByText(rootNode, element.text, element.rect)
+        } else if (element.rect != null && !element.className.isNullOrEmpty()) {
+            Log.e("FlowClick", "find OnlyClick NodeInfo ${element.text}")
+            return OnlyClickNodeInfo()
         }
+        Log.e("FlowClick", "find null NodeInfo!")
         return null
     }
 

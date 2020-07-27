@@ -32,7 +32,7 @@ public class ReflectionP {
 
     public static <T> T breakAndroidP(Func<T> func) {
         T result;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        if (Build.VERSION.SDK_INT >= 28) {
             exemptAll();
             result = func.call();
         } else {

@@ -19,7 +19,7 @@ public class Reflection {
     private static Method setHiddenApiExemptions;
 
     static {
-        if (SDK_INT >= Build.VERSION_CODES.P) {
+        if (SDK_INT >= 28) {
             try {
                 Method forName = Class.class.getDeclaredMethod("forName", String.class);
                 Method getDeclaredMethod = Class.class.getDeclaredMethod("getDeclaredMethod", String.class, Class[].class);
