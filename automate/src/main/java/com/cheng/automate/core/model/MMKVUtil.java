@@ -1,5 +1,9 @@
 package com.cheng.automate.core.model;
 
+import android.text.TextUtils;
+
+import com.cheng.automate.core.config.ConfigCt;
+import com.lody.virtual.client.core.VirtualCore;
 import com.tencent.mmkv.MMKV;
 
 import java.util.ArrayList;
@@ -68,10 +72,12 @@ public class MMKVUtil {
     }
 
     public Set<String> getStringSet(String key) {
+        key = key.replace(".", "");
         return myMMKV.decodeStringSet(key, null);
     }
 
-    public boolean setElement(String key, List<ElementBean> value) {
+    public boolean setElement(List<ElementBean> value) {
+        String key = getCurrentKeyWord();
         if (value == null || value.size() == 0) {
             myMMKV.removeValueForKey(key);
             return true;
@@ -90,10 +96,10 @@ public class MMKVUtil {
     /**
      * 排好序的list
      *
-     * @param key
      * @return
      */
-    public List<ElementBean> getElements(String key) {
+    public List<ElementBean> getElements() {
+        String key = getCurrentKeyWord();
         try {
             Set<String> strings = getStringSet(key);
             if (strings != null && strings.size() > 0) {
@@ -113,6 +119,15 @@ public class MMKVUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private String getCurrentKeyWord() {
+        ConfigCt.AppName = VirtualCore.get().getTopPackName();
+        if (!TextUtils.isEmpty(ConfigCt.AppName)) {
+            return ConfigCt.AppName.replace(".", "");
+        } else {
+            return "";
+        }
     }
 
     public String[] allKeys() {

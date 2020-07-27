@@ -525,13 +525,13 @@ public class Adapter extends RecyclerView.Adapter {
                                 if (view instanceof TextView) {
                                     currentElement.setText(((TextView) view).getText().toString());
                                 }
-                                List<ElementBean> beforeElement = MMKVUtil.getInstance().getElements("elementBeans");
+                                List<ElementBean> beforeElement = MMKVUtil.getInstance().getElements();
                                 if (beforeElement == null) {
                                     beforeElement = new ArrayList<>();
                                 }
                                 if (isChecked) {
                                     beforeElement.add(currentElement);
-                                    MMKVUtil.getInstance().setElement("elementBeans", beforeElement);
+                                    MMKVUtil.getInstance().setElement(beforeElement);
                                 } else {
                                     //取消选择
                                     int index = beforeElement.size();
@@ -555,7 +555,7 @@ public class Adapter extends RecyclerView.Adapter {
                                                 }
                                             }
                                         }
-                                        MMKVUtil.getInstance().setElement("elementBeans", beforeElement);
+                                        MMKVUtil.getInstance().setElement(beforeElement);
                                     }
                                 }
                                 vName.setText(Util.getSwitchText(beforeElement, item.getElement()));

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cheng.automate.core.config.ConfigCt;
 import com.cheng.automate.core.model.ElementBean;
 import com.cheng.automate.core.model.MMKVUtil;
 
@@ -117,7 +118,7 @@ public class EditTouchLayout extends FrameLayout {
     }
 
     private void resetList() {
-        adapter.setElementList(MMKVUtil.getInstance().getElements("elementBeans"));
+        adapter.setElementList(MMKVUtil.getInstance().getElements());
     }
 
     private void saveList() {
@@ -135,12 +136,12 @@ public class EditTouchLayout extends FrameLayout {
                 }
             }
         }
-        MMKVUtil.getInstance().setElement("elementBeans", mElementList);
+        MMKVUtil.getInstance().setElement(mElementList);
     }
 
     private void clearList() {
         adapter.setElementList(null);
-        MMKVUtil.getInstance().setElement("elementBeans", null);
+        MMKVUtil.getInstance().setElement(null);
     }
 
     class EditAdapter extends RecyclerView.Adapter<EditViewHolder> implements

@@ -11,6 +11,7 @@ import java.util.List;
 
 import me.ele.uetool.base.Element;
 
+import com.cheng.automate.core.config.ConfigCt;
 import com.cheng.automate.core.model.ElementBean;
 
 import me.ele.uetool.base.IAttrs;
@@ -37,7 +38,7 @@ public class UETCore implements IAttrs {
 
         View view = element.getView();
 
-        List<ElementBean> beforeElement = MMKVUtil.getInstance().getElements("elementBeans");
+        List<ElementBean> beforeElement = MMKVUtil.getInstance().getElements();
         int state = Util.getSwitchState(beforeElement, element);
         String text = Util.getSwitchText(beforeElement, element);
         items.add(new SwitchItem(text, element, SwitchItem.Type.TYPE_SELECT_STEP, state));

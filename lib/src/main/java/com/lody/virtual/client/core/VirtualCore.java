@@ -234,6 +234,19 @@ public final class VirtualCore {
         return null;
     }
 
+    public String getTopPackName() {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        AppTaskInfo taskInfo;
+        for (ActivityManager.RunningTaskInfo info : am.getRunningTasks(1)) {
+            taskInfo = VActivityManager.get().getTaskInfo(info.id);
+            if (taskInfo != null) {
+                //前台显示
+                return taskInfo.topActivity.getPackageName();
+            }
+        }
+        return null;
+    }
+
     public String getEngineProcessName() {
         return context.getString(R.string.engine_process_name);
     }

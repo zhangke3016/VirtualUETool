@@ -24,7 +24,7 @@ object AutoClickableManager {
 
     private var mDownTimer: DownTimer = DownTimer()
     private val mClickStepHandler: ClickStepHandler = ClickStepHandler(Looper.getMainLooper())
-    private lateinit var elementList: MutableList<ElementBean?>
+    private var elementList: MutableList<ElementBean?>? = null
     private const val loop = true
 
     private var currentOrders: Array<out ElementBean?>? = null
@@ -57,7 +57,10 @@ object AutoClickableManager {
 
     fun start() {
         index = 0
-        elementList = MMKVUtil.getInstance().getElements("elementBeans")
+        elementList = MMKVUtil.getInstance().elements
+        if (elementList.isNullOrEmpty()) {
+            return
+        }
         mClickStepHandler.removeCallbacksAndMessages(null)
         mClickStepHandler.sendEmptyMessage(NEXT_STEP)
     }
@@ -111,16 +114,18 @@ object AutoClickableManager {
     }
 
     private fun getQueueElement(position: Int): ElementBean? {
-        return when {
-            position < elementList.size -> {
-                elementList[position]
-            }
-            loop -> {
-                index = 0
-                elementList[0]
-            }
-            else -> {
-                null
+        return elementList?.let {
+            when {
+                position < it.size -> {
+                    it[position]
+                }
+                loop -> {
+                    index = 0
+                    it[0]
+                }
+                else -> {
+                    null
+                }
             }
         }
     }
