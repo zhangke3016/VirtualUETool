@@ -1,4 +1,4 @@
-package com.cheng.automate.core.config
+package me.ele.uetool.base.config
 
 /**
  * @author zijian.cheng

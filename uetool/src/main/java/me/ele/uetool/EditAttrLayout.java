@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -11,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import me.ele.uetool.base.Element;
+import me.ele.uetool.base.db.ElementBean;
 
 import static me.ele.uetool.base.DimenUtil.dip2px;
 import static me.ele.uetool.base.DimenUtil.px2dip;
@@ -167,6 +169,21 @@ public class EditAttrLayout extends CollectViewsLayout {
                         public void enableMove() {
                             mode = new MoveMode();
                             dismissAttrsDialog();
+                        }
+
+                        @Override
+                        public void showSelectedViews(int position, boolean isChecked, ElementBean currentElement) {
+                            int positionStart = position + 1;
+                            if (isChecked) {
+                                PointF pointF = currentElement.getFromPoint();
+                                if (pointF.x == 0 && pointF.y == 0) {
+                                    currentElement.setFromPoint(new PointF(lastX, lastY));
+                                    currentElement.setToPoint(new PointF(lastX, lastY));
+                                }
+                                dialog.notifySelectedViewItemInserted(positionStart, targetElement, currentElement);
+                            } else {
+                                dialog.notifySelectedItemRangeRemoved(positionStart);
+                            }
                         }
 
                         @Override

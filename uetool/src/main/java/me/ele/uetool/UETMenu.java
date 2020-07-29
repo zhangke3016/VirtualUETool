@@ -34,7 +34,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cheng.automate.core.model.MMKVUtil;
+import me.ele.uetool.base.db.MMKVUtil;
 
 public class UETMenu extends LinearLayout {
 

@@ -11,12 +11,11 @@ import java.util.List;
 
 import me.ele.uetool.base.Element;
 
-import com.cheng.automate.core.config.ConfigCt;
-import com.cheng.automate.core.model.ElementBean;
+import me.ele.uetool.base.db.ElementBean;
 
 import me.ele.uetool.base.IAttrs;
 
-import com.cheng.automate.core.model.MMKVUtil;
+import me.ele.uetool.base.db.MMKVUtil;
 
 import me.ele.uetool.base.item.AddMinusEditItem;
 import me.ele.uetool.base.item.BitmapItem;
@@ -26,7 +25,6 @@ import me.ele.uetool.base.item.SwitchItem;
 import me.ele.uetool.base.item.TextItem;
 import me.ele.uetool.base.item.TitleItem;
 
-import static android.view.View.NO_ID;
 import static me.ele.uetool.base.DimenUtil.px2dip;
 import static me.ele.uetool.base.DimenUtil.px2sp;
 
@@ -39,9 +37,26 @@ public class UETCore implements IAttrs {
         View view = element.getView();
 
         List<ElementBean> beforeElement = MMKVUtil.getInstance().getElements();
-        int state = Util.getSwitchState(beforeElement, element);
-        String text = Util.getSwitchText(beforeElement, element);
-        items.add(new SwitchItem(text, element, SwitchItem.Type.TYPE_SELECT_STEP, state));
+        ElementBean elementBean = ElementBean.createElementBean(element);
+        int state = 0;
+        String text = "未设置";
+        if (beforeElement != null) {
+            int size = beforeElement.size();
+            if (size > 0) {
+                ElementBean tempBean;
+                for (int i = 0; i < size; i++) {
+                    tempBean = beforeElement.get(i);
+                    if (tempBean.getUniqueId().equals(elementBean.getUniqueId())) {
+                        elementBean = tempBean;
+                        state = 1;
+                        text = (i + 1) + "/" + size;
+                        break;
+                    }
+                }
+            }
+        }
+
+        items.add(new SwitchItem(text, element, SwitchItem.Type.TYPE_SELECT_STEP, state, elementBean));
         items.add(new TextItem("Fragment", Util.getCurrentFragmentName(view), new View.OnClickListener() {
             @Override
             public void onClick(View v) {

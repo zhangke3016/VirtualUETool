@@ -7,8 +7,8 @@ import android.os.Message
 import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
 import com.cheng.automate.core.AutoAccessibilityService
-import com.cheng.automate.core.model.ElementBean
-import com.cheng.automate.core.model.MMKVUtil
+import me.ele.uetool.base.db.ElementBean
+import me.ele.uetool.base.db.MMKVUtil
 
 /**
  * @author zijian.cheng
@@ -16,11 +16,11 @@ import com.cheng.automate.core.model.MMKVUtil
  */
 object AutoClickableManager {
 
-    const val mStepMsgDelayMillis: Long = 1000 //每一步延迟发送时间
     const val millisInFuture: Long = 10000 //寻找节点总时长
     const val countDownInterval: Long = 500 //寻找节点间隔时间
-    const val NEXT_STEP = 0x00
-    const val FIND_ELEMENT = 0x01
+    const val STEP_NEXT = 0x00
+    const val STEP_DELAY = 0x01
+    const val FIND_ELEMENT = 0x02
 
     private var mDownTimer: DownTimer = DownTimer()
     private val mClickStepHandler: ClickStepHandler = ClickStepHandler(Looper.getMainLooper())
@@ -32,8 +32,16 @@ object AutoClickableManager {
 
     class ClickStepHandler(mainLooper: Looper) : Handler(mainLooper) {
         override fun handleMessage(msg: Message) {
-            if (msg.what == NEXT_STEP) {
-                findNodeInfoByTimer(getQueueElement(index))
+            if (msg.what == STEP_NEXT) {
+                val elementBean = getQueueElement(index)
+                elementBean?.let {
+                    mClickStepHandler.removeCallbacksAndMessages(null)
+                    mClickStepHandler.sendMessageDelayed(Message.obtain(mClickStepHandler, STEP_DELAY, it), it.stepDelay)
+                }
+            } else if (msg.what == STEP_DELAY) {
+                if (msg.obj is ElementBean) {
+                    findNodeInfoByTimer(msg.obj as ElementBean)
+                }
             } else if (msg.what == FIND_ELEMENT) {
                 currentOrders?.let {
                     for (item in it) {
@@ -62,7 +70,7 @@ object AutoClickableManager {
             return
         }
         mClickStepHandler.removeCallbacksAndMessages(null)
-        mClickStepHandler.sendEmptyMessage(NEXT_STEP)
+        mClickStepHandler.sendEmptyMessage(STEP_NEXT)
     }
 
     fun stop() {
@@ -87,10 +95,15 @@ object AutoClickableManager {
                 AccessibilityHelper.nodeInput(nodeInfo, element.text)
             }
             index += 1
-            AccessibilityHelper.performClick(nodeInfo)
+            if (element.scrollDuration != 0L) {
+                //有滑动时间，说明是滑动手势
+                AccessibilityHelper.processSwipe(element.fromPoint, element.toPoint, element.scrollDuration)
+            } else {
+                AccessibilityHelper.performClick(nodeInfo)
+            }
         }
         mClickStepHandler.removeCallbacksAndMessages(null)
-        mClickStepHandler.sendEmptyMessageDelayed(NEXT_STEP, mStepMsgDelayMillis)
+        mClickStepHandler.sendEmptyMessage(STEP_NEXT)
     }
 
     fun onTimerFinish() {

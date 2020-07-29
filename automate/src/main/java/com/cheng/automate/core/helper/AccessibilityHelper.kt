@@ -8,6 +8,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Path
 import android.graphics.Point
+import android.graphics.PointF
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
@@ -17,8 +18,8 @@ import android.util.Log
 import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
 import com.cheng.automate.core.AutoAccessibilityService
-import com.cheng.automate.core.config.ConfigCt
-import com.cheng.automate.core.model.ElementBean
+import me.ele.uetool.base.config.ConfigCt
+import me.ele.uetool.base.db.ElementBean
 import com.lody.virtual.client.core.VirtualCore
 
 
@@ -217,6 +218,9 @@ object AccessibilityHelper {
         return false
     }
 
+    /**
+     * 点击事件
+     */
     fun performClickByRect(rect: Rect) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             dispatch_gesture(
@@ -227,6 +231,22 @@ object AccessibilityHelper {
                     null)
         } else {
             GestureShellCmd.processClick(Point(rect.centerX(), rect.centerY()))
+        }
+    }
+
+    /**
+     * 滑动事件
+     */
+    fun processSwipe(p1: PointF, p2: PointF, duration: Long) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            dispatch_gesture(
+                    floatArrayOf(p1.x, p1.y),
+                    floatArrayOf(p2.x, p2.y),
+                    100,
+                    duration,
+                    null)
+        } else {
+            GestureShellCmd.processSwipe(p1, p2, duration)
         }
     }
 

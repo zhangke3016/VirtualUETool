@@ -107,6 +107,7 @@ public class CloneAppListAdapter extends DragSelectRecyclerViewAdapter<CloneAppL
         holder.itemView.setOnClickListener(v -> {
             mItemEventListener.onItemClick(info, position);
         });
+        holder.itemView.setEnabled("com.banban.kuxiu".equals(info.packageName));
     }
 
     @Override

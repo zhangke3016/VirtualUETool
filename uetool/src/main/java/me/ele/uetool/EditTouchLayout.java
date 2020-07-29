@@ -21,9 +21,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cheng.automate.core.config.ConfigCt;
-import com.cheng.automate.core.model.ElementBean;
-import com.cheng.automate.core.model.MMKVUtil;
+import me.ele.uetool.base.db.ElementBean;
+import me.ele.uetool.base.db.MMKVUtil;
 
 import me.ele.uetool.itemtouch.ItemTouchHelper;
 import me.ele.uetool.itemtouch.SwipeAndDragHelper;

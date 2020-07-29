@@ -22,5 +22,4 @@ dependencies {
     api project(':uetool-base')
     api project(':uetool-fresco')
     api project(':cmprocess')
-    api project(':lib')
 }

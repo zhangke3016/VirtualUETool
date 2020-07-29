@@ -1,8 +1,8 @@
-package com.cheng.automate.core.model;
+package me.ele.uetool.base.db;
 
 import android.text.TextUtils;
 
-import com.cheng.automate.core.config.ConfigCt;
+import me.ele.uetool.base.config.ConfigCt;
 import com.lody.virtual.client.core.VirtualCore;
 import com.tencent.mmkv.MMKV;
 

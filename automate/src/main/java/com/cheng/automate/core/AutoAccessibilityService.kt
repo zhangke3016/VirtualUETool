@@ -4,9 +4,9 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-import com.cheng.automate.core.config.ConfigCt
+import me.ele.uetool.base.config.ConfigCt
 import com.cheng.automate.core.jobs.ManageAccessibilityJob
-import com.cheng.automate.core.model.MMKVUtil
+import me.ele.uetool.base.db.MMKVUtil
 import com.cheng.automate.extend.toast
 import com.lody.virtual.client.core.VirtualCore
 

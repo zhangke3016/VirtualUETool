@@ -9,7 +9,8 @@ import android.os.Build;
 import android.provider.Settings;
 import android.widget.Toast;
 
-import com.cheng.automate.core.model.MMKVUtil;
+import me.ele.uetool.attrdialog.binder.EditStepItemBinder;
+import me.ele.uetool.base.db.MMKVUtil;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -28,6 +29,7 @@ import me.ele.uetool.base.ItemViewBinder;
 import me.ele.uetool.base.item.AddMinusEditItem;
 import me.ele.uetool.base.item.BitmapItem;
 import me.ele.uetool.base.item.BriefDescItem;
+import me.ele.uetool.base.item.EditStepItem;
 import me.ele.uetool.base.item.EditTextItem;
 import me.ele.uetool.base.item.Item;
 import me.ele.uetool.base.item.SwitchItem;
@@ -158,6 +160,8 @@ public class UETool {
         attrsDialogMultiTypePool.register(SwitchItem.class, new SwitchItemBinder());
         attrsDialogMultiTypePool.register(TextItem.class, new TextItemBinder());
         attrsDialogMultiTypePool.register(TitleItem.class, new TitleItemBinder());
+        attrsDialogMultiTypePool.register(EditStepItem.class, new EditStepItemBinder());
+
     }
 
     @TargetApi(Build.VERSION_CODES.M)

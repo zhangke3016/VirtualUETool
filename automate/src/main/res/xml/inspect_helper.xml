@@ -4,6 +4,7 @@
     android:accessibilityFeedbackType="feedbackAllMask"
     android:accessibilityFlags="flagDefault"
     android:canPerformGestures="true"
+    android:description="@string/accessibility"
     android:canRequestFilterKeyEvents="true"
     android:canRetrieveWindowContent="true"
     android:canRequestTouchExplorationMode="true"

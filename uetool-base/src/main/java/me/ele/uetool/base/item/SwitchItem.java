@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import me.ele.uetool.base.Element;
+import me.ele.uetool.base.db.ElementBean;
 
 import static me.ele.uetool.base.item.SwitchItem.Type.TYPE_IS_BOLD;
 import static me.ele.uetool.base.item.SwitchItem.Type.TYPE_MOVE;
@@ -18,6 +19,7 @@ public class SwitchItem extends ElementItem {
     private int type;
     private boolean isChecked;
     private boolean disEnable;
+    private ElementBean elementBean;
 
     public SwitchItem(String name, Element element, @Type int type) {
         super(name, element);
@@ -30,11 +32,12 @@ public class SwitchItem extends ElementItem {
         this.isChecked = isChecked;
     }
 
-    public SwitchItem(String name, Element element, @Type int type, int state) {
+    public SwitchItem(String name, Element element, @Type int type, int state, ElementBean elementBean) {
         super(name, element);
         this.type = type;
         this.isChecked = state == 1;
         this.disEnable = state == 2;
+        this.elementBean = elementBean;
     }
 
     public void setChecked(boolean checked) {
@@ -51,6 +54,14 @@ public class SwitchItem extends ElementItem {
 
     public int getType() {
         return type;
+    }
+
+    public ElementBean getElementBean() {
+        return elementBean;
+    }
+
+    public void setElementBean(ElementBean elementBean) {
+        this.elementBean = elementBean;
     }
 
     @IntDef({

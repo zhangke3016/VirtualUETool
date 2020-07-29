@@ -3,7 +3,7 @@ package com.cheng.automate.core.jobs
 import android.view.accessibility.AccessibilityEvent
 import com.cheng.automate.core.AutoAccessibilityService
 import com.cheng.automate.core.base.BaseAccessibilityJob
-import com.cheng.automate.core.config.Order
+import me.ele.uetool.base.config.Order
 
 /**
  * @author zijian.cheng

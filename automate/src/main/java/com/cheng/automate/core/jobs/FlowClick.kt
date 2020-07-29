@@ -1,12 +1,8 @@
 package com.cheng.automate.core.jobs
 
-import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.cheng.automate.core.AutoAccessibilityService
 import com.cheng.automate.core.base.BaseAccessibilityJob
-import com.cheng.automate.core.config.ConfigCt
-import com.cheng.automate.core.helper.AccessibilityHelper
-import com.lody.virtual.client.core.VirtualCore
 
 /**
  * @author zijian.cheng

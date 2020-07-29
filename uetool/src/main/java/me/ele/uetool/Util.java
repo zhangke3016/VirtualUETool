@@ -40,7 +40,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cheng.automate.core.model.ElementBean;
+import me.ele.uetool.base.db.ElementBean;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -76,65 +76,6 @@ public class Util {
     public static void setStatusBarColor(@NonNull Window window, int color) {
         if (Build.VERSION.SDK_INT >= 21) {
             window.setStatusBarColor(color);
-        }
-    }
-
-    public static String getSwitchText(List<ElementBean> beforeElement, Element element) {
-        if (beforeElement != null) {
-            int size = beforeElement.size();
-            String clickListener = getViewClickListener(element.getView());
-            ElementBean bean;
-            for (int i = 0; i < size; i++) {
-                bean = beforeElement.get(i);
-                if (element.getRect().contains(bean.getRect())) {
-                    if ((TextUtils.isEmpty(bean.getViewClickClass())
-                            && TextUtils.isEmpty(clickListener))
-                            || bean.getViewClickClass().equals(clickListener)) {
-                        return (i + 1) + "/" + size;
-                    }
-                }
-            }
-        }
-        return "未设置";
-    }
-
-    public static int getSwitchState(List<ElementBean> beforeElement, Element element) {
-        int id = element.getView().getId();
-        String clickListener = getViewClickListener(element.getView());
-        if (id > 0) {
-            String resId = getResId(id);
-            if (!TextUtils.isEmpty(resId)) {
-                if (beforeElement != null) {
-                    for (ElementBean bean : beforeElement) {
-                        if (bean.getResId().equals(resId) && element.getRect().contains(bean.getRect())) {
-                            if ((TextUtils.isEmpty(bean.getViewClickClass())
-                                    && TextUtils.isEmpty(clickListener))
-                                    || bean.getViewClickClass().equals(clickListener)) {
-                                return 1;
-                            }
-                        }
-                    }
-                }
-            }
-            return 0;
-        } else {
-            if (beforeElement != null) {
-                for (ElementBean bean : beforeElement) {
-                    if (element.getRect().contains(bean.getRect())) {
-                        View view = element.getView();
-                        if (view instanceof TextView) {
-                            if (((TextView) view).getText().toString().equals(bean.getText())) {
-                                return 1;
-                            }
-                        } else if ((TextUtils.isEmpty(bean.getViewClickClass())
-                                && TextUtils.isEmpty(clickListener))
-                                || bean.getViewClickClass().equals(clickListener)) {
-                            return 1;
-                        }
-                    }
-                }
-            }
-            return 0;
         }
     }
 

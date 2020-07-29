@@ -4,19 +4,25 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.lody.virtual.helper.utils.Reflect;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import me.ele.uetool.base.Element;
+import me.ele.uetool.base.db.ElementBean;
 import me.ele.uetool.base.item.BriefDescItem;
+import me.ele.uetool.base.item.EditStepItem;
 import me.ele.uetool.base.item.Item;
 
 import static me.ele.uetool.base.DimenUtil.dip2px;
@@ -43,7 +49,7 @@ public class AttrsDialog extends Dialog {
         linearLayout.setBackgroundColor(Color.WHITE);
 
         RecyclerView recyclerView = new RecyclerView(getContext());
-        linearLayout.addView(recyclerView,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        linearLayout.addView(recyclerView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         setContentView(linearLayout);
         recyclerView.setAdapter(adapter);
@@ -75,6 +81,41 @@ public class AttrsDialog extends Dialog {
 
     public final void notifyItemRangeRemoved(int positionStart) {
         adapter.notifyValidViewItemRemoved(positionStart);
+    }
+
+    public void notifySelectedViewItemInserted(int positionStart, Element targetElement, ElementBean currentBean) {
+        List<Item> selectedItems = new ArrayList<>();
+        selectedItems.add(new EditStepItem("延时触发", currentBean,
+                EditStepItem.Type.TYPE_DELAY));
+        View view = targetElement.getView();
+        boolean canScrollUp = ViewCompat.canScrollVertically(view, -1);
+        boolean canScrollDown = ViewCompat.canScrollVertically(view, 1);
+        boolean canScrollLeft = ViewCompat.canScrollHorizontally(view, -1);
+        boolean canScrollRight = ViewCompat.canScrollHorizontally(view, 1);
+        boolean canScrollVer = false;
+        boolean canScrollHor = false;
+        if (view.getClass().getName().contains("RecyclerView")) {
+            int mOrientation = Reflect.on(Reflect.on(view).get("mLayout")).get("mOrientation");
+            if (mOrientation == 0) {
+                //HORIZONTAL = 0;
+                canScrollHor = true;
+            } else if (mOrientation == 1) {
+                //VERTICAL = 1;
+                canScrollVer = true;
+            }
+//            selectedItems.add(new EditStepItem("循环点击", currentBean,
+//                    EditStepItem.Type.TYPE_LOOP_CLICK));
+        }
+        if (canScrollUp || canScrollDown || canScrollVer
+                || canScrollLeft || canScrollRight || canScrollHor) {
+            selectedItems.add(new EditStepItem("滑动列表", currentBean,
+                    EditStepItem.Type.TYPE_SCROLL_VIEW));
+        }
+        adapter.notifySelectedItemInserted(positionStart, selectedItems);
+    }
+
+    public final void notifySelectedItemRangeRemoved(int positionStart) {
+        adapter.notifySelectedItemRemoved(positionStart);
     }
 
     public void setAttrDialogCallback(AttrDialogCallback callback) {

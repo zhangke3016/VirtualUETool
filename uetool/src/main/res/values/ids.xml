@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="id_ly_from" type="id" />
+    <item name="id_ly_to" type="id" />
+    <item name="id_ly_duration" type="id" />
+    <item name="id_ly_loop" type="id" />
+
+    <item name="minus_fx" type="id" />
+    <item name="detail_fx" type="id" />
+    <item name="add_fx" type="id" />
+
+    <item name="minus_fy" type="id" />
+    <item name="detail_fy" type="id" />
+    <item name="add_fy" type="id" />
+
+    <item name="minus_tx" type="id" />
+    <item name="detail_tx" type="id" />
+    <item name="add_tx" type="id" />
+
+    <item name="minus_ty" type="id" />
+    <item name="detail_ty" type="id" />
+    <item name="add_ty" type="id" />
+
+    <item name="minus_delay" type="id" />
+    <item name="detail_delay" type="id" />
+    <item name="add_delay" type="id" />
+
+    <item name="minus_s" type="id" />
+    <item name="detail_s" type="id" />
+    <item name="add_s" type="id" />
+
+    <item name="minus_e" type="id" />
+    <item name="detail_e" type="id" />
+    <item name="add_e" type="id" />
+
+    <item name="minus_lc" type="id" />
+    <item name="detail_lc" type="id" />
+    <item name="add_lc" type="id" />
+</resources>

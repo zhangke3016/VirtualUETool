@@ -5,7 +5,7 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.cheng.automate.core.AutoAccessibilityService
 import com.cheng.automate.core.base.BaseAccessibilityJob
-import com.cheng.automate.core.config.ConfigCt
+import me.ele.uetool.base.config.ConfigCt
 
 /**
  * @author zijian.cheng

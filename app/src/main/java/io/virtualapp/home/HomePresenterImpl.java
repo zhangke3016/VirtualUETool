@@ -3,18 +3,9 @@ package io.virtualapp.home;
 import android.app.Activity;
 import android.graphics.Bitmap;
 
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AlertDialog.Builder;
-
-import com.cheng.automate.core.config.ConfigCt;
 import com.lody.virtual.GmsSupport;
 import com.lody.virtual.client.core.VirtualCore;
-import com.lody.virtual.os.VUserInfo;
-import com.lody.virtual.os.VUserManager;
-import com.lody.virtual.remote.InstallResult;
-import com.lody.virtual.remote.InstalledAppInfo;
 
-import io.virtualapp.R;
 import io.virtualapp.sys.Installd;
 import io.virtualapp.sys.Installd.UpdateListener;
 import java.io.IOException;
@@ -26,7 +17,6 @@ import io.virtualapp.home.models.AppInfoLite;
 import io.virtualapp.home.models.MultiplePackageAppData;
 import io.virtualapp.home.models.PackageAppData;
 import io.virtualapp.home.repo.AppRepository;
-import io.virtualapp.home.repo.PackageAppDataStorage;
 import jonathanfinerty.once.Once;
 
 /**
