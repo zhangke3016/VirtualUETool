@@ -2,6 +2,7 @@ package me.ele.uetool.base.db;
 
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -58,13 +59,12 @@ public class ElementBean implements Serializable {
 
     public String getUniqueId() {
         StringBuilder stringBuffer = new StringBuilder();
-        stringBuffer.append(resId);
         stringBuffer.append(text);
         stringBuffer.append(resName);
         stringBuffer.append(className);
         stringBuffer.append(clickable);
         stringBuffer.append(viewClickClass);
-        if (rect != null) {
+        if (TextUtils.isEmpty(text) && TextUtils.isEmpty(resName) && rect != null) {
             stringBuffer.append(rect.toShortString());
         }
         return MD5Utils.get32MD5String(stringBuffer.toString());

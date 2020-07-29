@@ -86,6 +86,7 @@ object AutoClickableManager {
     }
 
     fun onSuccess(element: ElementBean, nodeInfo: AccessibilityNodeInfo? = null) {
+        var sendDelayed = 50L
         if (nodeInfo == null) {
             //only click
             index += 1
@@ -98,12 +99,13 @@ object AutoClickableManager {
             if (element.scrollDuration != 0L) {
                 //有滑动时间，说明是滑动手势
                 AccessibilityHelper.processSwipe(element.fromPoint, element.toPoint, element.scrollDuration)
+                sendDelayed = element.scrollDuration
             } else {
                 AccessibilityHelper.performClick(nodeInfo)
             }
         }
         mClickStepHandler.removeCallbacksAndMessages(null)
-        mClickStepHandler.sendEmptyMessage(STEP_NEXT)
+        mClickStepHandler.sendEmptyMessageDelayed(STEP_NEXT, sendDelayed)
     }
 
     fun onTimerFinish() {
